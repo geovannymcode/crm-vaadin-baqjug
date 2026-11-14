@@ -1,29 +1,29 @@
 # Capturas de pantalla
 
-Esta carpeta está vacía a propósito: cada sesión de la guía deja marcado
-con `![...](images/...)` dónde va cada captura, para que las agregues tú
-mismo a medida que avanzas.
+Cada sesión deja marcado con `![...](images/...)` dónde va cada captura.
+Si guardas los archivos con estos nombres, las rutas funcionan sin editar
+nada más.
 
-Convención de nombres usada en los `![...]` de la guía (puedes cambiarla,
-pero si la mantienes, las rutas ya van a funcionar sin editar nada más):
+| Archivo | Sesión | Qué mostrar |
+|---------|--------|-------------|
+| `s0-proyecto-corriendo.png` | 0, Parte 3 | IDE con el proyecto abierto y la app corriendo |
+| `s1-primera-vista.png` | 1 | Campo, selector de fecha, dos botones lado a lado y una notificación |
+| `s2-grid.png` | 2 | Grid en `/customers` con columnas ordenables |
+| `s3-busqueda-signals.png` | 3 | Buscador filtrando el Grid (por ejemplo "bluefern") |
+| `s4-formulario-seleccion.png` | 4, Parte 1 | Formulario visible al seleccionar una fila, todavía vacío |
+| `s4-binder-validacion.png` | 4, Parte 2 | Formulario lleno y un campo obligatorio con error |
+| `s5-guardar-descartar.png` | 5, Parte 1 | Botones Guardar y Descartar, cambio reflejado en el Grid |
+| `s5-alta-cliente.png` | 5, Parte 2 | Barra con título, buscador y +; formulario vacío abierto |
+| `s5-eliminar-confirmacion.png` | 5, Parte 3 | Diálogo de confirmación con el nombre del cliente |
+| `s6-backend-real.png` | 6 | Clientes de `data.sql`; botón "Crear" y Eliminar deshabilitado |
+| `s7-navegacion.png` | 7 | Drawer con logo, nombre y menú |
+| `s8-variantes.png` | 8, Parte 1 | Botones con variantes y diálogo con botón rojo |
+| `s8-css-modo-oscuro.png` | 8, Parte 2 | Nombre en negrita y modo oscuro |
+| `s8-tema-marca.png` | 8, Parte 3 | App terminada con el tema de marca |
+| `s8-copilot.png` | 8, Cierre | Copilot editando la UI desde el navegador |
 
-| Archivo | Dónde se usa |
-|---------|--------------|
-| `sesion1-primeros-componentes.png` | Sesión 1, Parte 4 |
-| `sesion2-grid-datos-prueba.png` | Sesión 2, Parte 1 |
-| `sesion2-busqueda-reactiva.png` | Sesión 2, Parte 3 |
-| `sesion3-kpis-filtrando.png` | Sesión 3, Parte 4 |
-| `sesion4-formulario-visibilidad.png` | Sesión 4, Parte 1 |
-| `sesion4-binder-validacion.png` | Sesión 4, Parte 2 |
-| `sesion5-guardar-descartar.png` | Sesión 5, Parte 1 |
-| `sesion5-alta-producto.png` | Sesión 5, Parte 2 |
-| `sesion5-baja-confirmacion.png` | Sesión 5, Parte 3 |
-| `sesion6-backend-real.png` | Sesión 6, Parte 4 |
-| `sesion7-navegacion.png` | Sesión 7, Parte 3 |
-| `sesion8-theme-variants.png` | Sesión 8, Parte 1 |
-| `sesion8-css-propio.png` | Sesión 8, Parte 2 |
-| `sesion8-marca-propia.png` | Sesión 8, Parte 3 (opcional) |
+Formato sugerido: PNG, solo la ventana del navegador, ancho máximo
+~1200 px.
 
-Formato sugerido: PNG, recorte solo la ventana del navegador (sin el resto
-del escritorio), ancho máximo ~1200px para que MkDocs no las achique
-demasiado.
+Las imágenes `sesionN-*.png` e `ImgNN.png` son de la versión anterior de
+la guía y ya no se usan en ninguna página.
