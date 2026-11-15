@@ -1,95 +1,57 @@
-# Sesión 7: Navegación y una segunda feature
+# Sesión 7: App shell y navegación
 
-**Rama**: `sesion-7`
-**Lo que vas a lograr**: un menú de navegación entre dos pantallas, y la
-comprobación práctica de la promesa de package-by-feature: agregar una
-funcionalidad nueva sin tocar la que ya existe.
-
-Esta sesión se arma en bloques pequeños, cada uno con algo para correr y
-mirar antes de pasar al siguiente, en vez de dos archivos completos con la
-explicación después. También cambia el orden en el que los creamos: en
-vez de escribir primero `MainLayout` (que depende de una vista que todavía
-no existe), empezamos por una versión mínima de esa vista, para que nunca
-haya un momento con la compilación rota.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 6 min · Video de referencia: 48:18
+    - **Al terminar vas a tener:** un marco común para toda la app, con
+      logo, nombre y un menú lateral para ir entre Inicio y Clientes.
+    - **Conceptos nuevos:** `AppLayout`, `@Layout`, drawer, `SideNav` y
+      `SideNavItem`, navegación type-safe.
 
 ---
 
-## Parte 1: `DashboardView`, la versión mínima
-Vamos a crear un paquete completamente nuevo, `dashboard/`, con una vista
-de inicio que más adelante va a resumir el estado del inventario. Por
-ahora, la versión más chica posible: solo para tener algo que compile y
-para que puedas navegar a ella en un rato.
+## De dónde partimos
 
-`dashboard/DashboardView.java`:
+La app tiene dos vistas: `HomeView` en `/` y `CustomerListView` en
+`/customers`.
 
-```java
-package com.baqjug.stockpilot.dashboard;
+## El problema
 
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Route;
-
-@Route("")
-public class DashboardView extends VerticalLayout {
-
-    public DashboardView() {
-        setSizeFull();
-        add(new H2("Bienvenido a StockPilot"));
-    }
-}
-```
-
-Con esto acabamos de crear, a propósito, una colisión: `DashboardView`
-tiene `@Route("")`, y `ProductListView`, desde la Sesión 2, también.
-Todavía no corras la aplicación. La resolvemos ya mismo, en la Parte 2,
-antes de tocar nada más.
+La única forma de ir de una pantalla a otra es **escribir la URL a
+mano**. Ningún usuario va a hacer eso. Además, cada pantalla está
+"suelta": no hay nombre de la aplicación, ni logo, ni un menú común.
 
 ---
 
-## Parte 2: La colisión de rutas
-Dos vistas no pueden compartir la misma ruta. Si arrancaras la aplicación
-en este momento, con `DashboardView` y `ProductListView` compitiendo por
-`@Route("")`, Vaadin fallaría al levantar con algo parecido a esto:
+## Concepto: el *app shell*
 
-```text
-com.vaadin.flow.server.InvalidRouteConfigurationException: Navigation
-targets must have unique routes, found navigation targets
-'com.baqjug.stockpilot.dashboard.DashboardView' and
-'com.baqjug.stockpilot.product.ProductListView' with the same route.
+Un **app shell** (o *layout* principal) es el marco que envuelve todas
+las pantallas: lo que **no cambia** al navegar. En Vaadin se construye
+con `AppLayout`, que tiene tres zonas:
+
+```
+┌─────────────────────────────────────────────┐
+│ navbar (barra superior)                     │
+├──────────────┬──────────────────────────────┤
+│              │                              │
+│   drawer     │   contenido                  │
+│   (menú      │   (la vista actual:          │
+│   lateral)   │   HomeView o                 │
+│              │   CustomerListView)          │
+│              │                              │
+└──────────────┴──────────────────────────────┘
 ```
 
-Es un error al arrancar, no una excepción mientras usas la app: el
-servidor ni siquiera termina de levantar. Si alguna vez te encontrás con
-un mensaje así, meses después de esta guía, agregando una vista propia, ya
-sabes qué buscar: dos `@Route` con el mismo valor.
-
-La solución es mover `ProductListView` a su propia ruta, porque la raíz
-(`""`) ahora le pertenece al dashboard:
-
-```java
-@Route("products")   // antes era @Route("")
-public class ProductListView extends VerticalLayout {
-```
-
-Con este cambio ya puedes correr la aplicación: vas a ver la
-`DashboardView` mínima en la raíz. Todavía no hay menú para llegar a
-`/products`, así que pruébalo escribiendo la URL a mano en el navegador.
-El menú es justo lo que sigue.
+Al navegar, solo cambia la zona de contenido. El drawer y la barra se
+quedan.
 
 ---
 
-## Parte 3: El App Shell, en tres pasos
-Ahora que `DashboardView` existe, `MainLayout` puede compilar. Lo
-construimos en tres pasos, cada uno con algo para correr y mirar.
+## Paso 1: Un layout vacío
 
-Esto es transversal a toda la app: no es "de producto" ni de ninguna otra
-funcionalidad de negocio, así que va en el paquete técnico que reservamos
-desde la Sesión 1: `shell/`.
-
-**Paso 1: la cáscara vacía.**
+Crea `src/main/java/com/baqjug/crm/ui/MainLayout.java`:
 
 ```java
-package com.baqjug.stockpilot.shell;
+package com.baqjug.crm.ui;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.router.Layout;
@@ -99,273 +61,185 @@ public class MainLayout extends AppLayout {
 }
 ```
 
-!!! abstract "Vaadin al paso: `@Layout` y `AppLayout`"
-    `AppLayout` es el componente base para una cáscara de aplicación, con
-    cabecera y/o menú lateral. `@Layout` le dice a Vaadin que envuelva
-    todas las vistas registradas con `@Route` dentro de esta cáscara,
-    automáticamente, sin que cada vista tenga que declararlo. Eso acaba de
-    pasar: `DashboardView` y `ProductListView` ya están las dos dentro de
-    un `MainLayout`, aunque esa cáscara todavía no tenga nada adentro.
+- `extends AppLayout`: hereda las tres zonas.
+- `@Layout` sin argumentos: este layout envuelve **todas** las rutas de
+  la aplicación. No hay que tocar ningún `@Route` ni listar vistas.
 
-Corre la aplicación. No vas a notar ningún cambio, y así tiene que ser: la
-cáscara ya envuelve las dos vistas, pero está vacía, así que no hay nada
-que se vea distinto todavía. Confirma nada más que sigue compilando y
-arrancando sin errores; el cambio visible llega en el paso 2.
+**Guarda y mira:** apenas se recarga, aparece un marco alrededor de las
+dos vistas. Todavía vacío.
 
-**Paso 2: la cabecera y el drawer.**
-
-```java
-@Layout
-public class MainLayout extends AppLayout {
-
-    public MainLayout() {
-        setPrimarySection(Section.DRAWER);
-
-        H1 appName = new H1("StockPilot");
-        appName.addClassName("app-name");
-
-        HorizontalLayout header = new HorizontalLayout(appName);
-        header.setPadding(true);
-        addToDrawer(header);
-    }
-}
-```
-
-!!! abstract "Vaadin al paso: `Section.DRAWER` contra `Section.NAVBAR`"
-    `AppLayout` soporta dos secciones primarias: `NAVBAR`, una barra
-    horizontal arriba (la opción por defecto), y `DRAWER`, un panel
-    lateral replegable. `setPrimarySection(Section.DRAWER)` elige el panel
-    lateral en vez de la barra superior: es la diferencia entre un menú
-    horizontal arriba y uno vertical a la izquierda, que en pantallas
-    angostas se puede colapsar detrás de un botón de hamburguesa.
-    `addToDrawer(...)` agrega contenido específicamente a esa sección.
-
-Corre la aplicación: ahora sí hay algo que ver, un panel a la izquierda
-con el nombre "StockPilot". Todavía no navega a ningún lado: eso es lo que
-falta en el paso 3.
-
-**Paso 3: el menú de navegación.**
+## Paso 2: El menú a la izquierda
 
 ```java
 public MainLayout() {
     setPrimarySection(Section.DRAWER);
-
-    H1 appName = new H1("StockPilot");
-    appName.addClassName("app-name");
-
-    HorizontalLayout header = new HorizontalLayout(appName);
-    header.setPadding(true);
-    addToDrawer(header);
-
-    SideNav nav = new SideNav();
-    nav.addItem(new SideNavItem("Inicio", DashboardView.class, VaadinIcon.HOME.create()));
-    nav.addItem(new SideNavItem("Productos", ProductListView.class, VaadinIcon.PACKAGE.create()));
-    addToDrawer(nav);
 }
 ```
 
-`MainLayout` completo, con todos los imports que necesita a esta altura:
+`setPrimarySection` decide qué zona manda:
+
+| Valor | Resultado |
+|-------|-----------|
+| `Section.NAVBAR` (por defecto) | La barra superior ocupa todo el ancho; el drawer queda debajo |
+| `Section.DRAWER` | El drawer ocupa todo el alto, a la izquierda; la barra queda a su lado |
+
+Para una herramienta interna con menú, `DRAWER` es lo habitual.
+
+## Paso 3: El menú de navegación
 
 ```java
-package com.baqjug.stockpilot.shell;
+var nav = new SideNav();
+nav.addItem(new SideNavItem("Inicio", HomeView.class, VaadinIcon.HOME.create()));
 
-import com.baqjug.stockpilot.dashboard.DashboardView;
-import com.baqjug.stockpilot.product.ProductListView;
-import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.html.H1;
+addToDrawer(nav);
+```
+
+Imports:
+
+```java
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.router.Layout;
 ```
 
-!!! abstract "`SideNavItem` recibe una clase, no una URL, y eso importa"
-    `new SideNavItem("Productos", ProductListView.class, icono)` no le da
-    a Vaadin la URL `"/products"` escrita a mano: le da la clase
-    `ProductListView`. Internamente, Vaadin resuelve la ruta a partir de
-    la anotación `@Route` de esa clase en el momento de navegar, no cuando
-    armas el menú. La consecuencia concreta: si el mes que viene cambias
-    `@Route("products")` por `@Route("catalogo")`, el menú sigue
-    funcionando sin que lo toques, porque en ningún lado del código del
-    menú quedó un string `"/products"` escrito a mano que se te pueda
-    desactualizar. Este ítem es refactor-safe: renombrar una ruta es un
-    cambio de una línea en un archivo, no una búsqueda de texto por todo
-    el proyecto.
+`SideNavItem` recibe tres cosas: el texto, **la clase de la vista** y un
+ícono opcional. `addToDrawer(...)` pone el menú en el drawer.
 
-Corre la aplicación y navega entre "Inicio" y "Productos" con el menú.
-Este es el primer momento en que las dos pantallas se sienten como una
-sola aplicación.
+**Guarda y mira:** aparece "Inicio" en el menú. Haz clic: lleva a `/`.
 
----
-
-## Parte 4: Enriquecer el dashboard con sus KPIs
-Con la navegación funcionando, volvemos a `DashboardView` para que haga lo
-que prometía: resumir el inventario. Primero el componente visual, después
-los números.
-
-El helper de la tarjeta. Ya escribiste esta forma en la Sesión 3, para los
-KPIs del Grid; acá la extraemos a un método propio porque el dashboard va
-a necesitar tres tarjetas, no dos:
+Ahora agrega Clientes:
 
 ```java
-private Div kpiCard(String title, String value) {
-    Span titleSpan = new Span(title);
-    titleSpan.addClassName("kpi-title");
-    Span valueSpan = new Span(value);
-    valueSpan.addClassName("kpi-value");
-    Div card = new Div(titleSpan, valueSpan);
-    card.addClassName("kpi-card");
-    return card;
-}
+nav.addItem(new SideNavItem("Clientes", CustomerListView.class, VaadinIcon.USER.create()));
 ```
 
-!!! note "Las mismas clases CSS de la Sesión 3, sin estilo todavía"
-    `kpi-card`, `kpi-title`, y `kpi-bar` (el contenedor que agrupa varias
-    tarjetas en fila, que usamos abajo) son las mismas clases que ya
-    usaste en el panel de KPIs del catálogo, en la Sesión 3, y siguen sin
-    tener una regla de CSS que las pinte: eso llega recién en la Sesión 8.
-    Reusarlas acá no es casualidad: es el mismo tipo de componente visual
-    en dos pantallas distintas, así que comparte el mismo estilo el día
-    que ese estilo exista, sin que tengas que escribir CSS nuevo por cada
-    pantalla.
+**Guarda y mira:** navega entre las dos. El ítem de la vista actual se
+**resalta solo**: no escribimos nada para eso.
 
-Ahora los números. Inyectamos `ProductService` en el constructor, igual
-que hicimos con `ProductListView` en la Sesión 6:
+!!! abstract "Por qué la clase y no la URL"
+    `SideNavItem` recibe `CustomerListView.class`, no el texto
+    `"customers"`. La ruta se lee del `@Route` de esa clase. Ventajas:
+
+    - Si mañana cambias `@Route("customers")` por `@Route("clientes")`,
+      el menú sigue funcionando sin tocarlo.
+    - Un error de tipeo (`CustomerListVew.class`) es un **error de
+      compilación**, no un enlace roto que descubre un usuario.
+
+## Paso 4: Logo y nombre de la app
 
 ```java
-package com.baqjug.stockpilot.dashboard;
+var logo = VaadinIcon.VAADIN_H.create();
+var appName = new Span("CRM Interno");
+var header = new HorizontalLayout(logo, appName);
 
-import com.baqjug.stockpilot.product.Product;
-import com.baqjug.stockpilot.product.ProductService;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
+addToDrawer(header, nav);
+```
+
+Imports:
+
+```java
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Route;
-
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
-
-@Route("")
-public class DashboardView extends VerticalLayout {
-
-    public DashboardView(ProductService productService) {
-        setSizeFull();
-        add(new H2("Bienvenido a StockPilot"));
-
-        List<Product> products = productService.findAll();
-        BigDecimal totalValue = products.stream()
-                .map(p -> p.getUnitPrice().multiply(BigDecimal.valueOf(p.getStockQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        long lowStock = products.stream().filter(Product::isLowStock).count();
-
-        Div totalCard = kpiCard("Valor total del inventario", formatCurrency(totalValue));
-        Div countCard = kpiCard("Productos en catálogo", String.valueOf(products.size()));
-        Div lowStockCard = kpiCard("Stock bajo", lowStock + " producto(s)");
-
-        HorizontalLayout kpis = new HorizontalLayout(totalCard, countCard, lowStockCard);
-        kpis.addClassName("kpi-bar");
-        add(kpis);
-    }
-
-    private Div kpiCard(String title, String value) {
-        // igual que arriba
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
-        format.setMaximumFractionDigits(0);
-        return format.format(amount);
-    }
-}
 ```
 
-!!! danger "`Locale.of(...)`, no `new Locale(...)`"
-    El constructor `new Locale("es", "CO")` está deprecado desde Java 19:
-    todavía funciona, pero el compilador te va a marcar la advertencia.
-    `Locale.of("es", "CO")` es el reemplazo, y es el que ya usas en el
-    resto de la guía desde hace varias sesiones; esta era la última
-    aparición de la forma vieja que quedaba.
+`Span` es un texto en línea, como `<span>` en HTML. Cambia el
+`addToDrawer(nav)` anterior por `addToDrawer(header, nav)`: el encabezado
+va primero, arriba del menú.
 
-`productService.findAll()` sigue devolviendo `List<Product>`, la lista
-completa de entidades, tal como quedó definida en la Sesión 6:
-`DashboardView` no pasó por el cambio a `ProductRow` que hicimos ahí,
-porque ese cambio resolvía un problema de Signals dentro del Grid, y acá
-no hay ningún Grid ni ningún signal. `Product::isLowStock` también sigue
-disponible en la entidad, sin cambios. Nada de lo que ajustamos en la
-Sesión 6 le rompe algo a esta vista.
+**Guarda y mira:** el logo y el nombre quedan **pegados al borde**.
 
-!!! abstract "Por qué `ProductService`, nunca `ProductRepository`"
-    `DashboardView` vive en `dashboard/`, una funcionalidad distinta de
-    `product/`, y solo puede depender de lo que `product/` expone como
-    pública: `ProductService`. Nunca de `ProductRepository`. La
-    consecuencia concreta de saltarse esta regla: si `DashboardView`
-    llamara a `ProductRepository` directamente, cualquier cambio en cómo
-    `product/` consulta sus datos (una columna nueva, un `@Query`
-    distinto, el día de mañana cambiar de JPA a otra cosa) habría que
-    replicarlo, o por lo menos revisarlo, en dos lugares en vez de uno. La
-    feature de producto dejaría de poder cambiar sus entrañas sin
-    arriesgarse a romper al dashboard. `ProductService` es el contrato;
-    `ProductRepository` es apenas la implementación de ese contrato, y las
-    implementaciones no se comparten entre features.
+## Paso 5: Espacio alrededor del encabezado
 
-!!! note "Por qué esta vista no usa Signals"
-    El dashboard hace una lectura única al entrar: calcula los tres
-    números en el constructor, los muestra, y ahí termina su trabajo. El
-    dato no cambia mientras el usuario lo está mirando, porque no hay
-    ninguna interacción en esta pantalla que lo cambie (no hay
-    formulario, no hay búsqueda, nada que el usuario haga acá dispare un
-    recálculo). Signals resuelve un problema real, mantener sincronizados
-    la UI y los datos cuando algo cambia en vivo, como en la Sesión 3,
-    pero ese problema cuesta algo: declarar los signals, pensar en
-    efectos y dependencias. Pagar ese costo cuando no hay nada que
-    sincronizar es complejidad de más. Saber cuándo no usar una
-    herramienta es tan importante como saber usarla, y esta vista es el
-    ejemplo concreto: la Sesión 3 te enseñó a construir con Signals, y
-    esta te enseña a reconocer cuándo no hacen falta.
+```java
+header.setPadding(true);
+```
 
-Corre la aplicación, entra a "Inicio", y confirma los tres números: el
-valor total del inventario, la cantidad de productos, y cuántos están en
-stock bajo.
+`VerticalLayout` trae relleno (*padding*) por defecto, pero
+`HorizontalLayout` **no**. Hay que activarlo.
+
+**Guarda y mira:** el encabezado respira.
 
 ---
 
-## Parte 5: Comprobar que package-by-feature cumplió su promesa
-Ya tienes las dos pantallas conectadas por un menú, y el dashboard
-mostrando datos reales. Antes de cerrar, un ejercicio rápido: abre el
-árbol de carpetas del proyecto y cuenta cuántos archivos dentro de
-`product/` tuviste que tocar para agregar toda esta funcionalidad nueva,
-el dashboard, sus KPIs, el menú, la navegación entre pantallas.
+## Código completo al cierre de la sesión
 
-La respuesta es uno: `ProductListView.java`, y dentro de ese archivo, una
-sola línea, el `@Route`. Todo lo demás (`DashboardView`, `MainLayout`,
-`kpiCard`, el cálculo de los KPIs) es código nuevo, en paquetes nuevos,
-que no tocó ni una entidad, ni un repositorio, ni un servicio de
-`product/`.
+??? example "MainLayout.java"
+    ```java
+    package com.baqjug.crm.ui;
 
-![Navegación entre Inicio y Productos con el menú lateral](images/sesion7-navegacion.png)
+    import com.vaadin.flow.component.applayout.AppLayout;
+    import com.vaadin.flow.component.html.Span;
+    import com.vaadin.flow.component.icon.VaadinIcon;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.sidenav.SideNav;
+    import com.vaadin.flow.component.sidenav.SideNavItem;
+    import com.vaadin.flow.router.Layout;
 
-!!! success "Lo que acabas de comprobar"
-    Agregaste una funcionalidad completa (una vista nueva, cálculos
-    propios, una entrada de menú) sin modificar ni una sola línea dentro
-    de la lógica de negocio de `product/`. Todo lo nuevo vive en
-    `dashboard/` y `shell/`. package-by-feature no es una preferencia
-    estética: es la razón por la que esto fue una carpeta nueva y una
-    línea de ruta, y no una cirugía sobre el código existente.
+    @Layout
+    public class MainLayout extends AppLayout {
+
+        public MainLayout() {
+            setPrimarySection(Section.DRAWER);
+
+            var logo = VaadinIcon.VAADIN_H.create();
+            var appName = new Span("CRM Interno");
+            var header = new HorizontalLayout(logo, appName);
+            header.setPadding(true);
+
+            var nav = new SideNav();
+            nav.addItem(new SideNavItem("Inicio", HomeView.class, VaadinIcon.HOME.create()));
+            nav.addItem(new SideNavItem("Clientes", CustomerListView.class, VaadinIcon.USER.create()));
+
+            addToDrawer(header, nav);
+        }
+    }
+    ```
+
+`CustomerListView` y `HomeView` no cambian en esta sesión.
+
+![Drawer con logo, nombre de la app y menú Inicio / Clientes](images/s7-navegacion.png)
 
 ---
 
-## Cierre de la sesión
+## Verifica
+
+- [ ] Las dos vistas aparecen dentro del mismo marco.
+- [ ] El menú está a la izquierda, con logo y "CRM Interno" arriba.
+- [ ] Clic en "Inicio" lleva a `/`; clic en "Clientes" lleva a `/customers`.
+- [ ] El ítem de la vista actual está resaltado.
+
+??? tip "Para profundizar: el menú en pantallas angostas"
+    En una ventana angosta (un celular), `AppLayout` convierte el drawer
+    en un panel que se superpone al contenido. Para que el usuario pueda
+    abrirlo y cerrarlo, agrega un botón de menú en la barra superior:
+
+    ```java
+    addToNavbar(new DrawerToggle());
+    ```
+
+    Import: `com.vaadin.flow.component.applayout.DrawerToggle`.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| No aparece el marco | Falta `@Layout` | Agrégalo sobre la clase |
+| El import de `@Layout` no compila | Importaste otra anotación `Layout` | `com.vaadin.flow.router.Layout` |
+| El menú está arriba, no a la izquierda | Falta `setPrimarySection(Section.DRAWER)` | Agrégalo en el constructor |
+| `SideNavItem` no encuentra `CustomerListView` | Está en otro paquete sin import | Impórtala, o deja ambas clases en `ui` |
+| El encabezado queda pegado al borde | `HorizontalLayout` no trae padding | `header.setPadding(true)` |
+
+## Qué resolvimos
+
+- **Un marco común** para todas las pantallas con `AppLayout` y una sola
+  anotación, `@Layout`.
+- **Navegación sin URLs a mano**, con el ítem activo resaltado de fábrica.
+- **Navegación type-safe**: el menú apunta a clases, no a textos.
+
+## Checkpoint
 
 ```bash
-git add .
-git commit -m "sesion-7: navegación con App Shell y segunda feature (dashboard)"
-git branch sesion-7
+git add . && git commit -m "feat: app shell with side navigation"
 ```
 
-En la [Sesión 8](sesion_8.md), la última, le damos a StockPilot un tema
-propio.
+Sigue con la [Sesión 8](sesion_8.md).

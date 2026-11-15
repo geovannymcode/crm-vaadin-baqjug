@@ -1,125 +1,24 @@
-# Sesión 0: El problema, por qué Vaadin y el setup
+# Sesión 0: Preparación y apertura
 
-**Lo que vas a lograr**: entender a fondo el problema que resuelve Vaadin,
-por qué lo elegimos en vez de separar frontend y backend, y dejar tu
-entorno listo para la Sesión 1.
-
----
-
-## Parte 1: El problema, en una historia
-Un equipo de backend necesita un panel interno de inventario. Nada
-glamoroso: una tabla de productos, un formulario para editarlos, un botón
-para eliminar. Como todo el mundo hoy separa frontend de backend, arrancan
-así: un servicio Spring Boot con un `ProductController` que expone
-`/api/products`, y un proyecto React aparte que lo consume.
-
-Tres semanas después, el inventario "simple" tiene:
-
-1. **Un DTO por cada lado.** El `Product` de Java, un `Product` en
-   TypeScript, y un mapper (a veces manual, a veces generado) para que no
-   se desincronicen. Cada campo nuevo se agrega dos veces.
-2. **Validación por partida doble.** "El precio debe ser mayor a cero" vive
-   en el backend, con Bean Validation, porque no se puede confiar en el
-   cliente. Y vive otra vez en el frontend, con una librería de formularios
-   de React, porque nadie quiere esperar un roundtrip HTTP para enterarse
-   de un error de tipeo.
-3. **Una superficie de ataque más ancha.** Ahora hay CORS que configurar,
-   un token que viajar entre dos servicios, y una API pública (aunque sea
-   "interna") que alguien tiene que versionar y documentar.
-4. **Un segundo pipeline de build**, con su `node_modules`, su bundler, sus
-   actualizaciones de dependencias, para una pantalla que en el fondo es
-   una tabla y un formulario.
-
-Nada de esto es difícil por separado. El problema es que **se paga todo
-junto, siempre**, para cualquier herramienta interna, sin importar cuán
-simple sea. Y en un equipo de backend sin ingenieros de frontend dedicados,
-ese costo compite directamente con el tiempo que podrían invertir en el
-negocio.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 3 min (solo la apertura). Las Partes 1 a 4 se
+      hacen **antes** del taller, en casa.
+    - **Al terminar vas a tener:** el proyecto generado, el backend de
+      clientes copiado, la base de datos con datos de ejemplo y la app
+      arrancando sin errores.
+    - **Conceptos nuevos:** proyecto Vaadin + Spring Boot, entidad JPA,
+      repositorio, servicio, H2, *hotswap*.
 
 ---
 
-## Parte 2: Por qué Vaadin y no otra opción
-Antes de elegir, miremos las alternativas reales para este problema:
+## Parte 1: Lo que necesitas instalado
 
-- **Frontend separado (React/Angular/Vue) + API REST**: la opción por
-  defecto de la industria. Excelente cuando de verdad hay múltiples
-  clientes (web, móvil) consumiendo la misma API, o cuando hay un equipo de
-  frontend dedicado. Para una herramienta interna de un solo equipo, es
-  pagar la complejidad de una arquitectura multi-cliente sin tener
-  múltiples clientes.
-- **Server-side rendering con plantillas (Thymeleaf, JSP)**: evita el
-  segundo lenguaje, pero te devuelve a escribir HTML a mano, y cualquier
-  interacción rica (una tabla que se filtra sin recargar la página, un
-  formulario que valida mientras escribes) requiere JavaScript de todos
-  modos, aunque sea poco.
-- **Vaadin Flow**: los componentes de UI son objetos Java. Vaadin mantiene
-  una conexión persistente con el navegador y traduce cada cambio de
-  estado del servidor en actualizaciones del DOM. Nunca escribes HTML, CSS
-  obligatorio, ni JavaScript, y sin embargo tienes interacciones ricas
-  (Grid ordenable, formularios reactivos) de fábrica.
-
-Elegimos Vaadin por tres razones concretas:
-
-1. **Un solo lenguaje, un solo repo.** El equipo que ya sabe Java escribe
-   la UI en Java. No hay que aprender React ni TypeScript para construir
-   una herramienta interna.
-2. **Cero contrato que mantener sincronizado.** No hay DTOs duplicados ni
-   generador de clientes: la vista y el servicio comparten literalmente las
-   mismas clases de dominio.
-3. **La validación se escribe una sola vez**, del lado del servidor, con
-   Binder, y aun así se siente instantánea para el usuario, porque el
-   servidor está a milisegundos, no a un despliegue de distancia.
-
-|  | Frontend separado + REST | Vaadin Flow |
-|--|---------------------------|--------------|
-| Lenguajes en el equipo | Dos | Uno |
-| Dónde vive el estado de la UI | En el navegador | En el servidor |
-| Contrato entre capas | API REST + DTOs a sincronizar | No existe: mismas clases |
-| Validación | Duplicada (cliente y servidor) | Una sola vez (Binder) |
-| Build de JavaScript | Sí | No |
-| SEO / tráfico público masivo | Es su fuerte | No es su caso de uso |
-
-!!! warning "Vaadin no es la respuesta para todo"
-    Si estás construyendo algo público que necesita SEO, contenido cacheado
-    en un CDN para millones de visitas, o ya tienes un equipo de frontend
-    sirviendo varios clientes (web, iOS, Android) contra la misma API, la
-    separación frontend/backend sigue siendo la decisión correcta. Vaadin
-    brilla en el otro extremo: herramientas internas, backoffices,
-    dashboards: el tipo de software que un equipo de backend construye
-    todo el tiempo, y donde separar en dos repos es pagar una complejidad
-    que nadie afuera de la empresa va a agradecer. StockPilot, lo que vamos
-    a construir, es exactamente ese caso.
-
----
-
-## Parte 3: Los conceptos en dos minutos
-
-Dos ideas van a aparecer una y otra vez en esta guía:
-
-- **Signals**: el sistema de estado reactivo de Vaadin. En vez de escuchar
-  eventos y actualizar la UI a mano, declaras la relación entre un dato y
-  la UI una sola vez, y el framework mantiene todo sincronizado. Lo vas a
-  ver de cerca en la Sesión 2, y en su forma más potente (como KPIs de
-  negocio derivados) en la Sesión 3.
-- **Package-by-feature**: la forma en que vamos a organizar el código. En
-  vez de separar por capa técnica (`backend`, `ui`), separamos por
-  funcionalidad de negocio (`product`, `dashboard`). La Sesión 1 dedica su
-  primera parte entera a explicar por qué.
-
-!!! abstract "Qué es Vaadin Flow, en una frase"
-    Un framework de Java (o Kotlin) donde cada componente de UI (botón,
-    campo de texto, tabla) es un objeto del lado del servidor, y el
-    framework se encarga de pintar y actualizar el navegador sin que
-    escribas una línea de HTML o JavaScript.
-
----
-
-## Parte 4: Lo que necesitas instalar
-### Java 25
-
-```bash
-java -version
-```
+| Herramienta | Para qué | Cómo verificar |
+|-------------|----------|----------------|
+| **Java 25** (o 21) | Compilar y correr la app | `java -version` muestra `25` (o `21`) |
+| **IntelliJ IDEA** (Community alcanza) o **VS Code** | Escribir el código | Abre sin errores |
+| **Plugin de Vaadin** para tu IDE | *Hotswap*: ver cambios sin reiniciar | Aparece la opción "Debug using HotswapAgent" |
+| Un navegador moderno | Ver la app | Chrome, Firefox, Edge o Safari |
 
 === "macOS / Linux"
 
@@ -133,151 +32,435 @@ java -version
     winget install EclipseAdoptium.Temurin.25.JDK
     ```
 
-!!! note "¿No tienes Java 25 todavía?"
-    Vaadin 25 funciona con Java 21 en adelante. Si tu organización todavía
-    no migró a 25, puedes seguir toda esta guía con Java 21 sin cambiar nada
-    del código: solo ajusta `java.version` en el `pom.xml` cuando lo
-    generemos en la Sesión 1.
+Maven no hace falta instalarlo: el proyecto trae su propio Maven en el
+archivo `mvnw` (*Maven Wrapper*), que descarga la versión correcta la
+primera vez que lo usas.
 
-### Maven
+!!! note "Si usas VS Code"
+    Instala dos paquetes de extensiones: **Extension Pack for Java**
+    (Microsoft) y **Spring Boot Extension Pack** (VMware). El primero da
+    soporte al lenguaje; el segundo agrega todo lo de Spring. Si VS Code
+    no detecta tu JDK, configura `java.configuration.runtimes` en tu
+    `settings.json` y ejecuta `Java: Clean Workspace`.
 
-La mayoría de los IDEs lo traen integrado. Para verificar que tienes uno
-disponible desde la terminal:
+### ¿Qué es el *hotswap* y por qué importa?
 
-```bash
-mvn -version
-```
+Sin *hotswap*, cada cambio en Java implica detener el servidor, compilar
+y volver a arrancar: entre 10 y 30 segundos por cambio. Con el plugin de
+Vaadin, la app corre en modo depuración con una herramienta llamada
+HotswapAgent: guardas el archivo, la clase se recarga dentro del servidor
+que ya está corriendo, y el navegador se refresca solo.
 
-### IntelliJ IDEA (o tu IDE preferido)
+Hay cambios que *hotswap* no puede aplicar y que obligan a reiniciar.
+La guía te avisa cada vez que pase:
 
-La Community Edition alcanza: [jetbrains.com/idea](https://www.jetbrains.com/idea/download/).
-
-!!! tip "El plugin de Vaadin, para hot reload"
-    Instala el plugin oficial de Vaadin desde el marketplace de tu IDE.
-    Te permite correr la app en modo "debug con hot swap agent": cada vez
-    que guardas un cambio en Java, se refleja en el navegador sin
-    reiniciar el servidor. No es obligatorio para seguir la guía, pero
-    acorta muchísimo el ciclo de prueba-y-error de cada sesión.
-
-### Visual Studio Code (si vas a usarlo en vez de un IDE de JetBrains)
-
-Si tu equipo usa VS Code, instala estos dos packs de extensiones desde el
-Marketplace antes de la Sesión 1:
-
-- **Extension Pack for Java** (Microsoft): soporte del lenguaje, debugger
-  y ejecución de proyectos Maven/Gradle.
-- **Spring Boot Extension Pack** (VMware): autocompletado de
-  `application.properties`, navegación de beans y ejecución de
-  aplicaciones Spring Boot.
-
-!!! tip "Los dos packs son necesarios, no alcanza con uno solo"
-    El pack de Java te da el soporte base del lenguaje; el de Spring Boot
-    añade todo lo específico del framework (beans, endpoints,
-    propiedades). Sin el segundo, VS Code no te resalta ni autocompleta
-    nada de Spring.
-
-### Configurar la ruta del JDK a mano en VS Code
-
-A veces VS Code no detecta solo el JDK 25 recién instalado, sobre todo si
-tienes varias versiones de Java conviviendo en tu equipo (por ejemplo,
-instaladas con SDKMAN). Si te pasa esto, puedes indicarle la ruta exacta
-a mano.
-
-**Paso 1: abre `settings.json`**
-
-Abre la paleta de comandos (`Cmd + Shift + P` en macOS, `Ctrl + Shift + P`
-en Windows), escribe `Preferences: Open User Settings (JSON)` (o
-`Preferencias: Abrir configuración del usuario (JSON)` si tu editor está
-en español) y selecciona esa opción.
-
-**Paso 2: identifica la ruta de instalación de tu Java 25**
-
-=== "macOS / Linux (con SDKMAN)"
-
-    ```bash
-    ls ~/.sdkman/candidates/java/
-    ```
-
-    La ruta completa sigue el formato
-    `/Users/TU_USUARIO/.sdkman/candidates/java/NOMBRE_DE_LA_CARPETA`.
-
-=== "Windows"
-
-    Si lo instalaste con el ejecutable tradicional, la ruta suele ser
-    `C:\Program Files\Java\jdk-25` (o similar).
-
-**Paso 3: agrega la configuración al JSON**
-
-Busca la propiedad `java.configuration.runtimes` en tu `settings.json`.
-Si no existe, agrégala antes de la última llave de cierre `}`.
-
-=== "macOS / Linux"
-
-    ```json
-    "java.configuration.runtimes": [
-      {
-        "name": "JavaSE-25",
-        "path": "/Users/TU_USUARIO/.sdkman/candidates/java/NOMBRE_DE_LA_CARPETA",
-        "default": true
-      }
-    ]
-    ```
-
-=== "Windows"
-
-    ```json
-    "java.configuration.runtimes": [
-      {
-        "name": "JavaSE-25",
-        "path": "C:\\Program Files\\Java\\jdk-25",
-        "default": true
-      }
-    ]
-    ```
-
-!!! danger "En el JSON de Windows, usa doble barra invertida `\\`"
-    Una sola barra invertida `\` no sirve, porque en JSON es un carácter
-    de escape. `C:\\Program Files\\Java\\jdk-25` es lo correcto.
-
-**Paso 4: limpia el caché de Java (este paso no es opcional)**
-
-Guarda `settings.json`, abre de nuevo la paleta de comandos, escribe
-`Java: Clean Workspace` y presiona Enter. Confirma con el botón
-**Restart and clean** que aparece en la esquina inferior derecha. Sin
-este paso, VS Code sigue usando la configuración de Java que tenía en
-memoria, aunque ya hayas guardado la ruta nueva.
-
-Cuando VS Code termine de reiniciar, ya puedes correr y debuggear el
-proyecto directamente desde ahí: con el Spring Boot Extension Pack
-instalado, vas a tener un panel **Spring Boot Dashboard** con tu
-aplicación listada, y la inicias con el ícono de play, sin pasar por la
-terminal.
-
-### Un navegador moderno
-
-Cualquiera sirve. Vaadin no requiere ninguna extensión ni configuración
-especial del lado del cliente.
+- crear una vista nueva con `@Route` (a veces),
+- agregar parámetros al constructor de una vista,
+- cambiar anotaciones de la clase `Application`.
 
 ---
 
-## Parte 5: La carpeta del repo
+## Parte 2: Generar el proyecto
 
-```bash
-mkdir stockpilot-vaadin
-cd stockpilot-vaadin
-git init
+### El problema
+
+Necesitamos un proyecto Spring Boot con Vaadin, JPA y una base de datos,
+y no queremos gastar tiempo del taller configurándolo a mano.
+
+### Paso 1: Generar en start.vaadin.com
+
+1. Entra a [start.vaadin.com](https://start.vaadin.com).
+2. Elige **Flow** (no Hilla). Flow es el modo en que toda la interfaz se
+   escribe en Java.
+3. Java 25 (o 21) y la versión estable más reciente de Vaadin 25.x.
+4. Usa `com.baqjug.crm` como paquete base (*group id*).
+5. Descarga el `.zip`, descomprímelo y ábrelo en tu IDE como proyecto
+   Maven.
+
+Si el generador incluyó vistas o funcionalidades de ejemplo (por ejemplo
+una lista de tareas o un `MainLayout`), **bórralas**. Vamos a construir
+todo desde una vista vacía y el `MainLayout` lo creamos nosotros en la
+Sesión 7.
+
+### Paso 2: Revisar las dependencias
+
+Abre `pom.xml` y busca estas dos dependencias. Si no están, agrégalas
+dentro de `<dependencies>`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+</dependency>
 ```
 
-Al final de esta guía vas a tener un único proyecto Maven, generado en la
-Sesión 1, con esta forma:
+- `spring-boot-starter-data-jpa` trae **JPA** (la especificación de Java
+  para guardar objetos en una base de datos relacional), **Hibernate**
+  (la implementación) y **Spring Data** (que genera los repositorios por
+  ti).
+- `h2` es una base de datos que corre **dentro** de la misma aplicación,
+  en memoria. No hay que instalar nada. A cambio, los datos se pierden al
+  reiniciar: para un taller es exactamente lo que queremos.
 
-![Estructura del Proyecto](images/Img02.png)
+No pongas versión: el *parent* de Spring Boot ya la define, y así todas
+las dependencias quedan compatibles entre sí.
 
-!!! tip "Dónde van tus capturas"
-    Si vas a documentar tu propio avance con imágenes, te sugiero una
-    carpeta `docs/images/` dentro del repo, con un nombre por sesión:
-    `sesion1-grid-vacio.png`, `sesion3-kpis-en-vivo.png`, y así. Esta guía
-    deja el lugar marcado en cada sesión con `![...]" para que sepas
-    exactamente dónde va cada una.
+### Paso 3: La clase `Application`
 
-Cuando estés listo, sigue a la [Sesión 1](sesion_1.md).
+Deja `src/main/java/com/baqjug/crm/Application.java` así:
+
+```java
+package com.baqjug.crm;
+
+import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.theme.aura.Aura;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+@StyleSheet(Aura.STYLESHEET)
+@StyleSheet("styles.css")
+public class Application implements AppShellConfigurator {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
+
+Qué hace cada línea:
+
+| Línea | Qué hace |
+|-------|----------|
+| `@SpringBootApplication` | Enciende Spring Boot: busca tus clases, crea los objetos que necesitas (servicios, repositorios) y arranca un servidor web embebido. |
+| `@StyleSheet(Aura.STYLESHEET)` | Carga **Aura**, el tema visual de Vaadin 25. Sin un tema, los componentes se ven sin estilo. |
+| `@StyleSheet("styles.css")` | Carga nuestra propia hoja de estilos. La usamos en la Sesión 8. |
+| `implements AppShellConfigurator` | Marca esta clase como la configuración global de la página (tema, estilos, esquema de color). |
+| `main` | El punto de entrada. Correr `main` arranca todo: no hay un servidor aparte que instalar. |
+
+!!! warning "Una sola clase `AppShellConfigurator`"
+    Si el generador ya creó otra clase que implementa
+    `AppShellConfigurator`, deja solo una. Con dos, la app no arranca y
+    muestra: *"Multiple classes implementing AppShellConfigurator were
+    found"*.
+
+### Paso 4: La hoja de estilos vacía
+
+Crea el archivo `src/main/resources/META-INF/resources/styles.css`,
+vacío por ahora.
+
+!!! warning "La ruta exacta importa"
+    Vaadin sirve como archivos estáticos lo que está en
+    `META-INF/resources`. Si pones `styles.css` en otra carpeta, no lo
+    encuentra y **no muestra ningún error**: simplemente tus estilos no
+    se aplican.
+
+---
+
+## Parte 3: El backend, listo de antemano
+
+### El problema
+
+El taller es sobre la **interfaz**. Escribir el backend en vivo nos
+quitaría 10 minutos que necesitamos para la UI. Por eso se copia antes:
+es Spring Data JPA estándar, y en la Sesión 6 lo conectamos a la vista.
+
+Vamos a crear cuatro archivos en el paquete `com.baqjug.crm.backend` y
+dos en `src/main/resources`.
+
+### `Status.java`: los estados de un cliente
+
+```java
+package com.baqjug.crm.backend;
+
+public enum Status {
+    LEAD, PROSPECT, CUSTOMER, INACTIVE
+}
+```
+
+Un `enum` es un tipo con un conjunto cerrado de valores. Representa en
+qué etapa comercial está el cliente:
+
+| Valor | Significado |
+|-------|-------------|
+| `LEAD` | Contacto inicial, todavía no calificado |
+| `PROSPECT` | Interesado, en conversación |
+| `CUSTOMER` | Cliente activo |
+| `INACTIVE` | Fue cliente y ya no lo es |
+
+### `Customer.java`: la entidad
+
+```java
+package com.baqjug.crm.backend;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "customer")
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String firstName = "";
+
+    @Column(nullable = false)
+    private String lastName = "";
+
+    @Column(nullable = false)
+    private String email = "";
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.LEAD;
+
+    private LocalDate customerSince;
+
+    public Customer() {
+    }
+
+    public Customer(String firstName, String lastName, String email,
+                    Status status, LocalDate customerSince) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.status = status;
+        this.customerSince = customerSince;
+    }
+
+    public Long getId() { return id; }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+    public LocalDate getCustomerSince() { return customerSince; }
+    public void setCustomerSince(LocalDate customerSince) { this.customerSince = customerSince; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof Customer other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+}
+```
+
+Una **entidad** es una clase Java normal que JPA sabe guardar en una
+tabla. Cada objeto `Customer` es una fila de la tabla `customer`.
+
+| Anotación | Qué hace |
+|-----------|----------|
+| `@Entity` | Le dice a JPA: "esta clase se guarda en la base de datos". |
+| `@Table(name = "customer")` | El nombre de la tabla. |
+| `@Id` | El campo que identifica cada fila (la llave primaria). |
+| `@GeneratedValue(strategy = IDENTITY)` | La base de datos genera el `id` sola al insertar. Por eso un cliente nuevo tiene `id == null` hasta que se guarda: lo usamos en la Sesión 6. |
+| `@Column(nullable = false)` | La columna no acepta `null`. |
+| `@Enumerated(EnumType.STRING)` | Guarda el enum como texto (`"CUSTOMER"`), no como número. Si mañana reordenas el enum, los datos no se corrompen. |
+
+Tres decisiones que vale la pena entender:
+
+1. **Los campos de texto arrancan en `""`.** En la Sesión 5 creamos un
+   cliente nuevo con `new Customer()` y lo cargamos en el formulario. Con
+   cadenas vacías, los campos aparecen vacíos; con `null`, varios
+   componentes fallan o muestran "null".
+2. **`customerSince` no tiene valor inicial.** Un prospecto todavía no es
+   cliente, así que no tiene fecha de alta. Es un campo opcional a
+   propósito.
+3. **`equals` compara por `id` y `hashCode` es constante.** Es el patrón
+   recomendado para entidades JPA: dos objetos son "el mismo cliente" si
+   tienen el mismo `id` en la base de datos. Un cliente sin `id` (nuevo)
+   solo es igual a sí mismo. El `hashCode` constante evita que el objeto
+   "cambie de identidad" cuando recibe su `id` al guardarse.
+
+### `CustomerRepository.java`: el acceso a datos
+
+```java
+package com.baqjug.crm.backend;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+interface CustomerRepository extends JpaRepository<Customer, Long> {
+}
+```
+
+Es una interfaz **vacía**, y aun así funciona: Spring Data genera la
+implementación al arrancar. Al extender `JpaRepository<Customer, Long>`
+(entidad `Customer`, `id` de tipo `Long`) recibes gratis `findAll()`,
+`findById(...)`, `save(...)`, `delete(...)` y muchos más.
+
+No es `public` a propósito: solo el servicio, que está en el mismo
+paquete, puede usarlo. La vista nunca habla con el repositorio.
+
+### `CustomerService.java`: lo que la UI va a usar
+
+```java
+package com.baqjug.crm.backend;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class CustomerService {
+
+    private final CustomerRepository customerRepository;
+
+    CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
+    }
+
+    @Transactional
+    public Customer save(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @Transactional
+    public void delete(Customer customer) {
+        customerRepository.delete(customer);
+    }
+}
+```
+
+| Elemento | Qué hace |
+|----------|----------|
+| `@Service` | Spring crea **una** instancia de esta clase y se la entrega a quien la pida en su constructor. Eso se llama **inyección de dependencias**. |
+| Constructor con `CustomerRepository` | Spring ve que el servicio necesita un repositorio y se lo pasa automáticamente. |
+| `@Transactional` | Cada método corre dentro de una transacción de base de datos: o se aplica todo, o nada. |
+| `readOnly = true` | Le avisa a la base de datos que solo vamos a leer, lo que permite optimizar. |
+
+`save` sirve para crear **y** para actualizar: si el cliente no tiene
+`id`, hace un `INSERT`; si lo tiene, un `UPDATE`.
+
+!!! abstract "¿Por qué un servicio, si el repositorio ya hace todo?"
+    Porque el servicio es el lugar donde, más adelante, vas a poner las
+    reglas de negocio ("no se puede eliminar un cliente con facturas
+    pendientes", "al pasar a CUSTOMER, guardar la fecha de alta"). Si la
+    vista hablara directo con el repositorio, esas reglas terminarían
+    repartidas en las pantallas.
+
+### `application.properties`
+
+Agrega estas líneas a `src/main/resources/application.properties`:
+
+```properties
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.defer-datasource-initialization=true
+```
+
+- `ddl-auto=update`: Hibernate crea (o ajusta) la tabla `customer` a
+  partir de la clase `Customer`. Cómodo para aprender; en producción se
+  usa una herramienta de migraciones como Flyway.
+- `defer-datasource-initialization=true`: ejecuta `data.sql` **después**
+  de que Hibernate cree la tabla. Sin esta línea, el script corre antes,
+  la tabla no existe y la app no arranca.
+
+### `data.sql`: datos de ejemplo
+
+Crea `src/main/resources/data.sql`:
+
+```sql
+INSERT INTO customer (first_name, last_name, email, status, customer_since) VALUES
+('Alicia', 'Nieto', 'alicia.nieto@meridian.co', 'CUSTOMER', '2023-01-15'),
+('Boris', 'Martínez', 'boris.martinez@bluefern.io', 'CUSTOMER', '2022-11-03'),
+('Carolina', 'Schmidt', 'carolina.schmidt@meridian.co', 'PROSPECT', NULL),
+('Daniel', 'Reyes', 'daniel.reyes@northfield.com', 'LEAD', NULL),
+('Elena', 'Vargas', 'elena.vargas@northfield.com', 'INACTIVE', '2020-03-10'),
+('Felipe', 'Ortiz', 'felipe.ortiz@bluefern.io', 'PROSPECT', NULL),
+('Gabriela', 'Rojas', 'gabriela.rojas@meridian.co', 'CUSTOMER', '2024-05-02'),
+('Hernán', 'Castro', 'hernan.castro@graniteworks.com', 'LEAD', NULL);
+```
+
+Fíjate que las columnas se llaman `first_name`, `customer_since`:
+Hibernate convierte `firstName` (estilo Java) a `first_name` (estilo SQL)
+automáticamente.
+
+---
+
+## Parte 4: Comprobar que todo arranca
+
+=== "IntelliJ IDEA"
+
+    Abre `Application.java`, clic derecho sobre `main` →
+    **Debug using HotswapAgent** (lo agrega el plugin de Vaadin).
+
+=== "VS Code"
+
+    Abre el panel **Spring Boot Dashboard** y usa el botón de depurar
+    sobre la aplicación.
+
+=== "Terminal"
+
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+
+    En Windows: `mvnw.cmd spring-boot:run`. Así no hay *hotswap*: cada
+    cambio requiere reiniciar.
+
+La primera vez tarda varios minutos: Maven descarga las dependencias y
+Vaadin prepara los recursos del navegador. Las siguientes veces arranca
+en segundos.
+
+Abre `http://localhost:8080`. Todavía no hay ninguna vista, así que
+verás una página de "ruta no encontrada" o en blanco. **Eso es lo
+esperado.** Lo importante está en la consola.
+
+### Verifica
+
+- [ ] La consola termina con un mensaje parecido a `Started Application in X seconds`.
+- [ ] No hay ninguna excepción en rojo.
+- [ ] En la consola aparece Hibernate creando la tabla `customer`.
+
+### Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| `Table "CUSTOMER" not found` al arrancar | Falta `defer-datasource-initialization` | Agrega la línea en `application.properties` |
+| `Multiple classes implementing AppShellConfigurator` | El generador dejó otra clase de configuración | Deja solo `Application` |
+| `release version 25 not supported` | Maven usa un JDK más viejo | Configura el JDK 25 en el IDE, o baja `java.version` a 21 en el `pom.xml` |
+| `Port 8080 was already in use` | Otra app usa el puerto | Cierra la otra app o agrega `server.port=8081` |
+
+### Checkpoint
+
+```bash
+git init
+git add .
+git commit -m "chore: initial project with customer backend"
+```
+
+---
+
+## Parte 5: Apertura en vivo (3 min)
+
+1. El problema: un equipo comercial con hojas de cálculo dispersas y
+   nadie con la versión real (ver la [portada](index.md)).
+2. La propuesta: toda la interfaz en Java, en el mismo proyecto que el
+   backend. Sin API REST, sin un segundo proyecto de JavaScript.
+3. Mostrar el IDE con el proyecto abierto y la app corriendo con
+   *hotswap*.
+
+![Proyecto abierto en el IDE y la app corriendo](images/s0-proyecto-corriendo.png)
+
+Sigue con la [Sesión 1](sesion_1.md).

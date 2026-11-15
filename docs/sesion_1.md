@@ -1,276 +1,258 @@
-# Sesión 1: El proyecto y package-by-feature
+# Sesión 1: Primera vista, componentes y layouts
 
-**Rama**: `sesion-1`
-**Lo que vas a lograr**: el proyecto `stockpilot` generado y corriendo,
-organizado con package-by-feature desde el primer archivo, y tus primeros
-componentes de Vaadin en pantalla.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 6 min · Video de referencia: 2:29
+    - **Al terminar vas a tener:** una pantalla en `http://localhost:8080`
+      con un campo de texto, un selector de fecha y dos botones que
+      responden al clic.
+    - **Conceptos nuevos:** vista y `@Route`, componente, layout
+      (`VerticalLayout`, `HorizontalLayout`), listener, `Notification`.
 
 ---
 
-## Parte 1: Generar el proyecto con start.vaadin.com
+## De dónde partimos
 
-A diferencia de un proyecto Spring Boot cualquiera, para Vaadin conviene
-arrancar desde el asistente propio del framework:
-[https://start.vaadin.com](https://start.vaadin.com). Ya viene con el BOM
-de Vaadin, el plugin de Maven y una vista de ejemplo configurados: te
-ahorra la parte más propensa a errores de versión.
+El proyecto de la Sesión 0 arranca, pero en `http://localhost:8080` no
+hay nada: todavía no existe ninguna pantalla.
 
-Completa:
+## El problema
 
-| Campo | Valor |
-|-------|-------|
-| Framework | **Flow** (no Hilla, que es para UIs en React con endpoints TypeScript; nosotros queremos Java puro de punta a punta) |
-| Application name | `stockpilot` |
-| Technology stack | **Spring Boot** |
-| Language | **Java** |
-| Build tool | **Maven** |
-| Group ID | `com.baqjug.stockpilot` |
-| Version de Vaadin | **25.2.6** (o la 25.x estable más reciente) |
-| Java version | **25** |
+Necesitamos una primera pantalla con campos y botones. En un stack
+tradicional eso implica HTML para la estructura, CSS para el aspecto,
+JavaScript para reaccionar al clic y un endpoint en el backend para
+recibir los datos. Queremos hacerlo todo en Java.
 
-Elige la plantilla **"Empty"** (o "Plain Java") en vez de alguna de las
-plantillas con ejemplos de negocio: vamos a construir todo nosotros, capa
-por capa, y no queremos código de muestra estorbando.
+---
 
-Descarga el `.zip`, descomprímelo dentro de tu carpeta de repo, y ábrelo en
-tu IDE:
+## Conceptos antes de escribir código
 
-```bash
-unzip ~/Downloads/stockpilot.zip -d .
+### ¿Qué es una vista?
+
+Una **vista** es una pantalla de la aplicación a la que el usuario puede
+llegar con una URL. En Vaadin es una clase Java con la anotación
+`@Route`.
+
+### ¿Qué es un componente?
+
+Cada elemento de la pantalla (botón, campo de texto, tabla) es un
+**componente**, y cada componente es una **clase Java**. Si necesitas un
+botón, escribes `new Button("Guardar")`, igual que crearías cualquier
+otro objeto.
+
+### ¿Qué es un layout?
+
+Un **layout** es un componente que contiene y ordena otros componentes:
+
+| Layout | Cómo ordena |
+|--------|-------------|
+| `VerticalLayout` | Uno debajo del otro |
+| `HorizontalLayout` | Uno al lado del otro |
+| `FormLayout` | En columnas, adaptándose al ancho (lo usamos en la Sesión 4) |
+
+Las pantallas se arman **metiendo layouts dentro de layouts**. Es la
+idea central de esta sesión.
+
+### ¿Dónde corre el código?
+
+Esta es la diferencia más importante con un frontend tradicional:
+
+```
+Navegador                          Servidor (tu app Java)
+─────────                          ──────────────────────
+1. El usuario hace clic   ───────▶ 2. Vaadin ejecuta tu listener (Java)
+                                   3. Tu código cambia componentes
+4. El navegador se        ◀─────── 5. Vaadin envía solo lo que cambió
+   actualiza
 ```
 
-La primera vez que abres el proyecto, Maven descarga las dependencias y
-Vaadin prepara su frontend interno (aunque nunca vayas a tocarlo a mano).
-Espera a que termine antes de seguir.
-
-!!! note "¿Por qué no Spring Initializr?"
-    Podrías arrancar en [start.spring.io](https://start.spring.io) y
-    agregar Vaadin como dependencia a mano (así se hace cuando Vaadin se
-    suma a un proyecto Spring que ya existe). Para un proyecto que nace
-    siendo una app Vaadin, start.vaadin.com te ahorra fijar a mano la
-    versión del BOM y del plugin de Maven, que tienen que coincidir entre
-    sí.
+Tu código Java **nunca** corre en el navegador. Vaadin mantiene la
+comunicación y sincroniza la pantalla. Por eso no escribes JavaScript ni
+expones endpoints.
 
 ---
 
-## Parte 2: Por qué package-by-feature
-Antes de escribir la primera vista, tomemos una decisión de arquitectura
-que va a acompañar todo el proyecto: cómo organizamos los paquetes.
+## Paso 1: Crear la vista vacía
 
-Si abres el proyecto que acabas de generar, vas a ver que viene casi
-vacío: un único paquete `com.baqjug.stockpilot`, con la clase
-`Application.java` adentro y nada más. La plantilla no te impone ninguna
-arquitectura interna: esa decisión queda en tus manos, y la vamos a tomar
-ahora, antes de escribir la primera línea de código de negocio.
-
-La opción más común en un proyecto Spring Boot es separar **por capa
-técnica**: un paquete para toda la lógica de negocio (entidades,
-servicios, repositorios) y otro para las vistas o controladores. Para
-StockPilot, con un único dominio ("producto"), se vería así:
-
-![Estructura Normal](images/Img03.png)
-
-Es la estructura que vas a encontrar en la gran mayoría de proyectos
-Spring Boot del mundo real, y funciona perfecto mientras el proyecto tiene
-una sola funcionalidad de negocio.
-
-El problema aparece cuando el proyecto crece. El día que StockPilot necesite
-una segunda funcionalidad real (pedidos, proveedores, reportes), cada
-paquete técnico se va a llenar de clases de dominios distintos mezcladas
-entre sí. Para tocar "todo lo de producto" vas a tener que saltar entre
-cuatro paquetes lejanos (`entity`, `repository`, `service`, `view`), y el
-compilador no te va a avisar si una vista de "pedidos" termina usando por
-accidente una entidad de "producto" que no debería tocar.
-
-Vamos a organizar distinto: **package-by-feature**. Todo lo que tiene que
-ver con la funcionalidad "producto" (la entidad, el repositorio, el
-servicio, la vista) vive en un solo paquete, `product`, dentro de tu
-proyecto real. El día de mañana, "pedidos" sería una carpeta nueva,
-`order`, sin tocar una sola línea de `product`.
-
-![Estructura Normal](images/Img04.png)
-
-Elegimos package-by-feature por tres razones:
-
-1. **La cercanía sigue a la relación real entre las clases.** Un
-   `ProductService` cambia junto con `Product` y `ProductRepository` mucho
-   más seguido de lo que cambia junto con un `OrderService` que no tiene
-   nada que ver. El paquete debería reflejar eso.
-2. **Agregar una funcionalidad no toca las que ya existen.** Una carpeta
-   nueva, sin tocar nada de las demás: lo vas a comprobar con tus propias
-   manos en la Sesión 7, cuando agreguemos `dashboard/` sin modificar ni
-   una línea de `product/`.
-3. **El límite entre funcionalidades queda explícito.** Package-by-layer no
-   te impide que una vista de pedidos importe una entidad de producto sin
-   pasar por su servicio. Package-by-feature no lo prohíbe por sí solo
-   tampoco (Java no tiene "paquetes con permisos" de fábrica), pero hace
-   mucho más incómodo el atajo, porque cruzar de un paquete de feature a
-   otro se nota al mirar los imports.
-
-!!! danger "La única excepción: lo transversal"
-    No todo es una feature de negocio. La navegación general de la app, por
-    ejemplo, no es "de producto" ni "de pedidos": es de toda la
-    aplicación. Para eso reservamos un paquete técnico explícito, `shell/`
-    (lo vas a crear en la Sesión 7). La regla no es "cero paquetes
-    técnicos": es "el dominio manda, lo técnico es la excepción declarada".
-
----
-
-## Parte 3: Creando la estructura de paquetes
-Dentro de `src/main/java/com/baqjug/stockpilot`, crea el paquete `product`
-(clic derecho → **New → Package** en IntelliJ, o `mkdir -p` desde la
-terminal):
-
-```bash
-mkdir -p src/main/java/com/baqjug/stockpilot/product
-```
-
----
-
-## Parte 4: Tus primeros componentes
-En Vaadin, cada componente de UI es una clase de Java: si necesitas un
-botón, instancias un botón; si necesitas un campo de texto, instancias un
-campo de texto. No hay una plantilla HTML detrás: el árbol de componentes
-del lado del servidor **es** la interfaz.
-
-Primero, el modelo. Todavía sin ninguna anotación de persistencia (eso
-llega en la Sesión 6), porque queremos construir toda la experiencia de
-usuario con datos de prueba antes de depender de una base de datos.
-
-`product/ProductCategory.java`:
+Crea `src/main/java/com/baqjug/crm/ui/HomeView.java`:
 
 ```java
-package com.baqjug.stockpilot.product;
+package com.baqjug.crm.ui;
 
-public enum ProductCategory {
-    ELECTRONICS,
-    GROCERY,
-    APPAREL,
-    HOME_GOODS,
-    TOYS,
-    OTHER
-}
-```
-
-`product/Product.java`: un bean simple, con getters y setters, y un id
-`Long` que por ahora vamos a dejar en `null` para los productos que todavía
-no existen en ninguna base (esa idea de "id nulo = producto nuevo" la vamos
-a usar bastante a partir de la Sesión 5):
-
-```java
-package com.baqjug.stockpilot.product;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-public class Product {
-
-    private Long id;
-    private String sku;
-    private String name;
-    private ProductCategory category;
-    private BigDecimal unitPrice;
-    private int stockQuantity;
-    private int reorderLevel;
-    private String supplier;
-    private boolean active = true;
-    private LocalDate lastRestockedDate;
-
-    public Product() {
-    }
-
-    // getters y setters de cada campo -- IntelliJ: Code → Generate → Getter and Setter
-
-    public boolean isLowStock() {
-        return stockQuantity < reorderLevel;
-    }
-}
-```
-
-!!! tip "Genera los getters/setters con el IDE"
-    No los escribas a mano: en IntelliJ, `Alt+Insert` (o `Code → Generate`)
-    → **Getter and Setter**, selecciona todos los campos. Vas a necesitar
-    todos los getters y setters de estos campos más adelante, sobre todo
-    cuando lleguemos al Binder en la Sesión 4.
-
-Ahora sí, la vista. Vamos a empezar simple: un campo de texto para el
-nombre, un campo numérico para el precio, y dos botones.
-
-`product/ProductListView.java`:
-
-```java
-package com.baqjug.stockpilot.product;
-
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
 @Route("")
-public class ProductListView extends VerticalLayout {
+public class HomeView extends VerticalLayout {
 
-    public ProductListView() {
-        TextField nameField = new TextField("Nombre del producto");
-        add(nameField);
-
-        NumberField priceField = new NumberField("Precio unitario");
-        add(priceField);
-
-        Button saveButton = new Button("Guardar");
-        saveButton.addClickListener(event ->
-                Notification.show("Producto guardado (todavía no de verdad)"));
-
-        Button discardButton = new Button("Descartar");
-        discardButton.addClickListener(event ->
-                Notification.show("Cambios descartados"));
-
-        HorizontalLayout buttons = new HorizontalLayout(saveButton, discardButton);
-        add(buttons);
+    public HomeView() {
     }
 }
 ```
 
-!!! abstract "Vaadin al paso: `@Route`, layouts y `add(...)`"
-    - `@Route("")` registra la clase como una vista, servida en la URL que
-      indiques. Una cadena vacía significa la raíz del sitio
-      (`localhost:8080/`).
-    - `VerticalLayout` es un contenedor que apila sus componentes uno
-      debajo del otro. `HorizontalLayout` hace lo mismo pero lado a lado.
-      Los layouts se anidan entre sí, y así se construyen interfaces
-      complejas: layouts dentro de layouts.
-    - `add(...)` agrega un componente al layout. Puedes pasarle uno o
-      varios de una vez, como en `new HorizontalLayout(saveButton,
-      discardButton)`.
-    - `addClickListener` registra código que corre en el servidor cuando el
-      usuario hace clic. No hay JavaScript de por medio: el clic viaja al
-      servidor, tu lambda corre ahí, y si el estado de algún componente
-      cambió, Vaadin actualiza el navegador solo.
-    - `Notification.show(...)` es la forma más simple de darle feedback al
-      usuario: un mensaje flotante que desaparece solo.
+- `@Route("")` publica esta clase en la raíz: `http://localhost:8080`.
+  Con `@Route("hola")` estaría en `http://localhost:8080/hola`.
+- `extends VerticalLayout` hace que la propia vista sea un layout
+  vertical: todo lo que agreguemos se apila hacia abajo.
+- El constructor es donde armamos la pantalla.
 
-Corre la aplicación:
+**Guarda y mira:** la página ya no da error de ruta. Está vacía, pero
+existe.
 
-```bash
-mvn spring-boot:run
+!!! warning "Si la ruta no aparece"
+    Las vistas nuevas a veces no se registran con *hotswap*. Reinicia la
+    aplicación una vez.
+
+## Paso 2: Un campo de texto
+
+```java
+var name = new TextField("Nombre");
+add(name);
 ```
 
-Abre `http://localhost:8080` y prueba los dos botones: deberías ver la
-notificación de cada uno.
+Import: `com.vaadin.flow.component.textfield.TextField`.
 
-![Primeros componentes: campo de nombre, precio y los botones Guardar/Descartar](images/sesion1-primeros-componentes.png)
+- `new TextField("Nombre")` crea el campo. El texto es la etiqueta que
+  se ve arriba.
+- `add(...)` viene de `VerticalLayout`: agrega el componente a la
+  pantalla.
+
+**Guarda y mira:** aparece el campo. Ya puedes escribir en él.
+
+## Paso 3: Un selector de fecha
+
+```java
+var birthDate = new DatePicker("Fecha de nacimiento");
+add(name, birthDate);
+```
+
+Import: `com.vaadin.flow.component.datepicker.DatePicker`.
+
+**Guarda y mira:** al hacer clic se abre un calendario completo. No
+escribimos nada para eso: el componente ya lo trae.
+
+## Paso 4: Un botón que no hace nada
+
+```java
+var save = new Button("Guardar");
+add(name, birthDate, save);
+```
+
+Import: `com.vaadin.flow.component.button.Button`.
+
+**Guarda y mira:** el botón aparece, pero al hacer clic no pasa nada. Un
+botón sin listener es solo decoración.
+
+## Paso 5: Reaccionar al clic
+
+```java
+save.addClickListener(e -> Notification.show("Guardado"));
+```
+
+Import: `com.vaadin.flow.component.notification.Notification`.
+
+- `addClickListener` recibe una función (una *lambda*) que se ejecuta
+  cada vez que el usuario hace clic.
+- `e` es el evento del clic. Hoy no lo usamos, pero trae información
+  como qué botón del mouse se usó.
+- `Notification.show(...)` muestra un mensaje temporal en la esquina.
+
+**Guarda y mira:** cada clic muestra la notificación. Ese código corrió
+en el servidor.
+
+## Paso 6: Un segundo botón
+
+```java
+var discard = new Button("Descartar");
+discard.addClickListener(e -> Notification.show("Descartado"));
+add(name, birthDate, save, discard);
+```
+
+**Guarda y mira:** funciona, pero los botones quedan uno debajo del otro.
+En un formulario real van lado a lado.
+
+## Paso 7: Botones lado a lado
+
+```java
+var buttons = new HorizontalLayout(save, discard);
+add(name, birthDate, buttons);
+```
+
+Import: `com.vaadin.flow.component.orderedlayout.HorizontalLayout`.
+
+Los botones ya no se agregan directo a la vista: se agregan a un
+`HorizontalLayout`, y ese layout se agrega a la vista. Un layout dentro
+de otro.
+
+**Guarda y mira:** los botones quedan lado a lado.
 
 ---
 
-## Cierre de la sesión
+## Código completo al cierre de la sesión
+
+??? example "HomeView.java"
+    ```java
+    package com.baqjug.crm.ui;
+
+    import com.vaadin.flow.component.button.Button;
+    import com.vaadin.flow.component.datepicker.DatePicker;
+    import com.vaadin.flow.component.notification.Notification;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+    import com.vaadin.flow.component.textfield.TextField;
+    import com.vaadin.flow.router.Route;
+
+    @Route("")
+    public class HomeView extends VerticalLayout {
+
+        public HomeView() {
+            var name = new TextField("Nombre");
+            var birthDate = new DatePicker("Fecha de nacimiento");
+
+            var save = new Button("Guardar");
+            save.addClickListener(e -> Notification.show("Guardado"));
+
+            var discard = new Button("Descartar");
+            discard.addClickListener(e -> Notification.show("Descartado"));
+
+            var buttons = new HorizontalLayout(save, discard);
+
+            add(name, birthDate, buttons);
+        }
+    }
+    ```
+
+![Campo de texto, selector de fecha y dos botones lado a lado, con una notificación](images/s1-primera-vista.png)
+
+---
+
+## Verifica
+
+- [ ] `http://localhost:8080` muestra el campo, el calendario y dos botones.
+- [ ] Los botones están lado a lado.
+- [ ] Cada botón muestra su propia notificación al hacer clic.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| `Could not navigate to ''` | La vista nueva no se registró | Reinicia la app |
+| `TextField` no compila o no tiene etiqueta | Importaste otro `TextField` (por ejemplo de AWT o Swing) | Usa `com.vaadin.flow.component.textfield.TextField` |
+| Un componente no aparece | Lo creaste pero no lo agregaste con `add(...)` | Agrégalo a la vista o a un layout que esté en la vista |
+| El cambio no se ve | *Hotswap* no está activo | Corre la app con "Debug using HotswapAgent" o reinicia |
+
+## Qué resolvimos
+
+- **Una pantalla sin HTML ni JavaScript.** `@Route` publica la vista;
+  los componentes son objetos Java.
+- **Los layouts organizan.** Vertical, horizontal, y layouts dentro de
+  layouts: así se arma cualquier interfaz en Vaadin.
+- **Los listeners corren en el servidor.** El clic viaja al servidor, tu
+  Java se ejecuta ahí y Vaadin actualiza el navegador.
+
+## Checkpoint
 
 ```bash
-git add .
-git commit -m "sesion-1: proyecto generado, package-by-feature y primeros componentes"
-git branch sesion-1
+git add . && git commit -m "feat: first view with components and layouts"
 ```
 
-En la [Sesión 2](sesion_2.md) reemplazamos estos campos sueltos por un
-Grid de verdad, y agregamos búsqueda reactiva con Signals.
+Sigue con la [Sesión 2](sesion_2.md).

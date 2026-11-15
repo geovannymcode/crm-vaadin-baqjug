@@ -1,443 +1,599 @@
-# Sesión 8: Theming, CSS y marca propia
+# Sesión 8: Estilos, tema Aura y cierre
 
-**Rama**: `sesion-8` (= `main`)
-**Lo que vas a lograr**: que StockPilot se vea como un producto, no como
-una demo: variantes de tema listas para usar, CSS propio para lo que las
-variantes no cubren, y (opcional) tu propia paleta de marca, todo
-construido en pasos chicos que puedes correr y mirar antes de seguir.
-
----
-
-## Parte 1: Variantes de tema: estilo sin escribir CSS
-Lo más rápido para darle personalidad a la UI son las variantes de tema:
-estilos predefinidos que ya vienen con cada componente.
-
-```java
-saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-```
-
-!!! note "Esta línea va en el constructor, no en la declaración del campo"
-    `addThemeVariants` necesita que el botón ya exista como objeto, así
-    que se llama sobre la instancia, típicamente justo después de crearla
-    o donde armes el layout de botones en el constructor de la vista. No
-    funciona como parte de la declaración del campo (`private final
-    Button saveButton = new Button("Guardar");`), porque ahí todavía no
-    hay un lugar natural para encadenar la llamada sin ensuciar la
-    declaración.
-
-Agrégala y corre la aplicación: Guardar debería verse en azul sólido, un
-cambio de una sola línea.
-
-![Los botones con sus variantes de tema aplicadas](images/sesion8-theme-variants.png)
-
-Con eso comprobado, agrega las otras dos:
-
-```java
-deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
-addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-```
-
-Y en el diálogo de confirmación de la Sesión 5, la variante se pasa como
-texto, no como constante:
-
-```java
-dialog.setConfirmButtonTheme("error primary");
-```
-
-!!! abstract "Vaadin al paso: variantes de tema"
-    Cada familia de componentes (`Button`, `TextField`, `Grid`...) trae un
-    set de variantes propio, accesible como constantes de un enum
-    (`ButtonVariant`, en este caso). `LUMO_PRIMARY` rellena el fondo del
-    botón con el color principal del tema; `LUMO_ERROR` lo pinta de rojo;
-    `LUMO_TERTIARY` le saca el borde. Puedes combinar varias a la vez, como
-    en el botón Eliminar. Antes de escribir CSS a mano para algo, revisa si
-    ya existe una variante: la documentación de cada componente en
-    vaadin.com/docs las lista todas. El salto de "botón gris" a "botón azul
-    sólido" con una sola línea es el mejor argumento a favor de este
-    hábito.
-
-Corre la aplicación de nuevo y confirma los tres botones. Con esto, las
-variantes ya hicieron todo lo que pueden hacer: fíjate en lo que sigue sin
-resolver. La barra de KPIs no tiene ni espaciado ni forma de tarjeta, y las
-filas de stock bajo, marcadas desde la Sesión 3 con
-`setPartNameGenerator`, todavía no tienen ningún color. Ninguna variante
-de tema cubre eso: para eso escribimos CSS de verdad, en la Parte 2.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 11 min (8 de estilos + 3 de cierre) · Video de
+      referencia: 51:42
+    - **Al terminar vas a tener:** botones con jerarquía visual, CSS
+      propio, modo claro/oscuro y un tema con los colores de tu marca.
+    - **Conceptos nuevos:** variantes de tema, `getStyle()`, clases CSS,
+      `styles.css`, `@ColorScheme`, temas Aura y Lumo, variables CSS.
 
 ---
 
-## Parte 2: CSS propio, para lo que las variantes no cubren
-Todo lo que sigue va en `Application.java`, la clase que ya generó
-start.vaadin.com en la raíz del proyecto (`com.baqjug.stockpilot`), tal
-como quedó desde la Sesión 1:
+## De dónde partimos
+
+La aplicación funciona de punta a punta: navegación, Grid, búsqueda,
+formulario, alta, edición y baja contra la base de datos. Pero todos los
+botones se ven iguales y la app usa los colores por defecto.
+
+## Las tres herramientas de estilo, de menor a mayor esfuerzo
+
+| Herramienta | Cuándo usarla | Ejemplo |
+|-------------|---------------|---------|
+| **Variantes de tema** | Siempre primero: el componente ya trae la opción | Botón primario, botón de error |
+| **CSS propio** | No hay variante para lo que necesitas | Poner en negrita el nombre de la app |
+| **Variables del tema** | Cambiar el aspecto de **toda** la app de una vez | Colores de marca |
+
+---
+
+## Parte 1: Variantes de tema
+
+### El problema
+
+Guardar, Descartar y Eliminar se ven idénticos. El usuario no distingue
+la acción principal de la peligrosa.
+
+### Paso 1: Botones primarios
+
+En `createToolbar()`:
 
 ```java
-package com.baqjug.stockpilot;
+addBtn.addThemeVariants(ButtonVariant.PRIMARY);
+```
 
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+En `createForm()`:
 
-@SpringBootApplication
-public class Application implements AppShellConfigurator {
+```java
+saveBtn.addThemeVariants(ButtonVariant.PRIMARY);
+```
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+Import: `com.vaadin.flow.component.button.ButtonVariant`.
+
+**Guarda y mira:** Guardar y + quedan con fondo de color. Son las
+acciones principales de cada zona.
+
+### Paso 2: Eliminar en rojo, sin borde
+
+En `createForm()`:
+
+```java
+deleteBtn.addThemeVariants(ButtonVariant.ERROR, ButtonVariant.TERTIARY);
+```
+
+Las variantes se **combinan**:
+
+| Variante | Efecto |
+|----------|--------|
+| `PRIMARY` | Fondo de color: la acción principal |
+| `ERROR` | Color rojo: acción peligrosa |
+| `TERTIARY` | Sin fondo ni borde: acción secundaria |
+
+`ERROR` + `TERTIARY` da un Eliminar rojo y discreto: se lee como
+peligroso, pero no compite con Guardar.
+
+!!! note "Si vienes de Vaadin 24"
+    Las constantes ya no llevan el prefijo del tema: es
+    `ButtonVariant.PRIMARY`, no `ButtonVariant.LUMO_PRIMARY`.
+
+### Paso 3: El botón del diálogo
+
+En `confirmDelete()`:
+
+```java
+dialog.setConfirmButtonTheme("primary error");
+```
+
+`ConfirmDialog` crea su propio botón, así que la variante se le pasa
+como texto. Ahora el botón "Eliminar" del diálogo es rojo, no azul.
+
+### Paso 4: Un ajuste puntual de espaciado
+
+En `createForm()`:
+
+```java
+form.getStyle().setPaddingTop("30px");
+```
+
+`getStyle()` aplica CSS **directamente** a un componente desde Java.
+Sirve para casos puntuales: un solo padding no merece un archivo CSS. Si
+el mismo estilo se repite en varios lugares, va en la hoja de estilos.
+
+![Guardar y + en color primario, Eliminar rojo sin borde, diálogo con botón rojo](images/s8-variantes.png)
+
+---
+
+## Parte 2: CSS propio y modo claro/oscuro
+
+### El problema
+
+Queremos el nombre de la app en negrita, y no existe una variante para
+eso. Además, la app ignora si el sistema operativo del usuario está en
+modo oscuro.
+
+### Paso 5: Una clase CSS
+
+En `MainLayout`:
+
+```java
+appName.addClassNames("app-name");
+```
+
+En `src/main/resources/META-INF/resources/styles.css`:
+
+```css
+.app-name {
+    font-weight: bold;
 }
 ```
 
-!!! danger "No crees una clase `AppShell` aparte"
-    Si en algún momento leíste sobre Vaadin y viste una clase separada
-    (algo como `AppShell.java implements AppShellConfigurator`) para
-    configurar el tema, no la repliques acá. `Application` ya implementa
-    `AppShellConfigurator`, y Vaadin solo permite **una** clase que lo
-    haga en todo el proyecto. Si creas una segunda, la aplicación falla al
-    arrancar con algo como esto:
+- `addClassNames("app-name")` le pone la clase CSS `app-name` al
+  componente, igual que `class="app-name"` en HTML.
+- `styles.css` ya se carga desde la Sesión 0, por el
+  `@StyleSheet("styles.css")` de `Application`.
 
-    ```text
-    Multiple classes implementing AppShellConfigurator were found.
-    However, only a single class implementing AppShellConfigurator
-    is allowed.
-    ```
+**Guarda el CSS y mira:** el cambio se ve **sin reiniciar**. Es CSS
+normal, sin un lenguaje propietario.
 
-    La solución no es elegir cuál de las dos clases borrar: es no crear
-    la segunda. Todo lo de esta sesión (cargar Lumo, cargar tu CSS) se
-    agrega directamente sobre `Application`.
+### Paso 6: Seguir el modo del sistema operativo
 
-También vas a ver por ahí ejemplos con `@Theme("stockpilot")`. Esa
-anotación está deprecada en Vaadin 25: el reemplazo es `@StyleSheet`, que
-es justo lo que armamos en los siguientes tres momentos.
-
-**Momento 1: cargar Lumo, explícitamente.**
-Vaadin 25 cambió algo de fondo en cómo funciona el theming: los
-componentes ya no traen Lumo (el tema base, el que define cada
-`--lumo-*`) incorporado por defecto. Ahora se carga como cualquier otra
-hoja de estilos, con una línea explícita:
+En `Application`, agrega la anotación:
 
 ```java
-package com.baqjug.stockpilot;
-
-import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.theme.lumo.Lumo;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.vaadin.flow.component.page.ColorScheme;
 
 @SpringBootApplication
-@StyleSheet(Lumo.STYLESHEET)
-public class Application implements AppShellConfigurator {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-}
-```
-
-Corre la aplicación así, sin agregar nada más todavía. No debería verse
-ningún cambio: Lumo ya estaba activo por otra vía, así que los botones,
-campos y demás componentes se siguen viendo exactamente igual. El objetivo
-de este paso no es ver algo distinto, es entender que a partir de ahora
-Lumo se carga porque tu código lo pide, explícitamente, y no porque Vaadin
-lo dé por hecho.
-
-**Momento 2: el archivo vacío, y confirmar la conexión.**
-Agrega la segunda anotación, siempre después de la de Lumo (el orden
-importa: tu CSS tiene que cargar después del tema base, para poder
-sobreescribirlo):
-
-```java
-@StyleSheet(Lumo.STYLESHEET)
+@StyleSheet(Aura.STYLESHEET)
 @StyleSheet("styles.css")
+@ColorScheme(ColorScheme.Value.LIGHT_DARK)
 public class Application implements AppShellConfigurator {
 ```
 
-!!! danger "La ruta del archivo cambió, y si te equivocas no hay ningún error"
-    Con `@Theme`, el CSS vivía en `frontend/themes/stockpilot/`. Con
-    `@StyleSheet`, va en un lugar completamente distinto:
+| Valor | Resultado |
+|-------|-----------|
+| `LIGHT` | Siempre claro |
+| `DARK` | Siempre oscuro |
+| `LIGHT_DARK` | Sigue la preferencia del navegador o del sistema operativo |
 
-    ```
-    src/main/resources/META-INF/resources/styles.css
-    ```
+!!! warning "Reinicia la aplicación"
+    Los cambios en `Application.java` no se aplican con *hotswap*.
 
-    Si lo dejas en la ruta vieja, o en cualquier otra, la aplicación
-    arranca sin problema, no aparece ningún error ni advertencia en la
-    consola, y tu CSS simplemente no se aplica nunca. Es el peor tipo de
-    falla para un taller en vivo: no hay nada que depurar porque no hay
-    ningún síntoma más que "no pasó nada". Por eso el siguiente paso, una
-    regla de una sola línea, es la manera de confirmar la conexión antes
-    de escribir nada más.
+**Mira:** cambia tu sistema operativo a modo oscuro y la app lo sigue.
+Fondo, texto, Grid, campos y botones: todo cambia, porque el tema ya
+trae las dos versiones.
 
-Crea `src/main/resources/META-INF/resources/styles.css` con una sola
-regla, deliberadamente tonta, solo para comprobar que el archivo se está
-cargando:
+### Aura y Lumo
 
-```css
-.app-name {
-    color: red;
-}
-```
+Vaadin incluye dos temas:
 
-Reinicia el servidor (los cambios de tema a veces no aplican con hot
-reload) y mira el nombre de la aplicación en el drawer. Si se puso rojo,
-la conexión funciona. Si sigue con su color normal, algo está mal en la
-ruta del archivo, y es mucho más fácil descubrirlo con una regla de una
-línea que con las cuarenta que vienen en el momento 3.
+| Tema | Características |
+|------|-----------------|
+| **Aura** | El más reciente. Es el que usamos |
+| **Lumo** | El tema clásico de Vaadin, más cuadrado |
 
-!!! tip "Verificación de más peso: la pestaña Network"
-    El color es rápido de ver, pero si quieres estar seguro sin depender
-    de la vista, abre las herramientas de desarrollador del navegador, la
-    pestaña Network, filtra por "styles.css", y recarga. Tiene que
-    responder `200`. Un `404` ahí confirma exactamente lo que sospechas: el
-    archivo no está donde Vaadin lo está buscando.
-
-**Momento 3: el CSS de verdad, en tres bloques.**
-Con la conexión confirmada, reemplaza la regla de prueba por el primer
-bloque real: el nombre de la app con su estilo definitivo, y la barra y
-las tarjetas de KPI.
-
-```css
-.app-name {
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-.kpi-bar {
-    gap: var(--lumo-space-m);
-    padding: var(--lumo-space-m) 0;
-    flex-wrap: wrap;
-}
-
-.kpi-card {
-    background-color: var(--lumo-contrast-5pct);
-    border-radius: var(--lumo-border-radius-l);
-    padding: var(--lumo-space-m);
-    display: flex;
-    flex-direction: column;
-    gap: var(--lumo-space-xs);
-    min-width: 220px;
-}
-```
-
-Cada tarjeta es un `Div` con dos `Span` adentro (el título y el valor):
-sin `display: flex` y `flex-direction: column`, esos dos `Span` caerían
-uno al lado del otro, pegados, porque ese es el flujo normal de dos
-elementos en línea. `flex-direction: column` los apila; `gap` les pone aire
-entre sí sin necesitar un margen manual en cada uno. En `.kpi-bar`, el
-mismo `gap` separa una tarjeta de la siguiente, y `flex-wrap: wrap` deja
-que las tarjetas bajen a una segunda fila en una pantalla angosta en vez
-de desbordarse.
-
-Corre la aplicación: la barra de KPIs ya tiene forma de tarjetas, en fila,
-con separación.
-
-Segundo bloque, la jerarquía tipográfica dentro de cada tarjeta:
-
-```css
-.kpi-title {
-    font-size: var(--lumo-font-size-s);
-    color: var(--lumo-secondary-text-color);
-}
-
-.kpi-value {
-    font-size: var(--lumo-font-size-xxl);
-    font-weight: bold;
-}
-```
-
-El título chico y de un gris apagado, el valor grande y en negrita: el ojo
-va directo al número, que es el dato que importa, y el título queda como
-contexto secundario. Corre la aplicación y confirma la diferencia de
-tamaño entre el título y el valor de cada tarjeta.
-
-Tercer bloque, las filas de stock bajo. Este selector merece más
-explicación que los anteriores, porque no es CSS normal:
-
-```css
-/* Esto NO funciona, y no hay ningún error que te avise */
-.low-stock-row {
-    background-color: var(--lumo-error-color-10pct);
-}
-```
-
-```css
-/* Esto sí funciona */
-vaadin-grid::part(low-stock-row) {
-    background-color: var(--lumo-error-color-10pct);
-}
-```
-
-!!! abstract "Por qué `::part()`, y no una clase normal"
-    `Grid` es un componente web que renderiza sus filas dentro de un
-    shadow DOM: un árbol de elementos aparte, encapsulado, que el CSS de
-    tu página no puede atravesar desde afuera. Escribir `.low-stock-row {
-    }` en `styles.css` es CSS perfectamente válido, pero busca un elemento
-    con `class="low-stock-row"` en el documento normal, y ese elemento no
-    existe ahí: vive adentro del shadow DOM del grid, fuera del alcance de
-    ese selector. Por eso no pasa nada, y por eso tampoco hay ningún error:
-    para el navegador, la regla es válida, simplemente no encuentra a
-    quién aplicársela.
-
-    `setPartNameGenerator`, que escribiste en la Sesión 3, no le pone una
-    clase CSS a la fila: le pone un atributo `part`, que es la manera en
-    que un componente con shadow DOM expone deliberadamente ciertos
-    elementos internos para que sí se puedan estilar desde afuera.
-    `vaadin-grid::part(low-stock-row)` es un pseudo-elemento CSS diseñado
-    exactamente para eso: "la parte de `vaadin-grid` marcada con
-    `part="low-stock-row"`", cruzando el límite del shadow DOM por la
-    puerta que el propio componente dejó abierta a propósito.
-
-Reinicia el servidor y confirma que las filas de stock bajo aparecen en
-rojo suave.
-
-![Las filas de stock bajo resaltadas y las tarjetas de KPI con estilo](images/sesion8-css-propio.png)
-
-!!! tip "Las variables `--lumo-*`"
-    Lumo define sus colores, espaciados y tipografías como variables CSS
-    (`--lumo-primary-color`, `--lumo-space-m`, etc.). Usarlas en tu propio
-    CSS, en vez de valores fijos, hace que tus estilos respeten
-    automáticamente el modo claro/oscuro y cualquier ajuste de marca que
-    hagas más adelante.
-
-Un último detalle, opcional pero prolijo: un poco de espacio arriba del
-formulario de detalle:
+Los dos soportan claro y oscuro. Para probar Lumo, cambia en
+`Application`:
 
 ```java
-detailForm.getStyle().set("padding-top", "30px");
+import com.vaadin.flow.theme.lumo.Lumo;
+
+@StyleSheet(Lumo.STYLESHEET)
 ```
 
-!!! abstract "Vaadin al paso: `getStyle()`"
-    Todo componente tiene un método `getStyle()` que devuelve un objeto
-    para aplicar propiedades CSS puntuales desde Java, sin necesidad de una
-    clase CSS aparte. Es útil para ajustes de un solo componente; para
-    estilos reutilizables entre varios, una clase CSS (como `kpi-card`)
-    sigue siendo mejor.
+y reinicia. Vuelve a `Aura.STYLESHEET` para seguir.
+
+![Nombre de la app en negrita, la app en modo oscuro siguiendo al sistema](images/s8-css-modo-oscuro.png)
 
 ---
 
-## Parte 3: Tu propia paleta de marca (opcional)
-Vaadin tenía un generador visual de temas, pero está pensado para Vaadin
-10: produce `<dom-module>` y `<custom-style>`, dos mecanismos que ya no
-existen en Vaadin 25. Vamos a hacer en su lugar lo que muestra la
-documentación actual: redefinir las variables `--lumo-*` a mano,
-directamente en `styles.css`.
+## Parte 3: Marca propia con el editor de temas de Aura
 
-Agrega este bloque al principio de `styles.css`, antes de las reglas que
-ya escribiste en la Parte 2:
+### El problema
+
+Queremos los colores de nuestra marca. Cambiar a mano el color de cada
+botón, campo, ítem de menú y fila seleccionada sería interminable.
+
+### Concepto: variables CSS
+
+El tema Aura no tiene colores escritos componente por componente. Todos
+los componentes leen **variables CSS** compartidas, por ejemplo
+`--aura-accent-color-light`. Si cambias la variable una vez, el cambio
+se propaga a todos los componentes que la usan.
+
+### Paso 7: Generar y pegar el tema
+
+El editor de temas de Aura (ver la
+[documentación de Aura](https://vaadin.com/docs/latest/styling/themes/aura))
+te deja elegir en el navegador el color de acento, el tamaño de letra,
+la densidad y el contraste, y exporta un bloque de variables. Pégalo en
+`styles.css`, debajo de `.app-name`. Por ejemplo:
 
 ```css
 html {
-    --lumo-primary-color: hsl(173, 100%, 21%);
-    --lumo-primary-color-50pct: hsla(173, 100%, 21%, 0.5);
-    --lumo-primary-color-10pct: hsla(173, 100%, 21%, 0.1);
-    --lumo-primary-text-color: hsl(173, 100%, 21%);
-    --lumo-primary-contrast-color: #ffffff;
+    --aura-accent-color-dark: #22D3EE;
+    --aura-accent-color-light: #7F22FE;
+    --aura-background-color-light: #FFFFFF;
+    --aura-base-font-size: 13;
+    --aura-base-size: 20;
+    --aura-content-color-scheme: dark;
+    --aura-contrast-level: 0.25;
+    --aura-notification-color-scheme: dark;
+    color-scheme: dark;
+}
+
+html {
+    --vaadin-button-font-weight: 600;
+    --vaadin-grid-header-font-weight: 600;
 }
 ```
 
-El color exacto no importa para este ejercicio, usa el que quieras. Guarda,
-recarga la aplicación, y fíjate en tres lugares a la vez: el botón
-Guardar, el botón `+` de la barra de productos, y el ítem activo del menú
-lateral cambian de color, sin que hayas tocado una sola línea de Java ni
-ninguna regla de la Parte 2.
+| Variable | Qué controla |
+|----------|--------------|
+| `--aura-accent-color-light` / `-dark` | Color de acento en modo claro / oscuro (botones primarios, selección, ítem activo) |
+| `--aura-base-font-size` | Tamaño de letra base |
+| `--aura-base-size` | Densidad: tamaño de campos y botones |
+| `--aura-contrast-level` | Contraste entre superficies |
+| `--vaadin-button-font-weight` | Grosor de letra de **todos** los botones |
+| `--vaadin-grid-header-font-weight` | Grosor de letra de los encabezados del Grid |
 
-Ese es el pago de una decisión que ya tomaste sin saberlo: `saveButton` y
-`addButton` usan `ButtonVariant.LUMO_PRIMARY` desde la Parte 1, así que su
-fondo sale de `--lumo-primary-color` y su texto de
-`--lumo-primary-contrast-color`. El ítem activo del `SideNav` funciona
-igual por defecto en Lumo: fondo con `--lumo-primary-color-10pct`, texto
-con `--lumo-primary-text-color`. Ninguno de los tres sabe ni le importa
-qué valor tienen esas variables hoy: cuando el valor cambia, ellos
-cambian con él.
+Las variables `--aura-*` son del tema; las `--vaadin-*` ajustan un tipo
+de componente en particular.
 
-!!! tip "¿Y el resaltado de bajo stock?"
-    Si comparas con atención, notarás que `vaadin-grid::part(low-stock-row)`
-    no cambió de color. Es intencional: esa regla usa
-    `--lumo-error-color-10pct` (Parte 2), no una variable de color
-    primario. Es una advertencia semántica, no parte de tu marca, y no
-    tendría sentido que cambiara solo porque cambiaste tu paleta. Separar
-    "color de marca" de "color de estado" (error, éxito, advertencia) es
-    justamente lo que te permite tener ambos a la vez sin que se pisen.
+### Paso 8: Fijar el modo oscuro
 
-!!! abstract "Vaadin al paso: los sufijos `-50pct` y `-10pct`"
-    `--lumo-primary-color-50pct` y `--lumo-primary-color-10pct` no son
-    colores nuevos: son el mismo `--lumo-primary-color`, con la opacidad
-    reducida al 50% y al 10%. Por eso en el bloque de arriba se escriben
-    con `hsla(...)`, donde el cuarto valor es la opacidad. Lumo los usa
-    para fondos sutiles, como el del ítem activo del menú, o para
-    resaltados de foco y `:hover`.
-
-!!! danger "Fondo y texto son variables distintas"
-    `--lumo-primary-color` pinta fondos, como el del botón Guardar.
-    `--lumo-primary-text-color` pinta texto, como el del ítem activo del
-    menú. Son dos valores independientes: si solo redefines uno, el
-    resultado queda a medias, con un color nuevo en el fondo y el azul
-    por defecto de Lumo todavía en el texto (o al revés).
-
-!!! note "La paleta por defecto cumple WCAG, la tuya no automáticamente"
-    La paleta original de Lumo cumple el criterio de contraste de WCAG
-    2.0 nivel AA (una relación de al menos 4.5:1 entre texto y fondo). Al
-    reemplazar `--lumo-primary-color` o `--lumo-primary-text-color` con
-    tus propios valores, esa garantía se pierde: nada impide elegir, por
-    ejemplo, un texto blanco sobre un fondo amarillo pálido, ilegible
-    para buena parte de tus usuarios. Verifica el contraste de tu paleta
-    con una herramienta como el [contrast checker de
-    WebAIM](https://webaim.org/resources/contrastchecker/) antes de
-    darla por buena.
-
-![Tu paleta de marca aplicada a StockPilot](images/sesion8-marca-propia.png)
-
-Esto es apenas el color primario. Si quieres seguir explorando (tipografía,
-radios de borde, colores de superficie y de contraste), la
-[documentación de propiedades de color de
-Lumo](https://vaadin.com/docs/latest/styling/lumo/lumo-style-properties/color)
-lista todas las variables disponibles.
-
----
-
-## Parte 4: El precio, también formateado en el Grid
-Un último detalle suelto: en el Grid, el precio sale como `149900.00`,
-mientras que en el formulario y en los KPIs ya se ve formateado como
-moneda. `ProductListView` ya tiene el método que hace esa conversión,
-`formatCurrency`, desde la Sesión 3: solo hace falta usarlo también en la
-columna.
+Este tema de ejemplo está pensado para modo oscuro. En `Application`:
 
 ```java
-grid.addColumn(row -> formatCurrency(row.unitPrice()))
-        .setHeader("Precio")
-        .setSortable(true)
-        .setComparator(ProductRow::unitPrice);
+@ColorScheme(ColorScheme.Value.DARK)
 ```
 
-!!! danger "Sin `setComparator`, el orden de la columna se rompe"
-    `addColumn(ValueProvider<T, ?>)` con una función que devuelve un
-    `String` (como esta, que arma el texto formateado) hace que el Grid
-    ordene esa columna alfabéticamente por defecto, comparando el texto
-    que ves, no el número que representa. `"$99.900"` puede terminar antes
-    que `"$149.900"` en un orden alfabético, aunque numéricamente sea al
-    revés. `setComparator(ProductRow::unitPrice)` le dice al Grid,
-    explícitamente, que ordene por el `BigDecimal` real, no por el texto
-    formateado que se ve en pantalla. Es un tropiezo clásico de cualquier
-    columna formateada, no solo de esta: cada vez que le des a una columna
-    un `ValueProvider` que devuelve texto derivado de un número, revisa si
-    hace falta un `setComparator` al lado.
+y reinicia.
 
-Corre la aplicación, ordena por precio, y confirma que el orden es
-numérico y que los valores se ven con el mismo formato que el resto de la
-aplicación.
+**Mira:** no tocamos ni un componente, y botones, campos, diálogos, el
+Grid y el menú cambiaron juntos. Como el modo está fijado en oscuro, se
+ve el acento `--aura-accent-color-dark` (cian); el morado de
+`--aura-accent-color-light` queda listo por si vuelves a modo claro.
+
+!!! note "Contraste"
+    Al elegir colores propios, verifica que el texto se siga leyendo
+    bien. El [contrast checker de WebAIM](https://webaim.org/resources/contrastchecker/)
+    sirve para comprobarlo.
+
+![La app terminada con el tema de marca aplicado](images/s8-tema-marca.png)
 
 ---
 
-## Cierre: StockPilot completo
-Con esto, StockPilot tiene Grid con búsqueda reactiva, KPIs computados,
-formulario validado, alta y baja, base de datos real, navegación entre dos
-funcionalidades, y un tema propio, todo en Java, todo organizado por
-funcionalidad de negocio.
+## Código completo al cierre del taller
+
+??? example "Application.java"
+    ```java
+    package com.baqjug.crm;
+
+    import com.vaadin.flow.component.dependency.StyleSheet;
+    import com.vaadin.flow.component.page.AppShellConfigurator;
+    import com.vaadin.flow.component.page.ColorScheme;
+    import com.vaadin.flow.theme.aura.Aura;
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+    @SpringBootApplication
+    @StyleSheet(Aura.STYLESHEET)
+    @StyleSheet("styles.css")
+    @ColorScheme(ColorScheme.Value.DARK)
+    public class Application implements AppShellConfigurator {
+
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+    }
+    ```
+
+??? example "MainLayout.java"
+    ```java
+    package com.baqjug.crm.ui;
+
+    import com.vaadin.flow.component.applayout.AppLayout;
+    import com.vaadin.flow.component.html.Span;
+    import com.vaadin.flow.component.icon.VaadinIcon;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.sidenav.SideNav;
+    import com.vaadin.flow.component.sidenav.SideNavItem;
+    import com.vaadin.flow.router.Layout;
+
+    @Layout
+    public class MainLayout extends AppLayout {
+
+        public MainLayout() {
+            setPrimarySection(Section.DRAWER);
+
+            var logo = VaadinIcon.VAADIN_H.create();
+            var appName = new Span("CRM Interno");
+            appName.addClassNames("app-name");
+            var header = new HorizontalLayout(logo, appName);
+            header.setPadding(true);
+
+            var nav = new SideNav();
+            nav.addItem(new SideNavItem("Inicio", HomeView.class, VaadinIcon.HOME.create()));
+            nav.addItem(new SideNavItem("Clientes", CustomerListView.class, VaadinIcon.USER.create()));
+
+            addToDrawer(header, nav);
+        }
+    }
+    ```
+
+??? example "CustomerListView.java"
+    ```java
+    package com.baqjug.crm.ui;
+
+    import com.baqjug.crm.backend.Customer;
+    import com.baqjug.crm.backend.CustomerService;
+    import com.baqjug.crm.backend.Status;
+    import com.vaadin.flow.component.button.Button;
+    import com.vaadin.flow.component.button.ButtonVariant;
+    import com.vaadin.flow.component.combobox.ComboBox;
+    import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+    import com.vaadin.flow.component.datepicker.DatePicker;
+    import com.vaadin.flow.component.formlayout.FormLayout;
+    import com.vaadin.flow.component.grid.Grid;
+    import com.vaadin.flow.component.html.H3;
+    import com.vaadin.flow.component.icon.VaadinIcon;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+    import com.vaadin.flow.component.textfield.EmailField;
+    import com.vaadin.flow.component.textfield.TextField;
+    import com.vaadin.flow.data.binder.Binder;
+    import com.vaadin.flow.data.binder.ValidationException;
+    import com.vaadin.flow.data.value.ValueChangeMode;
+    import com.vaadin.flow.router.Route;
+    import com.vaadin.flow.signals.Signal;
+    import com.vaadin.flow.signals.local.ValueSignal;
+    import java.util.ArrayList;
+    import java.util.stream.Collectors;
+
+    @Route("customers")
+    public class CustomerListView extends VerticalLayout {
+
+        private final CustomerService customerService;
+
+        private final Grid<Customer> grid = new Grid<>();
+        private final ValueSignal<String> searchValue = new ValueSignal<>("");
+        private final ValueSignal<Customer> editedCustomer = new ValueSignal<>(null);
+        private final Binder<Customer> binder = new Binder<>();
+
+        public CustomerListView(CustomerService customerService) {
+            this.customerService = customerService;
+
+            setSizeFull();
+            var toolbar = createToolbar();
+            configureGrid();
+            var form = createForm();
+
+            var content = new HorizontalLayout(grid, form);
+            content.setSizeFull();
+
+            add(toolbar, content);
+        }
+
+        private HorizontalLayout createToolbar() {
+            var title = new H3("Clientes");
+
+            var search = new TextField();
+            search.setPlaceholder("Buscar");
+            search.setValueChangeMode(ValueChangeMode.LAZY);
+            search.bindValue(searchValue, searchValue::set);
+            Signal.effect(search, () -> updateCustomerList(searchValue.get()));
+
+            var addBtn = new Button(VaadinIcon.PLUS.create());
+            addBtn.addThemeVariants(ButtonVariant.PRIMARY);
+            addBtn.addClickListener(e -> addCustomer());
+
+            var toolbar = new HorizontalLayout(title, search, addBtn);
+            toolbar.setWidthFull();
+            toolbar.setFlexGrow(1, title);
+            return toolbar;
+        }
+
+        private void configureGrid() {
+            grid.addColumn(Customer::getFirstName).setHeader("Nombre").setSortable(true);
+            grid.addColumn(Customer::getLastName).setHeader("Apellido").setSortable(true);
+            grid.addColumn(Customer::getEmail).setHeader("Correo").setSortable(true);
+            grid.addColumn(Customer::getStatus).setHeader("Estado").setSortable(true);
+            grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde").setSortable(true);
+            grid.setSizeFull();
+            grid.asSingleSelect().bindValue(editedCustomer, editedCustomer::set);
+        }
+
+        private FormLayout createForm() {
+            var firstName = new TextField("Nombre");
+            var lastName = new TextField("Apellido");
+            var email = new EmailField("Correo");
+            var status = new ComboBox<Status>("Estado");
+            status.setItems(Status.values());
+            var customerSince = new DatePicker("Cliente desde");
+
+            binder.forField(firstName)
+                    .asRequired("El nombre es obligatorio")
+                    .bind(Customer::getFirstName, Customer::setFirstName);
+            binder.forField(lastName)
+                    .asRequired("El apellido es obligatorio")
+                    .bind(Customer::getLastName, Customer::setLastName);
+            binder.forField(email)
+                    .asRequired("El correo es obligatorio")
+                    .bind(Customer::getEmail, Customer::setEmail);
+            binder.forField(status)
+                    .asRequired("Selecciona un estado")
+                    .bind(Customer::getStatus, Customer::setStatus);
+            binder.bind(customerSince, Customer::getCustomerSince, Customer::setCustomerSince);
+
+            var saveBtn = new Button();
+            saveBtn.addThemeVariants(ButtonVariant.PRIMARY);
+            saveBtn.bindText(editedCustomer.map(customer -> isNew(customer) ? "Crear" : "Guardar"));
+            saveBtn.addClickListener(e -> save());
+
+            var discardBtn = new Button("Descartar");
+            discardBtn.addClickListener(e -> binder.readBean(editedCustomer.peek()));
+
+            var deleteBtn = new Button("Eliminar");
+            deleteBtn.addThemeVariants(ButtonVariant.ERROR, ButtonVariant.TERTIARY);
+            deleteBtn.addClickListener(e -> confirmDelete());
+            deleteBtn.bindEnabled(editedCustomer.map(customer -> !isNew(customer)));
+
+            var buttons = new HorizontalLayout(saveBtn, discardBtn, deleteBtn);
+
+            var form = new FormLayout(firstName, lastName, email, status, customerSince, buttons);
+            form.setWidth("300px");
+            form.getStyle().setPaddingTop("30px");
+            form.bindVisible(editedCustomer.map(customer -> customer != null));
+            Signal.effect(form, () -> binder.readBean(editedCustomer.get()));
+            return form;
+        }
+
+        private boolean isNew(Customer customer) {
+            return customer != null && customer.getId() == null;
+        }
+
+        private void addCustomer() {
+            editedCustomer.set(new Customer());
+        }
+
+        private void save() {
+            try {
+                var customer = editedCustomer.peek();
+                binder.writeBean(customer);
+                customerService.save(customer);
+                updateCustomerList();
+            } catch (ValidationException ex) {
+                // The fields already show their own error messages.
+            }
+        }
+
+        private void confirmDelete() {
+            var customer = editedCustomer.peek();
+
+            var dialog = new ConfirmDialog();
+            dialog.setHeader("Eliminar cliente");
+            dialog.setText("¿Seguro que quieres eliminar a %s %s?"
+                    .formatted(customer.getFirstName(), customer.getLastName()));
+            dialog.setCancelable(true);
+            dialog.setConfirmText("Eliminar");
+            dialog.setConfirmButtonTheme("primary error");
+            dialog.addConfirmListener(e -> {
+                customerService.delete(customer);
+                updateCustomerList();
+            });
+            dialog.open();
+        }
+
+        private void updateCustomerList() {
+            updateCustomerList(searchValue.peek());
+        }
+
+        private void updateCustomerList(String query) {
+            var filtered = customerService.findAll();
+
+            if (!query.isEmpty()) {
+                var lower = query.toLowerCase();
+                filtered = filtered.stream()
+                        .filter(c -> c.getFirstName().toLowerCase().contains(lower)
+                                || c.getLastName().toLowerCase().contains(lower)
+                                || c.getEmail().toLowerCase().contains(lower)
+                                || c.getStatus().name().toLowerCase().contains(lower))
+                        .collect(Collectors.toCollection(ArrayList::new));
+            }
+
+            grid.setItems(filtered);
+        }
+    }
+    ```
+
+??? example "styles.css"
+    ```css
+    .app-name {
+        font-weight: bold;
+    }
+
+    html {
+        --aura-accent-color-dark: #22D3EE;
+        --aura-accent-color-light: #7F22FE;
+        --aura-background-color-light: #FFFFFF;
+        --aura-base-font-size: 13;
+        --aura-base-size: 20;
+        --aura-content-color-scheme: dark;
+        --aura-contrast-level: 0.25;
+        --aura-notification-color-scheme: dark;
+        color-scheme: dark;
+    }
+
+    html {
+        --vaadin-button-font-weight: 600;
+        --vaadin-grid-header-font-weight: 600;
+    }
+    ```
+
+---
+
+## Verifica
+
+- [ ] Guardar y + tienen fondo de color; Eliminar es rojo y sin borde.
+- [ ] El botón Eliminar del diálogo es rojo.
+- [ ] Hay espacio arriba del formulario.
+- [ ] "CRM Interno" está en negrita.
+- [ ] La app está en modo oscuro con el acento cian en botones, selección e ítem activo del menú.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| `ButtonVariant.LUMO_PRIMARY` no compila | Código de Vaadin 24 | Usa `ButtonVariant.PRIMARY` |
+| El CSS no se aplica y no hay error | `styles.css` está en otra carpeta | `src/main/resources/META-INF/resources/styles.css` |
+| `@ColorScheme` no tiene efecto | No reiniciaste | Reinicia después de tocar `Application` |
+| La app se ve sin estilos | Se borró `@StyleSheet(Aura.STYLESHEET)` | Vuelve a agregarlo en `Application` |
+| Las variables no cambian nada | Escribiste `--lumo-*` con el tema Aura activo | Usa las variables `--aura-*` |
+
+## Qué resolvimos
+
+- **Variantes antes que CSS**: la mayoría de los componentes ya trae las
+  opciones visuales que necesitas.
+- **CSS normal** cuando no hay variante: clases y selectores, sin un
+  lenguaje propietario.
+- **Claro, oscuro o automático** con una anotación.
+- **Una marca completa cambiando variables**, sin tocar un solo
+  componente.
+
+## Checkpoint
 
 ```bash
-git add .
-git commit -m "sesion-8: theming, CSS y marca propia"
-git branch sesion-8
-git branch -f main sesion-8
+git add . && git commit -m "style: theme variants, custom css and aura branding"
 ```
 
-Mira las [Referencias](referencias.md) para seguir profundizando.
+---
+
+## Cierre (3 min)
+
+Construimos un CRM con:
+
+- Grid ordenable y filtrable con Signals,
+- formulario validado con Binder, en modo buffered,
+- alta, edición y baja contra una base de datos real,
+- navegación con un app shell,
+- y un tema con colores de marca.
+
+Todo en Java, en tres clases de interfaz (`HomeView`,
+`CustomerListView`, `MainLayout`), sin HTML, sin un proyecto de
+JavaScript y sin una API REST.
+
+### Para seguir aprendiendo
+
+- **[Directorio de add-ons](https://vaadin.com/directory)**: componentes
+  de la comunidad y oficiales (calendarios, gráficos, editores). Se
+  instalan copiando una dependencia Maven al `pom.xml`.
+- **Vaadin Copilot**: con la app en modo desarrollo, permite editar la
+  interfaz desde el navegador, de forma visual o escribiendo lo que
+  quieres cambiar, y escribe el cambio en tu código Java.
+- **[Signals](https://vaadin.com/docs/latest/flow/ui-state)**: hoy usamos
+  `ValueSignal`, `map` y `Signal.effect`. Hay más tipos, como
+  `ListSignal` y los signals computados.
+- **El tutorial en inglés** en el que se basa este taller:
+  [texto](https://drewharvey.github.io/vaadin-intro-tutorial/) y
+  [código](https://github.com/drewharvey/vaadin-intro-tutorial).
+
+![Copilot editando un texto de la UI desde el navegador](images/s8-copilot.png)

@@ -1,199 +1,484 @@
-# Sesión 4: Formulario, Binder y validación
+# Sesión 4: Formulario de detalle, Binder y validación
 
-**Rama**: `sesion-4`
-**Lo que vas a lograr**: un formulario de detalle que aparece al
-seleccionar un producto en el Grid, se llena solo con sus datos, y valida
-lo que el usuario escribe antes de aceptarlo.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 11 min · Video de referencia: 18:01
+    - **Al terminar vas a tener:** al hacer clic en un cliente, un
+      formulario a la derecha con sus datos; al quitar la selección, el
+      formulario se oculta. Los campos obligatorios muestran error si
+      quedan vacíos.
+    - **Conceptos nuevos:** selección del Grid enlazada a un signal,
+      `FormLayout`, `EmailField`, `ComboBox`, `map` y `bindVisible`,
+      `Binder`, `asRequired`.
 
 ---
 
-## Parte 1: El formulario, enlazado a la selección
-Vamos a construir el formulario en dos pasos separados a propósito. Primero
-la estructura y la visibilidad, con Signals, igual que en las sesiones
-anteriores. Recién en la Parte 2 lo conectamos a los datos reales con
-Binder. Separar los dos pasos ayuda a ver con claridad qué resuelve cada
-herramienta.
+## De dónde partimos
 
-Vaadin tiene un `FormLayout`, pensado específicamente para formularios: da
-responsividad de fábrica y controla dónde va la etiqueta de cada campo.
-Vamos a declarar un campo por cada propiedad de `Product` como variable de
-instancia: los vamos a necesitar de nuevo en la Parte 2, cuando el Binder
-tenga que referenciarlos.
+`CustomerListView` tiene un buscador reactivo y un Grid ordenable. Se
+puede ver y buscar, pero no editar.
+
+## El problema
+
+Queremos hacer clic en un cliente y ver sus datos en un formulario al
+lado del Grid, listo para editar. Si no hay nadie seleccionado, el
+formulario no debería verse.
+
+---
+
+## Parte 1: El formulario sigue a la selección
+
+### Paso 1: Un signal para el cliente seleccionado
+
+Es el mismo patrón de la búsqueda, ahora para la selección. Agrega el
+campo:
 
 ```java
-private final TextField skuField = new TextField("SKU");
-private final TextField nameField = new TextField("Nombre");
-private final ComboBox<ProductCategory> categoryField = new ComboBox<>("Categoría");
-private final TextField priceField = new TextField("Precio unitario");
-private final IntegerField stockField = new IntegerField("Stock actual");
-private final IntegerField reorderLevelField = new IntegerField("Nivel de reorden");
-private final TextField supplierField = new TextField("Proveedor");
-private final Checkbox activeField = new Checkbox("Activo");
-private final DatePicker lastRestockedField = new DatePicker("Último reabastecimiento");
+private final ValueSignal<Customer> editedCustomer = new ValueSignal<>(null);
+```
 
-private final FormLayout detailForm = buildDetailForm();
+- Si no hay nadie seleccionado, vale `null`.
+- Si el usuario hace clic en Alicia, vale el objeto `Customer` de Alicia.
 
-private FormLayout buildDetailForm() {
-    FormLayout form = new FormLayout();
-    form.setWidth("300px");
-    form.add(skuField, nameField, categoryField, priceField, stockField,
-            reorderLevelField, supplierField, activeField, lastRestockedField);
-    categoryField.setItems(ProductCategory.values());
+Lo llamamos `editedCustomer` (cliente en edición) y no `selectedCustomer`
+porque en la Sesión 5 también va a contener un cliente **nuevo** que
+todavía no está en el Grid.
+
+### Paso 2: Enlazar la selección del Grid
+
+Al final de `configureGrid()`:
+
+```java
+grid.asSingleSelect().bindValue(editedCustomer, editedCustomer::set);
+```
+
+- `asSingleSelect()` trata al Grid como un selector de **un** solo
+  elemento: la fila seleccionada es su "valor".
+- `bindValue` es el mismo enlace de dos vías de la Sesión 3:
+
+| Dirección | Qué pasa |
+|-----------|----------|
+| Grid → signal | Clic en una fila: `editedCustomer` pasa a ser ese cliente. Clic otra vez: `null` |
+| Signal → Grid | Si el código hace `editedCustomer.set(x)`, el Grid selecciona `x` |
+
+### Paso 3: Comprobar que funciona (y borrarlo)
+
+Un efecto temporal, para ver la selección en acción. Agrégalo en el
+constructor:
+
+```java
+Signal.effect(grid, () -> Notification.show("Seleccionado: " + editedCustomer.get()));
+```
+
+Import: `com.vaadin.flow.component.notification.Notification`.
+
+**Guarda y mira:** cada clic en una fila muestra una notificación. Nunca
+llamamos a nada al hacer clic: el efecto leyó `editedCustomer` con
+`get()`, así que se re-ejecuta cada vez que cambia.
+
+Cuando lo veas funcionar, **borra** ese efecto.
+
+### Paso 4: El formulario
+
+```java
+private FormLayout createForm() {
+    var firstName = new TextField("Nombre");
+    var lastName = new TextField("Apellido");
+    var email = new EmailField("Correo");
+    var status = new ComboBox<Status>("Estado");
+    status.setItems(Status.values());
+    var customerSince = new DatePicker("Cliente desde");
+
+    var form = new FormLayout(firstName, lastName, email, status, customerSince);
     return form;
 }
 ```
 
-!!! note "El precio como `TextField`, no `NumberField`"
-    `NumberField` trabaja con `Double`, que no es seguro para dinero por
-    errores de redondeo. Vamos a manejar el precio como `BigDecimal`, así
-    que el campo es un `TextField` de texto plano, y en la Parte 2 le
-    agregamos un conversor que lo traduce a `BigDecimal` con validación
-    incluida.
-
-Ahora, para saber qué producto está seleccionado, creamos otro
-`ValueSignal`, esta vez de tipo `Product`, que arranca en `null` (nadie
-seleccionado) y lo actualizamos cada vez que el usuario hace clic en una
-fila:
+Imports:
 
 ```java
-private final ValueSignal<Product> selectedProduct = new ValueSignal<>(null);
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 ```
 
-```java
-grid.addSelectionListener(event ->
-        selectedProduct.set(event.getFirstSelectedItem().orElse(null)));
-```
+Elegimos un componente distinto según el tipo de dato:
 
-Y ponemos el grid y el formulario lado a lado:
+| Propiedad | Tipo en Java | Componente | Por qué |
+|-----------|--------------|------------|---------|
+| `firstName`, `lastName` | `String` | `TextField` | Texto libre |
+| `email` | `String` | `EmailField` | Valida solo el formato de correo |
+| `status` | `Status` (enum) | `ComboBox<Status>` | Desplegable con filtro; `setItems(Status.values())` ofrece los cuatro estados |
+| `customerSince` | `LocalDate` | `DatePicker` | Calendario, devuelve un `LocalDate` |
 
-```java
-HorizontalLayout content = new HorizontalLayout(grid, detailForm);
-content.setSizeFull();
-add(content);
-```
+`FormLayout` acomoda los campos en columnas y se adapta solo al ancho
+disponible.
 
-Por último, enlazamos la visibilidad del formulario a si hay o no una
-selección, con el mismo `map` que ya usamos en la Sesión 3 para transformar
-un signal en otro:
+### Paso 5: Grid y formulario lado a lado
 
 ```java
-detailForm.bindVisible(selectedProduct.map(Objects::nonNull));
-```
+public CustomerListView() {
+    setSizeFull();
+    var search = createSearch();
+    configureGrid();
+    var form = createForm();
 
-Corre la app, haz clic en una fila y confirma que el formulario aparece
-(vacío todavía) y que al deseleccionar (clic de nuevo en la misma fila)
-desaparece.
-
-![El formulario apareciendo al seleccionar una fila, todavía vacío](images/sesion4-formulario-visibilidad.png)
-
----
-
-## Parte 2: Binder: conectar el formulario a un `Product` real
-El formulario aparece, pero está vacío. Para conectar sus campos a un
-objeto `Product`, usamos el `Binder`: la pieza de Vaadin dedicada a mapear
-propiedades de un bean a componentes de UI, con validación incluida.
-
-!!! danger "Signals y Binder no compiten, resuelven cosas distintas"
-    Signals maneja **qué se muestra y cuándo** (visibilidad, texto,
-    habilitado). Binder maneja **cómo se lee y escribe un formulario** contra
-    un bean, con validación. Los vamos a usar juntos: un `Signal.effect`
-    decide *cuándo* releer el formulario (cada vez que cambia la
-    selección); el Binder hace la lectura y escritura en sí.
-
-```java
-private final Binder<Product> binder = new Binder<>(Product.class);
-
-private void configureBinder() {
-    binder.forField(skuField)
-            .asRequired("El SKU es obligatorio")
-            .withValidator(sku -> sku.matches("^[A-Z]{3}-\\d{3,5}$"),
-                    "El SKU debe tener el formato ABC-1234")
-            .bind(Product::getSku, Product::setSku);
-
-    binder.forField(nameField)
-            .asRequired("El nombre es obligatorio")
-            .bind(Product::getName, Product::setName);
-
-    binder.forField(categoryField)
-            .asRequired("Selecciona una categoría")
-            .bind(Product::getCategory, Product::setCategory);
-
-    binder.forField(priceField)
-            .asRequired("El precio es obligatorio")
-            .withConverter(new StringToBigDecimalConverter("Ingresa un número válido"))
-            .withValidator(price -> price.compareTo(BigDecimal.ZERO) > 0,
-                    "El precio debe ser mayor a cero")
-            .bind(Product::getUnitPrice, Product::setUnitPrice);
-
-    binder.forField(stockField)
-            .asRequired("El stock es obligatorio")
-            .withValidator(stock -> stock >= 0, "El stock no puede ser negativo")
-            .bind(Product::getStockQuantity, Product::setStockQuantity);
-
-    binder.forField(reorderLevelField)
-            .asRequired("El nivel de reorden es obligatorio")
-            .withValidator(level -> level >= 0, "El nivel de reorden no puede ser negativo")
-            .bind(Product::getReorderLevel, Product::setReorderLevel);
-
-    binder.forField(supplierField)
-            .bind(Product::getSupplier, Product::setSupplier);
-
-    binder.forField(activeField)
-            .bind(Product::isActive, Product::setActive);
-
-    binder.forField(lastRestockedField)
-            .bind(Product::getLastRestockedDate, Product::setLastRestockedDate);
+    var content = new HorizontalLayout(grid, form);
+    add(search, content);
 }
 ```
 
-Llama a `configureBinder()` en el constructor, después de `configureGrid()`.
+Import: `com.vaadin.flow.component.orderedlayout.HorizontalLayout`.
 
-!!! abstract "Vaadin al paso: `forField`, `asRequired`, `withConverter`, `withValidator`, `bind`"
-    - `binder.forField(campo)` arranca la configuración de un campo.
-    - `.asRequired(mensaje)` lo marca obligatorio: si queda vacío, se
-      muestra el mensaje y el valor no se escribe en el bean.
-    - `.withConverter(...)` transforma el tipo del campo (acá, `String`) al
-      tipo de la propiedad del bean (`BigDecimal`). Vaadin trae
-      conversores para los casos comunes (`StringToIntegerConverter`,
-      `StringToDoubleConverter`, `StringToBigDecimalConverter`), así no hay
-      que escribirlos a mano.
-    - `.withValidator(condición, mensaje)` agrega una regla propia. Se
-      evalúa **después** del converter, así que opera sobre el tipo ya
-      convertido: por eso el validador del precio recibe un `BigDecimal`,
-      no un `String`.
-    - `.bind(getter, setter)` conecta el campo, ya validado, a los métodos
-      del bean. A partir de acá, el Binder sabe leer y escribir esa
-      propiedad.
+**Guarda y mira:** dos problemas.
 
-Con el Binder configurado, todavía no sabe de qué producto leer. Para eso,
-un `Signal.effect` más: cada vez que cambia `selectedProduct`, releemos sus
-valores en el formulario.
+1. **El formulario es demasiado ancho** y aplasta al Grid. Agrega en
+   `createForm()`:
+
+    ```java
+    form.setWidth("300px");
+    ```
+
+    No necesitamos que el formulario crezca: 300 px alcanzan.
+
+2. **El Grid ya no ocupa todo el alto.** Es el mismo problema de la
+   Sesión 2: el Grid ahora vive dentro de `content`, y `content` no tiene
+   tamaño. Agrega:
+
+    ```java
+    content.setSizeFull();
+    ```
+
+### Paso 6: Mostrar el formulario solo si hay selección
+
+En `createForm()`, antes del `return`:
 
 ```java
-Signal.effect(this, () -> binder.readBean(selectedProduct.get()));
+form.bindVisible(editedCustomer.map(customer -> customer != null));
 ```
 
-!!! tip "`readBean(null)` limpia el formulario"
-    Si no hay ningún producto seleccionado, `selectedProduct.get()` es
-    `null`, y `binder.readBean(null)` deja todos los campos vacíos. No hace
-    falta un `if` para ese caso: el propio Binder lo maneja.
+- `editedCustomer.map(...)` crea un **signal derivado**: un
+  `Signal<Boolean>` que vale `true` si hay cliente y `false` si no. Se
+  recalcula solo cada vez que cambia `editedCustomer`.
+- `bindVisible(...)` enlaza la visibilidad del formulario a ese
+  booleano.
 
-Corre la app, haz clic en distintas filas y mira cómo el formulario se
-llena solo. Borra el nombre de un campo y mira el borde rojo de validación;
-escribe un SKU sin el formato correcto y mira el mensaje de error
-específico.
+!!! abstract "`map` no es el `map` de un stream"
+    `signal.map(f)` toma el valor actual de un signal y devuelve **otro
+    signal** con el resultado de `f`, que se mantiene actualizado. No
+    modifica el original y es de solo lectura. Lo vamos a usar para
+    derivar visibilidad, texto y si un botón está habilitado, siempre a
+    partir del mismo dato.
 
-![El formulario lleno con los datos de un producto seleccionado, y un error de validación en el SKU](images/sesion4-binder-validacion.png)
+**Guarda y mira:** sin selección no hay formulario; al hacer clic en una
+fila aparece; al hacer clic en la misma fila otra vez desaparece.
+
+Fíjate que no solo se enlazan **valores**: también la visibilidad
+(`bindVisible`), y en la Sesión 5 el texto (`bindText`) y si un botón
+está habilitado (`bindEnabled`).
+
+![Formulario a la derecha que aparece al seleccionar una fila, todavía vacío](images/s4-formulario-seleccion.png)
 
 ---
 
-## Cierre de la sesión
+## Parte 2: Llenar el formulario con Binder
 
-```bash
-git add .
-git commit -m "sesion-4: formulario de detalle con Binder y validación"
-git branch sesion-4
+### El problema
+
+El formulario aparece, pero **vacío**. Podríamos hacerlo a mano:
+
+```java
+firstName.setValue(customer.getFirstName());
+lastName.setValue(customer.getLastName());
+// ...y al guardar, al revés, campo por campo:
+customer.setFirstName(firstName.getValue());
+// ...y además validar cada uno
 ```
 
-En la [Sesión 5](sesion_5.md) agregamos los botones Guardar y Descartar, y
-la posibilidad de crear y eliminar productos.
+Con cinco campos ya son quince líneas repetitivas, y todavía falta la
+validación. Con veinte campos se vuelve inmanejable.
+
+### Concepto: ¿qué es el `Binder`?
+
+`Binder` es un **traductor entre un formulario y un objeto Java**. Le
+dices una vez qué campo corresponde a qué propiedad (con su getter y su
+setter), y él se encarga de:
+
+- **leer**: copiar los valores del objeto a los campos,
+- **escribir**: copiar los valores de los campos al objeto,
+- **validar**: comprobar cada campo antes de escribir.
+
+!!! abstract "Signals y Binder no compiten"
+    **Signals** decide **qué se muestra y cuándo** (qué cliente está en
+    edición, si el formulario se ve). **Binder** decide **cómo se leen y
+    escriben** los campos contra un objeto, con validación. Un efecto les
+    sirve de puente.
+
+### Paso 7: Crear el Binder
+
+Agrega el campo:
+
+```java
+private final Binder<Customer> binder = new Binder<>();
+```
+
+Import: `com.vaadin.flow.data.binder.Binder`.
+
+### Paso 8: Enlazar un campo y probar
+
+En `createForm()`, después de crear los campos:
+
+```java
+binder.bind(firstName, Customer::getFirstName, Customer::setFirstName);
+
+Signal.effect(form, () -> binder.setBean(editedCustomer.get()));
+```
+
+- `binder.bind(campo, getter, setter)`: para mostrar usa
+  `getFirstName`; cuando el usuario escribe, usa `setFirstName`.
+- El efecto es el **puente**: cada vez que cambia `editedCustomer`, el
+  Binder recibe ese cliente con `setBean` y llena los campos. Usa `get()`
+  porque está dentro de un efecto.
+
+**Guarda y mira:** al hacer clic en distintas filas, el campo Nombre se
+llena con el nombre de cada cliente.
+
+!!! tip "`setBean(null)` limpia el formulario"
+    Cuando no hay selección, `editedCustomer.get()` es `null` y
+    `binder.setBean(null)` deja los campos vacíos. No hace falta un `if`.
+
+### Paso 9: El resto de los campos, con validación
+
+Reemplaza el `binder.bind(firstName, ...)` por la versión completa:
+
+```java
+binder.forField(firstName)
+        .asRequired("El nombre es obligatorio")
+        .bind(Customer::getFirstName, Customer::setFirstName);
+
+binder.forField(lastName)
+        .asRequired("El apellido es obligatorio")
+        .bind(Customer::getLastName, Customer::setLastName);
+
+binder.forField(email)
+        .asRequired("El correo es obligatorio")
+        .bind(Customer::getEmail, Customer::setEmail);
+
+binder.forField(status)
+        .asRequired("Selecciona un estado")
+        .bind(Customer::getStatus, Customer::setStatus);
+
+binder.bind(customerSince, Customer::getCustomerSince, Customer::setCustomerSince);
+```
+
+`bind(...)` directo es la forma corta. Cuando necesitas configurar algo
+más (validación, conversión), usas la forma larga:
+
+| Paso de la cadena | Qué hace |
+|-------------------|----------|
+| `forField(campo)` | Empieza a configurar ese campo |
+| `.asRequired("mensaje")` | Lo marca obligatorio: muestra un asterisco, y si queda vacío muestra el mensaje y **no** escribe el valor en el objeto |
+| `.bind(getter, setter)` | Termina la configuración y conecta el campo con la propiedad |
+
+`customerSince` usa la forma corta y **no** es obligatorio a propósito:
+un prospecto todavía no tiene fecha de alta.
+
+**Guarda y mira:**
+
+1. Los campos obligatorios muestran un asterisco.
+2. Selecciona a Alicia y borra su nombre: el campo se marca en rojo y
+   aparece "El nombre es obligatorio".
+3. Escribe un correo sin `@`: `EmailField` también lo marca inválido.
+
+!!! warning "Por ahora los cambios se aplican solos"
+    Con `setBean`, cada cambio válido se escribe **de inmediato** en el
+    cliente. Si cambias el nombre de Alicia y seleccionas otra fila, el
+    Grid ya muestra el nombre nuevo. Ese es justamente el problema que
+    resolvemos en la Sesión 5.
+
+??? tip "Para profundizar: validadores propios"
+    Antes de escribir uno, revisa los que Vaadin ya trae:
+    `EmailValidator`, `StringLengthValidator`, `RegexpValidator`,
+    `IntegerRangeValidator`, entre otros. Un validador propio es una
+    función que devuelve `ValidationResult`:
+
+    ```java
+    import com.vaadin.flow.data.binder.ValidationResult;
+
+    binder.forField(lastName)
+            .asRequired("El apellido es obligatorio")
+            .withValidator((value, context) -> value.length() >= 2
+                    ? ValidationResult.ok()
+                    : ValidationResult.error("Mínimo 2 caracteres"))
+            .bind(Customer::getLastName, Customer::setLastName);
+    ```
+
+    `withValidator` va **antes** de `bind`. Puedes encadenar varios.
+
+![Formulario lleno con los datos del cliente y un error de validación en Nombre](images/s4-binder-validacion.png)
+
+---
+
+## Código completo al cierre de la sesión
+
+??? example "CustomerListView.java"
+    ```java
+    package com.baqjug.crm.ui;
+
+    import com.baqjug.crm.backend.Customer;
+    import com.baqjug.crm.backend.Status;
+    import com.vaadin.flow.component.combobox.ComboBox;
+    import com.vaadin.flow.component.datepicker.DatePicker;
+    import com.vaadin.flow.component.formlayout.FormLayout;
+    import com.vaadin.flow.component.grid.Grid;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+    import com.vaadin.flow.component.textfield.EmailField;
+    import com.vaadin.flow.component.textfield.TextField;
+    import com.vaadin.flow.data.binder.Binder;
+    import com.vaadin.flow.data.value.ValueChangeMode;
+    import com.vaadin.flow.router.Route;
+    import com.vaadin.flow.signals.Signal;
+    import com.vaadin.flow.signals.local.ValueSignal;
+    import java.time.LocalDate;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.stream.Collectors;
+
+    @Route("customers")
+    public class CustomerListView extends VerticalLayout {
+
+        private final Grid<Customer> grid = new Grid<>();
+        private final List<Customer> customers = getSampleCustomers();
+        private final ValueSignal<String> searchValue = new ValueSignal<>("");
+        private final ValueSignal<Customer> editedCustomer = new ValueSignal<>(null);
+        private final Binder<Customer> binder = new Binder<>();
+
+        public CustomerListView() {
+            setSizeFull();
+            var search = createSearch();
+            configureGrid();
+            var form = createForm();
+
+            var content = new HorizontalLayout(grid, form);
+            content.setSizeFull();
+
+            add(search, content);
+        }
+
+        private TextField createSearch() {
+            var search = new TextField();
+            search.setPlaceholder("Buscar");
+            search.setValueChangeMode(ValueChangeMode.LAZY);
+            search.bindValue(searchValue, searchValue::set);
+            Signal.effect(search, () -> updateCustomerList(searchValue.get()));
+            return search;
+        }
+
+        private void configureGrid() {
+            grid.addColumn(Customer::getFirstName).setHeader("Nombre").setSortable(true);
+            grid.addColumn(Customer::getLastName).setHeader("Apellido").setSortable(true);
+            grid.addColumn(Customer::getEmail).setHeader("Correo").setSortable(true);
+            grid.addColumn(Customer::getStatus).setHeader("Estado").setSortable(true);
+            grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde").setSortable(true);
+            grid.setSizeFull();
+            grid.asSingleSelect().bindValue(editedCustomer, editedCustomer::set);
+        }
+
+        private FormLayout createForm() {
+            var firstName = new TextField("Nombre");
+            var lastName = new TextField("Apellido");
+            var email = new EmailField("Correo");
+            var status = new ComboBox<Status>("Estado");
+            status.setItems(Status.values());
+            var customerSince = new DatePicker("Cliente desde");
+
+            binder.forField(firstName)
+                    .asRequired("El nombre es obligatorio")
+                    .bind(Customer::getFirstName, Customer::setFirstName);
+            binder.forField(lastName)
+                    .asRequired("El apellido es obligatorio")
+                    .bind(Customer::getLastName, Customer::setLastName);
+            binder.forField(email)
+                    .asRequired("El correo es obligatorio")
+                    .bind(Customer::getEmail, Customer::setEmail);
+            binder.forField(status)
+                    .asRequired("Selecciona un estado")
+                    .bind(Customer::getStatus, Customer::setStatus);
+            binder.bind(customerSince, Customer::getCustomerSince, Customer::setCustomerSince);
+
+            var form = new FormLayout(firstName, lastName, email, status, customerSince);
+            form.setWidth("300px");
+            form.bindVisible(editedCustomer.map(customer -> customer != null));
+            Signal.effect(form, () -> binder.setBean(editedCustomer.get()));
+            return form;
+        }
+
+        private void updateCustomerList(String query) {
+            var filtered = customers;
+
+            if (!query.isEmpty()) {
+                var lower = query.toLowerCase();
+                filtered = customers.stream()
+                        .filter(c -> c.getFirstName().toLowerCase().contains(lower)
+                                || c.getLastName().toLowerCase().contains(lower)
+                                || c.getEmail().toLowerCase().contains(lower)
+                                || c.getStatus().name().toLowerCase().contains(lower))
+                        .collect(Collectors.toCollection(ArrayList::new));
+            }
+
+            grid.setItems(filtered);
+        }
+
+        private List<Customer> getSampleCustomers() {
+            return new ArrayList<>(List.of(
+                    new Customer("Alicia", "Nieto", "alicia.nieto@meridian.co",
+                            Status.CUSTOMER, LocalDate.of(2023, 1, 15)),
+                    new Customer("Boris", "Martínez", "boris.martinez@bluefern.io",
+                            Status.CUSTOMER, LocalDate.of(2022, 11, 3)),
+                    new Customer("Carolina", "Schmidt", "carolina.schmidt@meridian.co",
+                            Status.PROSPECT, null)
+            ));
+        }
+    }
+    ```
+
+---
+
+## Verifica
+
+- [ ] Sin selección no se ve el formulario.
+- [ ] Al hacer clic en una fila aparece el formulario con los datos de ese cliente.
+- [ ] Al cambiar de fila, el formulario cambia de cliente.
+- [ ] Nombre, apellido, correo y estado tienen asterisco; "Cliente desde" no.
+- [ ] Borrar el nombre muestra "El nombre es obligatorio".
+- [ ] El Grid sigue ocupando todo el alto.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| El Grid se encoge al agregar el formulario | `content` no tiene tamaño | `content.setSizeFull()` |
+| El formulario ocupa media pantalla | Falta el ancho fijo | `form.setWidth("300px")` |
+| El formulario no se oculta | Falta `bindVisible`, o se aplicó a otro componente | `form.bindVisible(editedCustomer.map(c -> c != null))` |
+| Los campos no se llenan | Falta el efecto con `setBean`, o usa `peek()` en vez de `get()` | Dentro del efecto, `editedCustomer.get()` |
+| `ComboBox` vacío | Faltó `status.setItems(Status.values())` | Agrégalo |
+
+## Qué resolvimos
+
+- **La selección también es un signal.** El mismo patrón de la búsqueda
+  (signal + `bindValue` + efecto) ahora conecta Grid y formulario.
+- **Se pueden enlazar propiedades, no solo valores.** `bindVisible` con
+  un signal derivado (`map`) muestra u oculta el formulario.
+- **Binder conecta formulario y objeto**, en las dos direcciones, y
+  valida antes de escribir.
+- **El componente correcto para cada tipo de dato** ahorra validaciones:
+  `EmailField`, `ComboBox`, `DatePicker`.
+
+## Checkpoint
+
+```bash
+git add . && git commit -m "feat: details form bound to grid selection with binder"
+```
+
+Sigue con la [Sesión 5](sesion_5.md).

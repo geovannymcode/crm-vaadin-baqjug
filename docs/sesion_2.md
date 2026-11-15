@@ -1,274 +1,289 @@
-# Sesión 2: Grid y búsqueda reactiva con Signals
+# Sesión 2: Mostrar datos en un Grid
 
-**Rama**: `sesion-2`
-**Lo que vas a lograr**: una tabla real con datos de prueba, ordenable, con
-un campo de búsqueda que filtra en vivo usando Signals: el sistema de
-estado reactivo de Vaadin.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 7 min · Video de referencia: 5:58
+    - **Al terminar vas a tener:** una pantalla en `/customers` con una
+      tabla de clientes que ocupa toda la pantalla y se puede ordenar
+      por cualquier columna.
+    - **Conceptos nuevos:** `Grid`, columnas con referencias a métodos,
+      `setItems`, tamaño de componentes (`setSizeFull`), ordenamiento.
 
 ---
 
-## Parte 1: De campos sueltos a un Grid de verdad
-Los campos sueltos de la Sesión 1 ya cumplieron su propósito: mostrarte la
-mecánica básica de componentes y layouts. Ahora vamos a lo que de verdad va
-a ser el corazón de esta app: un `Grid`, la tabla avanzada de Vaadin.
+## De dónde partimos
 
-Reemplaza el contenido de `ProductListView` por lo siguiente:
+Tenemos `HomeView` en la raíz con componentes sueltos. El backend de la
+Sesión 0 existe pero todavía no lo usamos.
+
+## El problema
+
+Un CRM es, antes que nada, una **lista de clientes**. Necesitamos una
+tabla en su propia pantalla, que se pueda ordenar. Y queremos construir
+la interfaz primero, sin depender todavía de la base de datos.
+
+---
+
+## Conceptos antes de escribir código
+
+### El componente `Grid`
+
+`Grid` es la tabla de Vaadin. Es uno de sus componentes más completos:
+ordena, permite seleccionar filas, redimensionar columnas, y solo envía
+al navegador las filas que se ven en pantalla, así que funciona igual
+con 10 que con 100.000 filas.
+
+Es un tipo genérico: `Grid<Customer>` es una tabla donde **cada fila es
+un objeto `Customer`**.
+
+### ¿Qué es una referencia a método?
+
+`Customer::getFirstName` es una forma corta de escribir
+`customer -> customer.getFirstName()`. Le dice al Grid: "para llenar
+esta columna, llama a `getFirstName()` sobre el cliente de cada fila".
+
+---
+
+## Paso 1: La vista con el Grid automático
+
+Crea `src/main/java/com/baqjug/crm/ui/CustomerListView.java`:
 
 ```java
-package com.baqjug.stockpilot.product;
+package com.baqjug.crm.ui;
 
+import com.baqjug.crm.backend.Customer;
+import com.baqjug.crm.backend.Status;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Route("")
-public class ProductListView extends VerticalLayout {
+@Route("customers")
+public class CustomerListView extends VerticalLayout {
 
-    private final Grid<Product> grid = new Grid<>();
-
-    public ProductListView() {
-        setSizeFull();
-        configureGrid();
+    public CustomerListView() {
+        var grid = new Grid<>(Customer.class);
+        grid.setItems(getSampleCustomers());
         add(grid);
     }
 
-    private void configureGrid() {
-        grid.setSizeFull();
-
-        grid.addColumn(Product::getSku).setHeader("SKU").setSortable(true);
-        grid.addColumn(Product::getName).setHeader("Nombre").setSortable(true);
-        grid.addColumn(Product::getCategory).setHeader("Categoría").setSortable(true);
-        grid.addColumn(Product::getUnitPrice).setHeader("Precio").setSortable(true);
-        grid.addColumn(Product::getStockQuantity).setHeader("Stock").setSortable(true);
-        grid.addColumn(Product::getSupplier).setHeader("Proveedor").setSortable(true);
-
-        grid.setItems(getSampleProducts());
-    }
-
-    private List<Product> getSampleProducts() {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product(1L, "ELE-1001", "Audífonos inalámbricos", ProductCategory.ELECTRONICS,
-                new BigDecimal("149900"), 42, 10, "TecnoImport SAS", true, LocalDate.now().minusDays(5)));
-        products.add(new Product(2L, "ELE-1002", "Cargador USB-C 65W", ProductCategory.ELECTRONICS,
-                new BigDecimal("89900"), 6, 15, "TecnoImport SAS", true, LocalDate.now().minusDays(40)));
-        products.add(new Product(3L, "GRO-2001", "Café molido 500g", ProductCategory.GROCERY,
-                new BigDecimal("22000"), 120, 30, "Café del Norte", true, LocalDate.now().minusDays(2)));
-        products.add(new Product(4L, "APP-3001", "Camiseta BAQJUG edición 10 años", ProductCategory.APPAREL,
-                new BigDecimal("59900"), 8, 20, "Confecciones Caribe", true, LocalDate.now().minusDays(15)));
-        products.add(new Product(5L, "HOM-4001", "Set de sábanas queen", ProductCategory.HOME_GOODS,
-                new BigDecimal("134900"), 25, 10, "Textiles del Río", true, LocalDate.now().minusDays(60)));
-        products.add(new Product(6L, "TOY-5001", "Rompecabezas 1000 piezas", ProductCategory.TOYS,
-                new BigDecimal("45000"), 3, 12, "Juguetería Alegre", true, LocalDate.now().minusDays(90)));
-        return products;
+    private List<Customer> getSampleCustomers() {
+        return new ArrayList<>(List.of(
+                new Customer("Alicia", "Nieto", "alicia.nieto@meridian.co",
+                        Status.CUSTOMER, LocalDate.of(2023, 1, 15)),
+                new Customer("Boris", "Martínez", "boris.martinez@bluefern.io",
+                        Status.CUSTOMER, LocalDate.of(2022, 11, 3)),
+                new Customer("Carolina", "Schmidt", "carolina.schmidt@meridian.co",
+                        Status.PROSPECT, null)
+        ));
     }
 }
 ```
 
-!!! note "Agrega el constructor completo a `Product`"
-    Este código usa un constructor de `Product` con los diez campos en
-    orden. Si en la Sesión 1 solo generaste el constructor vacío, agregá
-    también uno con todos los parámetros (en IntelliJ: `Alt+Insert` →
-    **Constructor**, selecciona todos los campos).
+- `@Route("customers")`: la pantalla vive en `http://localhost:8080/customers`.
+- `new Grid<>(Customer.class)`: al pasarle la clase, el Grid **genera
+  una columna por cada propiedad** de `Customer`.
+- `grid.setItems(...)`: le entrega la lista de filas a mostrar.
+- `getSampleCustomers()` devuelve datos fijos. Usamos `new ArrayList<>(...)`
+  porque `List.of(...)` es inmutable, y en la Sesión 5 vamos a agregar y
+  quitar clientes de esta lista.
 
-!!! abstract "Vaadin al paso: columnas manuales, no `Grid(Product.class)`"
-    Si le pasas `Product.class` al constructor de `Grid`, genera columnas
-    automáticamente por cada propiedad de la clase, pero en la práctica
-    casi nunca es lo que quieres: te muestra el id, en el orden que Java
-    decida, sin control del formato. Por eso las agregamos manualmente con
-    `grid.addColumn(Product::getSku)`, una referencia al método getter. Cada
-    `addColumn` devuelve un objeto `Column` que puedes seguir configurando
-    con `.setHeader(...)` y `.setSortable(true)`.
+**Guarda, reinicia si hace falta, y abre `/customers`.** Aparece una
+tabla, pero:
 
-Corre `mvn spring-boot:run` y confirma que la tabla se ve, ordena por
-columna, y ocupa toda la pantalla (`setSizeFull()` en el grid y en la
-vista).
+- tiene una columna `Id` que al usuario no le importa,
+- el orden de las columnas no lo elegimos,
+- los títulos son los nombres de las propiedades en inglés.
 
-![Grid con los seis productos de muestra, ordenable por columna](images/sesion2-grid-datos-prueba.png)
+Para un prototipo sirve; para una aplicación real, no.
 
-Los datos siguen siendo un método en memoria (eso lo resolvemos en la
-Sesión 6), pero ya podemos construir toda la experiencia de usuario sin
-depender de una base de datos desde el día uno. Así trabaja el propio
-equipo de Vaadin en sus tutoriales, y así vamos a trabajar nosotros.
+## Paso 2: Columnas manuales
+
+Cambia la creación del Grid para que **no** genere columnas, y agrégalas
+una por una:
+
+```java
+var grid = new Grid<Customer>();
+grid.addColumn(Customer::getFirstName).setHeader("Nombre");
+grid.addColumn(Customer::getLastName).setHeader("Apellido");
+grid.addColumn(Customer::getEmail).setHeader("Correo");
+grid.addColumn(Customer::getStatus).setHeader("Estado");
+grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde");
+grid.setItems(getSampleCustomers());
+add(grid);
+```
+
+- `new Grid<Customer>()` sin la clase: cero columnas automáticas.
+- `addColumn(Customer::getFirstName)` crea una columna con lo que
+  devuelve ese getter.
+- `setHeader("Nombre")` pone el título.
+
+**Guarda y mira:** la primera vez agrega solo la columna de nombre y
+mira cómo aparece; después el resto.
+
+!!! abstract "Por qué columnas manuales: seguridad de tipos"
+    Si mañana alguien renombra `getEmail()` a `getEmailAddress()`, este
+    código **deja de compilar** y te enteras de inmediato. Con columnas
+    generadas a partir de nombres de texto, la columna quedaría vacía en
+    producción sin ningún aviso.
+
+## Paso 3: El Grid como campo de la clase
+
+En las próximas sesiones varios métodos van a necesitar el Grid (para
+filtrar, para saber qué fila está seleccionada). Muévelo a un campo y
+saca su configuración a un método propio:
+
+```java
+private final Grid<Customer> grid = new Grid<>();
+
+public CustomerListView() {
+    configureGrid();
+    grid.setItems(getSampleCustomers());
+    add(grid);
+}
+
+private void configureGrid() {
+    grid.addColumn(Customer::getFirstName).setHeader("Nombre");
+    grid.addColumn(Customer::getLastName).setHeader("Apellido");
+    grid.addColumn(Customer::getEmail).setHeader("Correo");
+    grid.addColumn(Customer::getStatus).setHeader("Estado");
+    grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde");
+}
+```
+
+El método se llama `configureGrid` y no `createGrid` porque el Grid ya
+existe (se crea en el campo); el método solo lo configura.
+
+## Paso 4: Que ocupe toda la pantalla
+
+Agrega al final de `configureGrid()`:
+
+```java
+grid.setSizeFull();
+```
+
+**Guarda y mira:** el Grid **no** ocupa toda la pantalla. ¿Por qué?
+
+!!! abstract "El tamaño se hereda del padre"
+    `setSizeFull()` significa "100% del ancho y 100% del alto **de mi
+    contenedor**". El contenedor del Grid es la vista, y la vista, por
+    defecto, solo es tan alta como su contenido. 100% de algo pequeño
+    sigue siendo pequeño.
+
+Agrega `setSizeFull()` también a la vista, al inicio del constructor:
+
+```java
+public CustomerListView() {
+    setSizeFull();
+    configureGrid();
+    grid.setItems(getSampleCustomers());
+    add(grid);
+}
+```
+
+**Guarda y mira:** ahora sí ocupa toda la pantalla. Este es el error de
+layout más común al empezar con Vaadin: cuando algo "no crece", revisa
+que **todos** sus contenedores también tengan tamaño.
+
+## Paso 5: Ordenar columnas
+
+Agrega `.setSortable(true)` a cada columna:
+
+```java
+grid.addColumn(Customer::getFirstName).setHeader("Nombre").setSortable(true);
+```
+
+**Guarda y mira:** aparecen flechas en los encabezados. Clic una vez:
+orden ascendente; otra vez: descendente; otra vez: sin orden. El Grid
+ordena por el valor que devuelve el getter (texto alfabético, fechas
+cronológicas, enums por su orden de declaración).
 
 ---
 
-## Parte 2: Qué es un Signal, con el ejemplo más simple posible
-Antes de aplicar Signals a la búsqueda, veamos el problema que resuelven
-con el ejemplo más chico posible: un contador.
+## Código completo al cierre de la sesión
 
-**Sin Signals**, así se escribe un contador que se actualiza a mano:
+??? example "CustomerListView.java"
+    ```java
+    package com.baqjug.crm.ui;
 
-```java
-public class TraditionalCounter extends VerticalLayout {
-    private int count = 0;
+    import com.baqjug.crm.backend.Customer;
+    import com.baqjug.crm.backend.Status;
+    import com.vaadin.flow.component.grid.Grid;
+    import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+    import com.vaadin.flow.router.Route;
+    import java.time.LocalDate;
+    import java.util.ArrayList;
+    import java.util.List;
 
-    public TraditionalCounter() {
-        Button button = new Button("Clicked 0 times");
-        button.addClickListener(click -> {
-            count++;
-            button.setText("Clicked " + count + " times"); // actualización manual
-        });
-        add(button);
-    }
-}
-```
+    @Route("customers")
+    public class CustomerListView extends VerticalLayout {
 
-Funciona, pero el patrón "cambiar el dato y acordarte de actualizar cada
-componente que dependía de él" no escala: si tres componentes distintos
-mostraran ese contador, tendrías que acordarte de actualizar los tres, cada
-vez, en cada lugar donde el dato cambia.
+        private final Grid<Customer> grid = new Grid<>();
 
-**Con Signals**, declaras la relación una sola vez:
-
-```java
-public class SignalCounter extends VerticalLayout {
-    private final ValueSignal<Integer> count = new ValueSignal<>(0);
-
-    public SignalCounter() {
-        Button button = new Button();
-        button.addClickListener(click -> count.update(c -> c + 1));
-        add(button);
-
-        // Se actualiza solo cada vez que count cambia
-        button.bindText(count.map(c -> "Clicked " + c + " times"));
-    }
-}
-```
-
-!!! abstract "Vaadin al paso: `ValueSignal`, `update`, `map` y `bindText`"
-    - `ValueSignal<T>` es un contenedor de un solo valor que Vaadin observa.
-      `new ValueSignal<>(0)` arranca en cero.
-    - `.update(c -> c + 1)` cambia el valor a partir del valor anterior: el
-      equivalente reactivo de `count++`.
-    - `.map(fn)` transforma el valor del signal en otra cosa (acá, un
-      `Integer` en un `String`), sin modificar el signal original.
-    - `button.bindText(...)` enlaza el texto del botón al resultado de esa
-      transformación. Cada vez que `count` cambia, el texto se actualiza
-      solo: no escribiste ningún `button.setText(...)` manual.
-
-No escribimos ningún código que diga "cuando cambie el contador, actualiza
-el botón". Ese comportamiento surge solo, porque declaramos la relación
-entre el dato y la UI, no la secuencia de pasos para mantenerla
-sincronizada. Esa es la diferencia entre programación imperativa y
-reactiva, y es la idea que vamos a aplicar ahora a un caso real: la
-búsqueda del Grid.
-
----
-
-## Parte 3: Búsqueda reactiva aplicada al Grid
-Vamos a crear un `ValueSignal<String>` que represente lo que el usuario
-escribe en un campo de búsqueda, y enlazarlo directamente al campo, sin
-escuchar un evento de cambio de valor a mano.
-
-```java
-package com.baqjug.stockpilot.product;
-
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.signals.Signal;
-import com.vaadin.flow.signals.local.ValueSignal;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Route("")
-public class ProductListView extends VerticalLayout {
-
-    private final Grid<Product> grid = new Grid<>();
-    private final List<Product> products = getSampleProducts();
-    private final ValueSignal<String> searchQuery = new ValueSignal<>("");
-
-    public ProductListView() {
-        setSizeFull();
-        configureGrid();
-
-        TextField searchField = new TextField();
-        searchField.setPlaceholder("Buscar");
-        searchField.setValueChangeMode(ValueChangeMode.LAZY);
-        searchField.bindValue(searchQuery, searchQuery::set);
-        add(searchField);
-
-        add(grid);
-
-        Signal.effect(this, () -> updateProductList(searchQuery.get()));
-    }
-
-    // configureGrid() queda igual que en la Parte 1, con un cambio: borra
-    // la línea `grid.setItems(getSampleProducts())`. Ya no hace falta: el
-    // efecto de abajo es ahora el único responsable de decirle al grid qué
-    // mostrar, y dejar esa llamada suelta puede pintar, por un instante, una
-    // lista de productos que no son los mismos objetos que `products` (un
-    // "fantasma" con el que después no vas a poder guardar cambios).
-
-    private void updateProductList(String query) {
-        List<Product> filtered = new ArrayList<>(products);
-        if (query != null && !query.isBlank()) {
-            String lowerQuery = query.toLowerCase();
-            filtered = products.stream()
-                    .filter(p -> p.getSku().toLowerCase().contains(lowerQuery)
-                            || p.getName().toLowerCase().contains(lowerQuery)
-                            || p.getCategory().name().toLowerCase().contains(lowerQuery)
-                            || (p.getSupplier() != null && p.getSupplier().toLowerCase().contains(lowerQuery)))
-                    .collect(Collectors.toCollection(ArrayList::new));
+        public CustomerListView() {
+            setSizeFull();
+            configureGrid();
+            grid.setItems(getSampleCustomers());
+            add(grid);
         }
-        grid.setItems(filtered);
+
+        private void configureGrid() {
+            grid.addColumn(Customer::getFirstName).setHeader("Nombre").setSortable(true);
+            grid.addColumn(Customer::getLastName).setHeader("Apellido").setSortable(true);
+            grid.addColumn(Customer::getEmail).setHeader("Correo").setSortable(true);
+            grid.addColumn(Customer::getStatus).setHeader("Estado").setSortable(true);
+            grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde").setSortable(true);
+            grid.setSizeFull();
+        }
+
+        private List<Customer> getSampleCustomers() {
+            return new ArrayList<>(List.of(
+                    new Customer("Alicia", "Nieto", "alicia.nieto@meridian.co",
+                            Status.CUSTOMER, LocalDate.of(2023, 1, 15)),
+                    new Customer("Boris", "Martínez", "boris.martinez@bluefern.io",
+                            Status.CUSTOMER, LocalDate.of(2022, 11, 3)),
+                    new Customer("Carolina", "Schmidt", "carolina.schmidt@meridian.co",
+                            Status.PROSPECT, null)
+            ));
+        }
     }
+    ```
 
-    // getSampleProducts() queda igual que en la Parte 1
-}
-```
-
-!!! note "Por qué `new ArrayList<>(products)` y no `filtered = products`"
-    Cuando la búsqueda está vacía, no hay nada que filtrar, así que es
-    tentador simplemente reusar `products` tal cual. El problema es que eso
-    deja `filtered` apuntando exactamente al mismo objeto `List` que
-    `products`: cualquier cambio posterior a uno le pasa al otro, sin que
-    nadie lo pida. Copiarlo siempre con `new ArrayList<>(products)` evita
-    ese acoplamiento accidental, incluso cuando hoy en la Sesión 2 todavía
-    no hay forma de agregar o eliminar productos. Vas a agradecer este
-    hábito en la Sesión 5.
-
-!!! abstract "Vaadin al paso: `bindValue` y `Signal.effect`"
-    - `searchField.bindValue(searchQuery, searchQuery::set)` crea una
-      sincronización de **dos vías**: si el usuario escribe, `searchQuery`
-      cambia; si cambias `searchQuery` por código, el campo se actualiza
-      solo.
-    - `Signal.effect(this, () -> ...)` ejecuta el bloque una vez al cargar
-      la vista, y **lo vuelve a ejecutar automáticamente** cada vez que
-      cambia cualquier signal leído dentro de él con `.get()`. Acá leemos
-      `searchQuery.get()`, así que cada cambio de búsqueda dispara de nuevo
-      el filtrado. El primer argumento, `this`, ata el efecto al ciclo de
-      vida de la vista: se limpia solo si la vista se destruye.
-    - `ValueChangeMode.LAZY` espera a que el usuario deje de escribir un
-      instante antes de sincronizar el valor con el servidor, en vez de
-      mandar cada tecla. El filtro se siente instantáneo sin saturar de
-      tráfico.
-
-Prueba escribiendo "café", "electro", o el nombre de un proveedor.
-
-![Búsqueda filtrando el grid en vivo](images/sesion2-busqueda-reactiva.png)
+![Grid en /customers con tres clientes y columnas ordenables](images/s2-grid.png)
 
 ---
 
-## Cierre de la sesión
+## Verifica
+
+- [ ] `http://localhost:8080/customers` muestra tres clientes.
+- [ ] Hay cinco columnas, en el orden que elegiste, con títulos en español.
+- [ ] No aparece la columna `Id`.
+- [ ] La tabla ocupa todo el ancho y el alto.
+- [ ] Al hacer clic en un encabezado, la tabla se ordena.
+- [ ] Carolina muestra "Cliente desde" vacío: es un prospecto.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| `/customers` da error de ruta | La vista nueva no se registró con *hotswap* | Reinicia la app |
+| Columnas duplicadas | Quedó `new Grid<>(Customer.class)` y además agregaste columnas manuales | Usa `new Grid<>()` sin la clase |
+| La tabla es pequeña | Falta `setSizeFull()` en la vista o en el Grid | Pónselo a los dos |
+| `UnsupportedOperationException` más adelante al agregar clientes | Devolviste `List.of(...)` sin envolverlo | Usa `new ArrayList<>(List.of(...))` |
+
+## Qué resolvimos
+
+- **Una tabla de datos en pocas líneas**, con ordenamiento incluido.
+- **Columnas explícitas y con tipos**: decides qué se ve, en qué orden,
+  y el compilador te protege si cambia el modelo.
+- **El tamaño se hereda**: "tamaño completo" siempre es relativo al
+  contenedor.
+
+## Checkpoint
 
 ```bash
-git add .
-git commit -m "sesion-2: grid con datos de prueba y búsqueda reactiva con Signals"
-git branch sesion-2
+git add . && git commit -m "feat: customer grid with manual sortable columns"
 ```
 
-En la [Sesión 3](sesion_3.md) llega una parte clave para cualquier proyecto
-real: usar Signals para calcular KPIs de negocio, no solo para sincronizar
-un campo de texto.
+Sigue con la [Sesión 3](sesion_3.md).

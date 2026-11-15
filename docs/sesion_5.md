@@ -1,283 +1,558 @@
-# Sesión 5: Guardar, descartar, alta y baja
+# Sesión 5: Guardar, descartar, crear y eliminar
 
-**Rama**: `sesion-5`
-**Lo que vas a lograr**: guardar y descartar cambios de forma explícita,
-crear productos nuevos desde una barra de herramientas, y eliminarlos con
-un diálogo de confirmación.
+!!! info "Resumen de la sesión"
+    - **Tiempo en vivo:** 12 min · Video de referencia: 30:03
+    - **Al terminar vas a tener:** un CRUD completo en memoria. Los
+      cambios del formulario solo se aplican al presionar Guardar,
+      Descartar los revierte, el botón + crea un cliente nuevo y Eliminar
+      pide confirmación.
+    - **Conceptos nuevos:** modo *write-through* vs *buffered*,
+      `readBean` / `writeBean`, `ValidationException`, `peek()`, barra de
+      herramientas con `setFlexGrow`, `ConfirmDialog`, `bindEnabled`.
 
 ---
 
-## Parte 1: Modo buffered: guardar y descartar
-Ahora mismo, como usamos `binder.readBean(...)` (no `binder.setBean(...)`),
-ya estamos en lo que Vaadin llama modo **"buffered"**: los cambios que el
-usuario hace en los campos no se escriben en el bean hasta que alguien lo
-pida explícitamente. Si en cambio hubiéramos usado `setBean`, estaríamos en
-modo **"write-through"**: cada tecla se escribiría de inmediato en el
-objeto, lo cual casi nunca es lo que quieres en un formulario real, porque
-significa que una edición a medio hacer ya está "guardada" en memoria antes
-de que el usuario decida algo.
+## De dónde partimos
 
-Agregamos los botones al formulario:
+Al seleccionar un cliente, el formulario se llena con sus datos y valida
+los campos obligatorios. El Binder usa `setBean`.
+
+---
+
+## Parte 1: Guardar y descartar
+
+### El problema
+
+Haz esta prueba con el código de la Sesión 4:
+
+1. Selecciona a Alicia.
+2. Cambia su nombre a "Alicia María".
+3. Haz clic en otra fila.
+
+El Grid ya muestra "Alicia María". **Nadie presionó Guardar** y el cambio
+ya está aplicado. Si el usuario se equivocó, no hay forma de deshacerlo.
+
+### Concepto: dos modos del Binder
+
+| Modo | Cómo se activa | Qué pasa al escribir en un campo |
+|------|----------------|----------------------------------|
+| **Write-through** | `binder.setBean(cliente)` | Cada cambio válido se escribe **de inmediato** en el objeto |
+| **Buffered** | `binder.readBean(cliente)` | Los cambios se quedan **en el formulario**. El objeto no se toca hasta llamar a `writeBean` |
+
+*Buffer* significa "zona de espera". En un formulario real casi siempre
+quieres el modo buffered: el usuario decide cuándo confirmar.
+
+| Método | Dirección | Qué hace |
+|--------|-----------|----------|
+| `readBean(cliente)` | objeto → formulario | Copia los valores al formulario. No guarda referencia para escribir |
+| `writeBean(cliente)` | formulario → objeto | Valida todo; si está bien, copia los valores al objeto. Si no, lanza `ValidationException` y no escribe **nada** |
+
+### Paso 1: Cambiar a modo buffered
+
+En `createForm()`, cambia una sola palabra en el efecto:
 
 ```java
-private final Button saveButton = new Button("Guardar");
-private final Button discardButton = new Button("Descartar");
+Signal.effect(form, () -> binder.readBean(editedCustomer.get()));
 ```
+
+**Guarda y mira:** el formulario se sigue llenando al seleccionar. Pero
+ahora, si cambias el nombre y seleccionas otra fila, el cambio **se
+pierde**: nunca llegó al objeto. Falta el botón que lo confirme.
+
+### Paso 2: Los botones
+
+En `createForm()`, después de enlazar los campos:
 
 ```java
-form.add(new HorizontalLayout(saveButton, discardButton));
+var saveBtn = new Button("Guardar");
+saveBtn.addClickListener(e -> save());
+
+var discardBtn = new Button("Descartar");
+discardBtn.addClickListener(e -> binder.readBean(editedCustomer.peek()));
+
+var buttons = new HorizontalLayout(saveBtn, discardBtn);
 ```
 
-**Descartar** es el más simple: volvemos a leer el bean actual, y como no
-le escribimos nada, los campos regresan a su último valor guardado.
+Y agrega `buttons` al formulario:
 
 ```java
-discardButton.addClickListener(event -> binder.readBean(selectedProduct.peek()));
+var form = new FormLayout(firstName, lastName, email, status, customerSince, buttons);
 ```
 
-!!! danger "`peek()`, no `get()`, dentro de un click listener"
-    `get()` registra una dependencia reactiva: úsalo dentro de un
-    `Signal.effect` o un `Signal.computed`, donde quieres que el bloque se
-    vuelva a ejecutar si el signal cambia. `peek()` lee el valor actual
-    **sin** registrar esa dependencia. Dentro de un click listener no
-    quieres que este código se dispare de nuevo cada vez que cambie
-    `selectedProduct`: solo quieres su valor en el instante del clic. Por
-    eso todo el código dentro de listeners de botón en esta guía usa
-    `peek()`.
+Import: `com.vaadin.flow.component.button.Button`.
 
-**Guardar** llama a `binder.writeBean(...)`, que intenta escribir todos los
-campos al bean. Si algo no pasa validación, lanza una excepción y no
-escribe nada: el propio formulario ya está mostrando los errores, así que
-el `catch` puede quedar vacío.
+**Descartar** es simplemente volver a leer el cliente: como el objeto no
+se tocó, `readBean` restaura los valores originales y las ediciones
+desaparecen.
+
+!!! abstract "Por qué `peek()` y no `get()` en el listener"
+    `get()` suscribe el código actual al signal, y solo tiene sentido
+    dentro de un efecto, que debe re-ejecutarse cuando el signal cambia.
+    Un listener de botón se ejecuta **cuando el usuario hace clic**, no
+    cuando cambia el signal; solo necesita el valor en ese instante. Por
+    eso usa `peek()`. Usar `get()` aquí lanza `IllegalStateException`.
+    Confundirlos es el error más común con Signals.
+
+### Paso 3: El método `save()`
 
 ```java
 private void save() {
-    Product product = selectedProduct.peek();
-    if (product == null) {
-        return;
-    }
     try {
-        binder.writeBean(product);
-        grid.getDataProvider().refreshItem(product);
-        updateVisibleProducts(searchQuery.peek());
-        Notification.show("Producto guardado");
-    } catch (ValidationException e) {
-        // El formulario ya resalta los campos inválidos.
+        binder.writeBean(editedCustomer.peek());
+        updateCustomerList();
+    } catch (ValidationException ex) {
+        // The fields already show their own error messages.
     }
+}
+
+private void updateCustomerList() {
+    updateCustomerList(searchValue.peek());
 }
 ```
 
-```java
-saveButton.addClickListener(event -> save());
-```
+Import: `com.vaadin.flow.data.binder.ValidationException`.
 
-!!! danger "`refreshItem`, no solo el signal: mutar un objeto no es lo mismo que cambiar la lista"
-    `binder.writeBean(product)` no crea un `Product` nuevo: escribe los
-    campos del formulario en el mismo objeto que ya estaba en `products` y
-    en `visibleProducts`. Y ahí está el problema: `updateVisibleProducts`
-    vuelve a filtrar y arma una lista nueva, sí, pero si la búsqueda no
-    cambió, esa lista nueva contiene exactamente los mismos objetos, en el
-    mismo orden, que la anterior, así que para el signal es "el mismo
-    valor" y no dispara de nuevo el efecto que pinta el grid. El grid nunca
-    se entera de que uno de sus objetos cambió por dentro. `refreshItem(product)`
-    resuelve esto sin pasar por el signal: le dice directamente al `Grid`
-    "esta fila específica cambió, volvé a pintarla", sin importar si la
-    lista completa se considera distinta o no. Agregar o eliminar productos
-    sí cambia el tamaño de la lista, así que ahí el signal funciona solo,
-    sin necesidad de `refreshItem`; editar un producto existente es
-    justamente el caso en el que no alcanza.
+Qué hace, paso a paso:
 
-Edita el nombre de un producto, dale Guardar, y confirma que el grid se
-actualiza. Edita otro y dale Descartar: debería revertir sin guardar nada.
+1. `editedCustomer.peek()`: el cliente que se está editando.
+2. `writeBean(...)`: valida. Si todo está bien, copia los valores del
+   formulario al cliente.
+3. `updateCustomerList()`: vuelve a cargar el Grid para que muestre el
+   cambio. Es una **sobrecarga** sin parámetros que reutiliza el texto
+   de búsqueda actual (`searchValue.peek()`): si estabas filtrando por
+   "ali", el filtro se mantiene después de guardar.
 
-![Editando un producto y guardando el cambio, reflejado en el grid](images/sesion5-guardar-descartar.png)
+!!! warning "El `catch` vacío es intencional"
+    Si `writeBean` falla, cada campo inválido **ya muestra su mensaje**.
+    No hay nada que agregar. No lances una `RuntimeException` ahí:
+    rompería la pantalla por un error que el usuario ya está viendo y
+    puede corregir.
+
+**Guarda y prueba:**
+
+1. Cambia el nombre de Alicia y presiona **Descartar**: vuelve a
+   "Alicia".
+2. Cámbialo otra vez y presiona **Guardar**: el Grid muestra el nombre
+   nuevo.
+3. Borra el nombre y presiona **Guardar**: aparece el error y no se
+   guarda nada.
+
+![Editando un cliente: Descartar revierte, Guardar actualiza el Grid](images/s5-guardar-descartar.png)
 
 ---
 
-## Parte 2: Alta de productos
-Primero, una barra de herramientas de verdad: título, buscador, y un botón
-de agregar, todos en una fila.
+## Parte 2: Barra de herramientas y alta de clientes
+
+### El problema
+
+Podemos editar, pero **no crear**: no hay forma de abrir el formulario
+vacío. Y el buscador está solo arriba, sin título.
+
+### Paso 4: Convertir el buscador en una barra de herramientas
+
+Renombra `createSearch()` a `createToolbar()` y haz que devuelva una
+barra con título, buscador y botón:
 
 ```java
-private final Button addButton = new Button(new Icon(VaadinIcon.PLUS));
+private HorizontalLayout createToolbar() {
+    var title = new H3("Clientes");
 
-private HorizontalLayout buildToolbar() {
-    H3 title = new H3("Catálogo de Productos");
-    title.getStyle().set("flex-grow", "1");
+    var search = new TextField();
+    search.setPlaceholder("Buscar");
+    search.setValueChangeMode(ValueChangeMode.LAZY);
+    search.bindValue(searchValue, searchValue::set);
+    Signal.effect(search, () -> updateCustomerList(searchValue.get()));
 
-    TextField searchField = new TextField();
-    searchField.setPlaceholder("Buscar");
-    searchField.setValueChangeMode(ValueChangeMode.LAZY);
-    searchField.bindValue(searchQuery, searchQuery::set);
+    var addBtn = new Button(VaadinIcon.PLUS.create());
+    addBtn.addClickListener(e -> addCustomer());
 
-    HorizontalLayout toolbar = new HorizontalLayout(title, searchField, addButton);
+    var toolbar = new HorizontalLayout(title, search, addBtn);
     toolbar.setWidthFull();
-    toolbar.setDefaultVerticalComponentAlignment(HorizontalLayout.Alignment.CENTER);
+    toolbar.setFlexGrow(1, title);
     return toolbar;
 }
 ```
 
-Reemplaza el `TextField` de búsqueda suelto del constructor por
-`add(buildToolbar());`. El `flex-grow: 1` en el título empuja el buscador y
-el botón hacia la derecha.
-
-Para crear un producto, la lógica es simple gracias a todo lo que ya
-armamos: solo hay que poner un `Product` nuevo, vacío, como el producto
-seleccionado. El formulario se abre solo, porque su visibilidad ya está
-enlazada a "hay alguien seleccionado" (Sesión 4), y el Binder lo va a leer,
-porque también ya está enlazado a la selección.
+Imports:
 
 ```java
-private void addProduct() {
-    grid.deselectAll();
-    selectedProduct.set(new Product());
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.icon.VaadinIcon;
+```
+
+- `H3` es un título de nivel 3, como `<h3>` en HTML, pero creado en Java.
+- `VaadinIcon.PLUS.create()` crea un ícono "+". Vaadin trae cientos de
+  íconos listos. Un botón con solo un ícono ocupa menos espacio que uno
+  que diga "Agregar cliente".
+- `setWidthFull()`: la barra ocupa todo el ancho.
+- `setFlexGrow(1, title)`: el título **absorbe el espacio sobrante**,
+  así que empuja el buscador y el botón al borde derecho.
+
+Actualiza el constructor:
+
+```java
+public CustomerListView() {
+    setSizeFull();
+    var toolbar = createToolbar();
+    configureGrid();
+    var form = createForm();
+
+    var content = new HorizontalLayout(grid, form);
+    content.setSizeFull();
+
+    add(toolbar, content);
 }
 ```
 
-```java
-addButton.addClickListener(event -> addProduct());
-```
-
-!!! note "`grid.deselectAll()` antes de crear"
-    Como conectamos la selección con `addSelectionListener` (una vía: grid
-    → signal), poner el signal a mano no cambia lo que el grid muestra
-    como seleccionado. `deselectAll()` evita que quede una fila vieja
-    resaltada mientras el formulario muestra un producto nuevo.
-
-Un producto nuevo se distingue de uno existente por una sola cosa: todavía
-no tiene id.
+### Paso 5: Crear un cliente
 
 ```java
-private boolean isNewProduct(Product product) {
-    return product != null && product.getId() == null;
+private void addCustomer() {
+    editedCustomer.set(new Customer());
 }
 ```
 
-Vamos a usar esa condición para que el botón Guardar diga "Crear" en vez de
-"Guardar" cuando corresponda, con el mismo patrón de `bindText` +
-`map` que ya usamos para los KPIs en la Sesión 3:
+Una línea. ¿Por qué alcanza?
+
+- El formulario es visible cuando `editedCustomer` no es `null`
+  (`bindVisible`, Sesión 4) → **se abre**.
+- El efecto del Binder lee `editedCustomer` → **carga los campos vacíos**
+  del cliente nuevo.
+
+No hace falta una bandera de "modo creación": el formulario ya reacciona
+a lo que haya en el signal.
+
+**Guarda y mira:** el botón + abre el formulario vacío.
+
+### Paso 6: Guardar un cliente nuevo
+
+Si llenas el formulario y presionas Guardar, `writeBean` escribe en el
+cliente nuevo... pero ese cliente no está en la lista `customers`, así
+que nunca aparece en el Grid. Ajusta `save()`:
 
 ```java
-saveButton.bindText(selectedProduct.map(p -> isNewProduct(p) ? "Crear" : "Guardar"));
-```
-
-Cambia la declaración de `saveButton` para que no tenga texto fijo
-(`new Button()`), ya que ahora lo controla el `bindText`.
-
-Y ajusta `save()` para que, si el producto es nuevo, le asigne un id y lo
-agregue a la lista en memoria:
-
-```java
-private long nextProductId = 100L;
-
 private void save() {
-    Product product = selectedProduct.peek();
-    if (product == null) {
-        return;
-    }
-    boolean wasNew = isNewProduct(product);
     try {
-        binder.writeBean(product);
-        if (wasNew) {
-            product.setId(nextProductId++);
-            products.add(product);
-        } else {
-            grid.getDataProvider().refreshItem(product);
+        var customer = editedCustomer.peek();
+        binder.writeBean(customer);
+        if (!customers.contains(customer)) {
+            customers.add(customer);
         }
-        updateVisibleProducts(searchQuery.peek());
-        Notification.show("Producto guardado");
-    } catch (ValidationException e) {
-        // ...
+        updateCustomerList();
+    } catch (ValidationException ex) {
+        // The fields already show their own error messages.
     }
 }
 ```
 
-!!! note "Esta asignación manual de id es temporal"
-    En la Sesión 6, cuando conectemos una base de datos real, el id lo va a
-    generar la base automáticamente, y esta línea (`nextProductId++`) va a
-    desaparecer. Por ahora, mientras trabajamos en memoria, alguien tiene
-    que hacer ese trabajo.
+`contains` usa el `equals` de `Customer`. Como el cliente nuevo no tiene
+`id`, solo es igual a sí mismo, así que no está en la lista y se agrega.
 
-Haz clic en el botón **+**, llena el formulario, y guarda. El botón
-debería decir "Crear" mientras el producto es nuevo.
+!!! note "Esto es temporal"
+    En la Sesión 6, la base de datos decide si es un alta o una
+    modificación, y este `if` desaparece.
 
-![El botón + abriendo un formulario vacío que dice "Crear"](images/sesion5-alta-producto.png)
+**Guarda y prueba:** presiona +, completa los datos, Guardar. El cliente
+nuevo aparece en el Grid.
+
+![Barra con título, buscador y +; el formulario abierto vacío](images/s5-alta-cliente.png)
 
 ---
 
-## Parte 3: Baja con diálogo de confirmación
-Para borrar, lo último que queremos es que un clic accidental elimine algo
-sin preguntar. Vaadin trae un componente hecho exactamente para esto:
-`ConfirmDialog`.
+## Parte 3: Eliminar con confirmación
+
+### El problema
+
+Falta la D de CRUD (*Create, Read, Update, Delete*). Y eliminar es
+**destructivo**: un clic por error no debería borrar un cliente sin
+preguntar.
+
+### Paso 7: El botón Eliminar
+
+En `createForm()`:
 
 ```java
-private final Button deleteButton = new Button("Eliminar");
+var deleteBtn = new Button("Eliminar");
+deleteBtn.addClickListener(e -> confirmDelete());
+deleteBtn.bindEnabled(editedCustomer.map(customer -> customer != null));
+
+var buttons = new HorizontalLayout(saveBtn, discardBtn, deleteBtn);
 ```
 
-Agrégalo al mismo `HorizontalLayout` de botones del formulario:
+`bindEnabled` es la misma idea que `bindVisible`: el botón está
+habilitado solo si hay un cliente en edición.
 
-```java
-form.add(new HorizontalLayout(saveButton, discardButton, deleteButton));
-```
+### Paso 8: El diálogo de confirmación
+
+Constrúyelo de a poco, guardando entre pasos:
 
 ```java
 private void confirmDelete() {
-    Product product = selectedProduct.peek();
-    if (product == null) {
-        return;
-    }
-    ConfirmDialog dialog = new ConfirmDialog();
-    dialog.setHeader("Eliminar producto");
-    dialog.setText("¿Seguro que quieres eliminar \"" + product.getName() + "\"? Esta acción no se puede deshacer.");
+    var customer = editedCustomer.peek();
+
+    var dialog = new ConfirmDialog();
+    dialog.setHeader("Eliminar cliente");
+    dialog.setText("¿Seguro que quieres eliminar a %s %s?"
+            .formatted(customer.getFirstName(), customer.getLastName()));
     dialog.setCancelable(true);
     dialog.setConfirmText("Eliminar");
-    dialog.setConfirmButtonTheme("error primary");
-    dialog.addConfirmListener(event -> {
-        products.remove(product);
-        grid.deselectAll();
-        selectedProduct.set(null);
-        updateVisibleProducts(searchQuery.peek());
-        Notification.show("Producto eliminado");
+    dialog.addConfirmListener(e -> {
+        customers.remove(customer);
+        updateCustomerList();
     });
     dialog.open();
 }
 ```
 
-```java
-deleteButton.addClickListener(event -> confirmDelete());
-```
+Import: `com.vaadin.flow.component.confirmdialog.ConfirmDialog`.
 
-!!! abstract "Vaadin al paso: `ConfirmDialog`"
-    `setHeader`/`setText` arman el contenido; `setCancelable(true)` agrega
-    un botón de cancelar además del de confirmar; `setConfirmText(...)`
-    cambia la etiqueta del botón de confirmación; `setConfirmButtonTheme`
-    le aplica variantes de tema (lo vas a ver de nuevo en la Sesión 8).
-    `addConfirmListener` corre solo si el usuario efectivamente confirma:
-    cancelar simplemente cierra el diálogo sin ejecutar nada.
+| Línea | Qué hace |
+|-------|----------|
+| `new ConfirmDialog()` | Crea el diálogo. Todavía no se ve |
+| `setHeader(...)` | Título del diálogo |
+| `setText(...)` | El mensaje. `formatted` reemplaza cada `%s` por el nombre y el apellido |
+| `setCancelable(true)` | Agrega el botón Cancelar. Sin esto, solo hay botón de confirmar |
+| `setConfirmText("Eliminar")` | El texto del botón de confirmar. Más claro que un "Confirmar" genérico |
+| `addConfirmListener(...)` | Lo que pasa **solo si** el usuario confirma |
+| `open()` | Muestra el diálogo |
 
-Por último, no tiene sentido mostrar el botón Eliminar mientras estás
-creando un producto que ni siquiera existe todavía en ningún lado. Lo
-deshabilitamos reutilizando `isNewProduct`:
+Fíjate que `customer` se lee con `peek()` **una vez**, al principio, y se
+usa en el texto y en el listener. Así el diálogo elimina exactamente al
+cliente que nombra.
 
-```java
-deleteButton.bindEnabled(selectedProduct.map(p -> p != null && !isNewProduct(p)));
-```
+**Guarda y prueba:** selecciona a Carolina, Eliminar, Cancelar: no pasa
+nada. Eliminar otra vez, confirmar: desaparece del Grid.
 
-Prueba: haz clic en **+** y confirma que Eliminar aparece deshabilitado;
-haz clic en una fila existente y confirma que se habilita. Elimina un
-producto y verifica el diálogo.
-
-![El diálogo de confirmación con el nombre del producto interpolado](images/sesion5-baja-confirmacion.png)
+![Diálogo de confirmación con el nombre del cliente](images/s5-eliminar-confirmacion.png)
 
 ---
 
-## Cierre de la sesión
+## Código completo al cierre de la sesión
+
+??? example "CustomerListView.java"
+    ```java
+    package com.baqjug.crm.ui;
+
+    import com.baqjug.crm.backend.Customer;
+    import com.baqjug.crm.backend.Status;
+    import com.vaadin.flow.component.button.Button;
+    import com.vaadin.flow.component.combobox.ComboBox;
+    import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+    import com.vaadin.flow.component.datepicker.DatePicker;
+    import com.vaadin.flow.component.formlayout.FormLayout;
+    import com.vaadin.flow.component.grid.Grid;
+    import com.vaadin.flow.component.html.H3;
+    import com.vaadin.flow.component.icon.VaadinIcon;
+    import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+    import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+    import com.vaadin.flow.component.textfield.EmailField;
+    import com.vaadin.flow.component.textfield.TextField;
+    import com.vaadin.flow.data.binder.Binder;
+    import com.vaadin.flow.data.binder.ValidationException;
+    import com.vaadin.flow.data.value.ValueChangeMode;
+    import com.vaadin.flow.router.Route;
+    import com.vaadin.flow.signals.Signal;
+    import com.vaadin.flow.signals.local.ValueSignal;
+    import java.time.LocalDate;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.stream.Collectors;
+
+    @Route("customers")
+    public class CustomerListView extends VerticalLayout {
+
+        private final Grid<Customer> grid = new Grid<>();
+        private final List<Customer> customers = getSampleCustomers();
+        private final ValueSignal<String> searchValue = new ValueSignal<>("");
+        private final ValueSignal<Customer> editedCustomer = new ValueSignal<>(null);
+        private final Binder<Customer> binder = new Binder<>();
+
+        public CustomerListView() {
+            setSizeFull();
+            var toolbar = createToolbar();
+            configureGrid();
+            var form = createForm();
+
+            var content = new HorizontalLayout(grid, form);
+            content.setSizeFull();
+
+            add(toolbar, content);
+        }
+
+        private HorizontalLayout createToolbar() {
+            var title = new H3("Clientes");
+
+            var search = new TextField();
+            search.setPlaceholder("Buscar");
+            search.setValueChangeMode(ValueChangeMode.LAZY);
+            search.bindValue(searchValue, searchValue::set);
+            Signal.effect(search, () -> updateCustomerList(searchValue.get()));
+
+            var addBtn = new Button(VaadinIcon.PLUS.create());
+            addBtn.addClickListener(e -> addCustomer());
+
+            var toolbar = new HorizontalLayout(title, search, addBtn);
+            toolbar.setWidthFull();
+            toolbar.setFlexGrow(1, title);
+            return toolbar;
+        }
+
+        private void configureGrid() {
+            grid.addColumn(Customer::getFirstName).setHeader("Nombre").setSortable(true);
+            grid.addColumn(Customer::getLastName).setHeader("Apellido").setSortable(true);
+            grid.addColumn(Customer::getEmail).setHeader("Correo").setSortable(true);
+            grid.addColumn(Customer::getStatus).setHeader("Estado").setSortable(true);
+            grid.addColumn(Customer::getCustomerSince).setHeader("Cliente desde").setSortable(true);
+            grid.setSizeFull();
+            grid.asSingleSelect().bindValue(editedCustomer, editedCustomer::set);
+        }
+
+        private FormLayout createForm() {
+            var firstName = new TextField("Nombre");
+            var lastName = new TextField("Apellido");
+            var email = new EmailField("Correo");
+            var status = new ComboBox<Status>("Estado");
+            status.setItems(Status.values());
+            var customerSince = new DatePicker("Cliente desde");
+
+            binder.forField(firstName)
+                    .asRequired("El nombre es obligatorio")
+                    .bind(Customer::getFirstName, Customer::setFirstName);
+            binder.forField(lastName)
+                    .asRequired("El apellido es obligatorio")
+                    .bind(Customer::getLastName, Customer::setLastName);
+            binder.forField(email)
+                    .asRequired("El correo es obligatorio")
+                    .bind(Customer::getEmail, Customer::setEmail);
+            binder.forField(status)
+                    .asRequired("Selecciona un estado")
+                    .bind(Customer::getStatus, Customer::setStatus);
+            binder.bind(customerSince, Customer::getCustomerSince, Customer::setCustomerSince);
+
+            var saveBtn = new Button("Guardar");
+            saveBtn.addClickListener(e -> save());
+
+            var discardBtn = new Button("Descartar");
+            discardBtn.addClickListener(e -> binder.readBean(editedCustomer.peek()));
+
+            var deleteBtn = new Button("Eliminar");
+            deleteBtn.addClickListener(e -> confirmDelete());
+            deleteBtn.bindEnabled(editedCustomer.map(customer -> customer != null));
+
+            var buttons = new HorizontalLayout(saveBtn, discardBtn, deleteBtn);
+
+            var form = new FormLayout(firstName, lastName, email, status, customerSince, buttons);
+            form.setWidth("300px");
+            form.bindVisible(editedCustomer.map(customer -> customer != null));
+            Signal.effect(form, () -> binder.readBean(editedCustomer.get()));
+            return form;
+        }
+
+        private void addCustomer() {
+            editedCustomer.set(new Customer());
+        }
+
+        private void save() {
+            try {
+                var customer = editedCustomer.peek();
+                binder.writeBean(customer);
+                if (!customers.contains(customer)) {
+                    customers.add(customer);
+                }
+                updateCustomerList();
+            } catch (ValidationException ex) {
+                // The fields already show their own error messages.
+            }
+        }
+
+        private void confirmDelete() {
+            var customer = editedCustomer.peek();
+
+            var dialog = new ConfirmDialog();
+            dialog.setHeader("Eliminar cliente");
+            dialog.setText("¿Seguro que quieres eliminar a %s %s?"
+                    .formatted(customer.getFirstName(), customer.getLastName()));
+            dialog.setCancelable(true);
+            dialog.setConfirmText("Eliminar");
+            dialog.addConfirmListener(e -> {
+                customers.remove(customer);
+                updateCustomerList();
+            });
+            dialog.open();
+        }
+
+        private void updateCustomerList() {
+            updateCustomerList(searchValue.peek());
+        }
+
+        private void updateCustomerList(String query) {
+            var filtered = customers;
+
+            if (!query.isEmpty()) {
+                var lower = query.toLowerCase();
+                filtered = customers.stream()
+                        .filter(c -> c.getFirstName().toLowerCase().contains(lower)
+                                || c.getLastName().toLowerCase().contains(lower)
+                                || c.getEmail().toLowerCase().contains(lower)
+                                || c.getStatus().name().toLowerCase().contains(lower))
+                        .collect(Collectors.toCollection(ArrayList::new));
+            }
+
+            grid.setItems(filtered);
+        }
+
+        private List<Customer> getSampleCustomers() {
+            return new ArrayList<>(List.of(
+                    new Customer("Alicia", "Nieto", "alicia.nieto@meridian.co",
+                            Status.CUSTOMER, LocalDate.of(2023, 1, 15)),
+                    new Customer("Boris", "Martínez", "boris.martinez@bluefern.io",
+                            Status.CUSTOMER, LocalDate.of(2022, 11, 3)),
+                    new Customer("Carolina", "Schmidt", "carolina.schmidt@meridian.co",
+                            Status.PROSPECT, null)
+            ));
+        }
+    }
+    ```
+
+---
+
+## Verifica
+
+- [ ] Editar y seleccionar otra fila **no** aplica el cambio.
+- [ ] Descartar restaura los valores originales.
+- [ ] Guardar actualiza el Grid.
+- [ ] Guardar con un campo obligatorio vacío muestra el error y no guarda.
+- [ ] El título "Clientes" está a la izquierda; buscador y + a la derecha.
+- [ ] El + abre el formulario vacío, y al guardar el cliente aparece en el Grid.
+- [ ] Eliminar abre un diálogo con el nombre del cliente; Cancelar no borra nada.
+- [ ] Si filtras por "ali" y guardas, el filtro se mantiene.
+
+## Errores comunes
+
+| Síntoma | Causa | Solución |
+|---------|-------|----------|
+| `IllegalStateException` al hacer clic | Usaste `get()` dentro de un listener | Usa `peek()` |
+| Los cambios se aplican sin Guardar | El efecto sigue usando `setBean` | Cámbialo a `readBean` |
+| Guardar no hace nada visible | Falta `updateCustomerList()` después de `writeBean` | Agrégalo |
+| El cliente nuevo no aparece en el Grid | Falta agregarlo a `customers` | El `if (!customers.contains(...))` de `save()` |
+| `UnsupportedOperationException` al agregar | `getSampleCustomers()` devuelve `List.of(...)` sin envolver | `new ArrayList<>(List.of(...))` |
+| El diálogo no tiene botón Cancelar | Falta `setCancelable(true)` | Agrégalo |
+
+## Qué resolvimos
+
+- **Modo buffered:** el usuario confirma o descarta; nada se aplica por
+  accidente.
+- **`peek()` en listeners, `get()` en efectos:** la regla de la Sesión 3
+  en acción.
+- **Crear es poner un objeto nuevo en el signal:** formulario y Binder
+  ya reaccionan a él.
+- **Confirmación antes de destruir** con `ConfirmDialog`.
+- **`bindEnabled`:** otra propiedad enlazada a un signal derivado.
+
+## Checkpoint
 
 ```bash
-git add .
-git commit -m "sesion-5: guardar, descartar, alta y baja con confirmación"
-git branch sesion-5
+git add . && git commit -m "feat: buffered save, discard, create and delete"
 ```
 
-En la [Sesión 6](sesion_6.md) reemplazamos la lista en memoria por una base
-de datos real con Spring Data JPA.
+Sigue con la [Sesión 6](sesion_6.md).
