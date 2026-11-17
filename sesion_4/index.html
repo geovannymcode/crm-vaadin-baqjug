@@ -1,0 +1,1591 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Taller de 70 minutos: un CRM con Vaadin Flow 25, Signals y Spring Boot, todo en Java.">
+      
+      
+        <meta name="author" content="Geovanny Mendoza">
+      
+      
+        <link rel="canonical" href="https://geovannymcode.github.io/stockpilot-vaadin-baqjug/sesion_4/">
+      
+      
+        <link rel="prev" href="../sesion_3/">
+      
+      
+        <link rel="next" href="../sesion_5/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Sesión 4 — Formulario, Binder y validación - CRM interno en Java puro con Vaadin Flow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sesion-4-formulario-de-detalle-binder-y-validacion" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href=".." title="CRM interno en Java puro con Vaadin Flow" class="md-header__button md-logo" aria-label="CRM interno en Java puro con Vaadin Flow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CRM interno en Java puro con Vaadin Flow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sesión 4 — Formulario, Binder y validación
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geovannymcode/stockpilot-vaadin-baqjug" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geovannymcode/stockpilot-vaadin-baqjug
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sesion_0/" class="md-tabs__link">
+          
+  
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../referencias/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Referencias
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CRM interno en Java puro con Vaadin Flow" class="md-nav__button md-logo" aria-label="CRM interno en Java puro con Vaadin Flow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CRM interno en Java puro con Vaadin Flow
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geovannymcode/stockpilot-vaadin-baqjug" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geovannymcode/stockpilot-vaadin-baqjug
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 0 — Preparación y apertura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 1 — Primera vista, componentes y layouts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 2 — Mostrar datos en un Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 3 — Filtrar con Signals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 4 — Formulario, Binder y validación
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 4 — Formulario, Binder y validación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#de-donde-partimos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De dónde partimos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El problema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-1-el-formulario-sigue-a-la-seleccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 1: El formulario sigue a la selección
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte 1: El formulario sigue a la selección">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-un-signal-para-el-cliente-seleccionado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Un signal para el cliente seleccionado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-enlazar-la-seleccion-del-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Enlazar la selección del Grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-comprobar-que-funciona-y-borrarlo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: Comprobar que funciona (y borrarlo)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-el-formulario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: El formulario
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-grid-y-formulario-lado-a-lado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5: Grid y formulario lado a lado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-mostrar-el-formulario-solo-si-hay-seleccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6: Mostrar el formulario solo si hay selección
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-2-llenar-el-formulario-con-binder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 2: Llenar el formulario con Binder
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte 2: Llenar el formulario con Binder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#el-problema_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El problema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concepto-que-es-el-binder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concepto: ¿qué es el Binder?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-7-crear-el-binder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 7: Crear el Binder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-8-enlazar-un-campo-y-probar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 8: Enlazar un campo y probar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-9-el-resto-de-los-campos-con-validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 9: El resto de los campos, con validación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codigo-completo-al-cierre-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Código completo al cierre de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errores-comunes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errores comunes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-resolvimos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué resolvimos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 5 — Guardar, descartar, crear y eliminar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 6 — Conectar la base de datos real
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 7 — App shell y navegación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 8 — Estilos, tema Aura y cierre
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../referencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sesion-4-formulario-de-detalle-binder-y-validacion">Sesión 4: Formulario de detalle, Binder y validación<a class="headerlink" href="#sesion-4-formulario-de-detalle-binder-y-validacion" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">Resumen de la sesión</p>
+<ul>
+<li><strong>Tiempo en vivo:</strong> 11 min · Video de referencia: 18:01</li>
+<li><strong>Al terminar vas a tener:</strong> al hacer clic en un cliente, un
+  formulario a la derecha con sus datos; al quitar la selección, el
+  formulario se oculta. Los campos obligatorios muestran error si
+  quedan vacíos.</li>
+<li><strong>Conceptos nuevos:</strong> selección del Grid enlazada a un signal,
+  <code>FormLayout</code>, <code>EmailField</code>, <code>ComboBox</code>, <code>map</code> y <code>bindVisible</code>,
+  <code>Binder</code>, <code>asRequired</code>.</li>
+</ul>
+</div>
+<hr />
+<h2 id="de-donde-partimos">De dónde partimos<a class="headerlink" href="#de-donde-partimos" title="Permanent link">&para;</a></h2>
+<p><code>CustomerListView</code> tiene un buscador reactivo y un Grid ordenable. Se
+puede ver y buscar, pero no editar.</p>
+<h2 id="el-problema">El problema<a class="headerlink" href="#el-problema" title="Permanent link">&para;</a></h2>
+<p>Queremos hacer clic en un cliente y ver sus datos en un formulario al
+lado del Grid, listo para editar. Si no hay nadie seleccionado, el
+formulario no debería verse.</p>
+<hr />
+<h2 id="parte-1-el-formulario-sigue-a-la-seleccion">Parte 1: El formulario sigue a la selección<a class="headerlink" href="#parte-1-el-formulario-sigue-a-la-seleccion" title="Permanent link">&para;</a></h2>
+<h3 id="paso-1-un-signal-para-el-cliente-seleccionado">Paso 1: Un signal para el cliente seleccionado<a class="headerlink" href="#paso-1-un-signal-para-el-cliente-seleccionado" title="Permanent link">&para;</a></h3>
+<p>Es el mismo patrón de la búsqueda, ahora para la selección. Agrega el
+campo:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">editedCustomer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></div>
+<ul>
+<li>Si no hay nadie seleccionado, vale <code>null</code>.</li>
+<li>Si el usuario hace clic en Alicia, vale el objeto <code>Customer</code> de Alicia.</li>
+</ul>
+<p>Lo llamamos <code>editedCustomer</code> (cliente en edición) y no <code>selectedCustomer</code>
+porque en la Sesión 5 también va a contener un cliente <strong>nuevo</strong> que
+todavía no está en el Grid.</p>
+<h3 id="paso-2-enlazar-la-seleccion-del-grid">Paso 2: Enlazar la selección del Grid<a class="headerlink" href="#paso-2-enlazar-la-seleccion-del-grid" title="Permanent link">&para;</a></h3>
+<p>Al final de <code>configureGrid()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">grid</span><span class="p">.</span><span class="na">asSingleSelect</span><span class="p">().</span><span class="na">bindValue</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">,</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">::</span><span class="n">set</span><span class="p">);</span>
+</span></code></pre></div>
+<ul>
+<li><code>asSingleSelect()</code> trata al Grid como un selector de <strong>un</strong> solo
+  elemento: la fila seleccionada es su "valor".</li>
+<li><code>bindValue</code> es el mismo enlace de dos vías de la Sesión 3:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Dirección</th>
+<th>Qué pasa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grid → signal</td>
+<td>Clic en una fila: <code>editedCustomer</code> pasa a ser ese cliente. Clic otra vez: <code>null</code></td>
+</tr>
+<tr>
+<td>Signal → Grid</td>
+<td>Si el código hace <code>editedCustomer.set(x)</code>, el Grid selecciona <code>x</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="paso-3-comprobar-que-funciona-y-borrarlo">Paso 3: Comprobar que funciona (y borrarlo)<a class="headerlink" href="#paso-3-comprobar-que-funciona-y-borrarlo" title="Permanent link">&para;</a></h3>
+<p>Un efecto temporal, para ver la selección en acción. Agrégalo en el
+constructor:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Notification</span><span class="p">.</span><span class="na">show</span><span class="p">(</span><span class="s">"Seleccionado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span></code></pre></div>
+<p>Import: <code>com.vaadin.flow.component.notification.Notification</code>.</p>
+<p><strong>Guarda y mira:</strong> cada clic en una fila muestra una notificación. Nunca
+llamamos a nada al hacer clic: el efecto leyó <code>editedCustomer</code> con
+<code>get()</code>, así que se re-ejecuta cada vez que cambia.</p>
+<p>Cuando lo veas funcionar, <strong>borra</strong> ese efecto.</p>
+<h3 id="paso-4-el-formulario">Paso 4: El formulario<a class="headerlink" href="#paso-4-el-formulario" title="Permanent link">&para;</a></h3>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">FormLayout</span><span class="w"> </span><span class="nf">createForm</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">firstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">);</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">lastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Apellido"</span><span class="p">);</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EmailField</span><span class="p">(</span><span class="s">"Correo"</span><span class="p">);</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ComboBox</span><span class="o">&lt;</span><span class="n">Status</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"Estado"</span><span class="p">);</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="n">status</span><span class="p">.</span><span class="na">setItems</span><span class="p">(</span><span class="n">Status</span><span class="p">.</span><span class="na">values</span><span class="p">());</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">customerSince</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatePicker</span><span class="p">(</span><span class="s">"Cliente desde"</span><span class="p">);</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FormLayout</span><span class="p">(</span><span class="n">firstName</span><span class="p">,</span><span class="w"> </span><span class="n">lastName</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">customerSince</span><span class="p">);</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">form</span><span class="p">;</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Imports:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.combobox.ComboBox</span><span class="p">;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.datepicker.DatePicker</span><span class="p">;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.formlayout.FormLayout</span><span class="p">;</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.textfield.EmailField</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Elegimos un componente distinto según el tipo de dato:</p>
+<table>
+<thead>
+<tr>
+<th>Propiedad</th>
+<th>Tipo en Java</th>
+<th>Componente</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>firstName</code>, <code>lastName</code></td>
+<td><code>String</code></td>
+<td><code>TextField</code></td>
+<td>Texto libre</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td><code>String</code></td>
+<td><code>EmailField</code></td>
+<td>Valida solo el formato de correo</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>Status</code> (enum)</td>
+<td><code>ComboBox&lt;Status&gt;</code></td>
+<td>Desplegable con filtro; <code>setItems(Status.values())</code> ofrece los cuatro estados</td>
+</tr>
+<tr>
+<td><code>customerSince</code></td>
+<td><code>LocalDate</code></td>
+<td><code>DatePicker</code></td>
+<td>Calendario, devuelve un <code>LocalDate</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>FormLayout</code> acomoda los campos en columnas y se adapta solo al ancho
+disponible.</p>
+<h3 id="paso-5-grid-y-formulario-lado-a-lado">Paso 5: Grid y formulario lado a lado<a class="headerlink" href="#paso-5-grid-y-formulario-lado-a-lado" title="Permanent link">&para;</a></h3>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">public</span><span class="w"> </span><span class="nf">CustomerListView</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createSearch</span><span class="p">();</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">configureGrid</span><span class="p">();</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createForm</span><span class="p">();</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">form</span><span class="p">);</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">);</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Import: <code>com.vaadin.flow.component.orderedlayout.HorizontalLayout</code>.</p>
+<p><strong>Guarda y mira:</strong> dos problemas.</p>
+<ol>
+<li>
+<p><strong>El formulario es demasiado ancho</strong> y aplasta al Grid. Agrega en
+   <code>createForm()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">form</span><span class="p">.</span><span class="na">setWidth</span><span class="p">(</span><span class="s">"300px"</span><span class="p">);</span>
+</span></code></pre></div>
+<p>No necesitamos que el formulario crezca: 300 px alcanzan.</p>
+</li>
+<li>
+<p><strong>El Grid ya no ocupa todo el alto.</strong> Es el mismo problema de la
+   Sesión 2: el Grid ahora vive dentro de <code>content</code>, y <code>content</code> no tiene
+   tamaño. Agrega:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">content</span><span class="p">.</span><span class="na">setSizeFull</span><span class="p">();</span>
+</span></code></pre></div>
+</li>
+</ol>
+<h3 id="paso-6-mostrar-el-formulario-solo-si-hay-seleccion">Paso 6: Mostrar el formulario solo si hay selección<a class="headerlink" href="#paso-6-mostrar-el-formulario-solo-si-hay-seleccion" title="Permanent link">&para;</a></h3>
+<p>En <code>createForm()</code>, antes del <code>return</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">form</span><span class="p">.</span><span class="na">bindVisible</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">));</span>
+</span></code></pre></div>
+<ul>
+<li><code>editedCustomer.map(...)</code> crea un <strong>signal derivado</strong>: un
+  <code>Signal&lt;Boolean&gt;</code> que vale <code>true</code> si hay cliente y <code>false</code> si no. Se
+  recalcula solo cada vez que cambia <code>editedCustomer</code>.</li>
+<li><code>bindVisible(...)</code> enlaza la visibilidad del formulario a ese
+  booleano.</li>
+</ul>
+<div class="admonition abstract">
+<p class="admonition-title"><code>map</code> no es el <code>map</code> de un stream</p>
+<p><code>signal.map(f)</code> toma el valor actual de un signal y devuelve <strong>otro
+signal</strong> con el resultado de <code>f</code>, que se mantiene actualizado. No
+modifica el original y es de solo lectura. Lo vamos a usar para
+derivar visibilidad, texto y si un botón está habilitado, siempre a
+partir del mismo dato.</p>
+</div>
+<p><strong>Guarda y mira:</strong> sin selección no hay formulario; al hacer clic en una
+fila aparece; al hacer clic en la misma fila otra vez desaparece.</p>
+<p>Fíjate que no solo se enlazan <strong>valores</strong>: también la visibilidad
+(<code>bindVisible</code>), y en la Sesión 5 el texto (<code>bindText</code>) y si un botón
+está habilitado (<code>bindEnabled</code>).</p>
+<p><img alt="Formulario a la derecha que aparece al seleccionar una fila, todavía vacío" src="images/s4-formulario-seleccion.png" /></p>
+<hr />
+<h2 id="parte-2-llenar-el-formulario-con-binder">Parte 2: Llenar el formulario con Binder<a class="headerlink" href="#parte-2-llenar-el-formulario-con-binder" title="Permanent link">&para;</a></h2>
+<h3 id="el-problema_1">El problema<a class="headerlink" href="#el-problema_1" title="Permanent link">&para;</a></h3>
+<p>El formulario aparece, pero <strong>vacío</strong>. Podríamos hacerlo a mano:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">firstName</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="n">customer</span><span class="p">.</span><span class="na">getFirstName</span><span class="p">());</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">lastName</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="n">customer</span><span class="p">.</span><span class="na">getLastName</span><span class="p">());</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1">// ...y al guardar, al revés, campo por campo:</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">customer</span><span class="p">.</span><span class="na">setFirstName</span><span class="p">(</span><span class="n">firstName</span><span class="p">.</span><span class="na">getValue</span><span class="p">());</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1">// ...y además validar cada uno</span>
+</span></code></pre></div>
+<p>Con cinco campos ya son quince líneas repetitivas, y todavía falta la
+validación. Con veinte campos se vuelve inmanejable.</p>
+<h3 id="concepto-que-es-el-binder">Concepto: ¿qué es el <code>Binder</code>?<a class="headerlink" href="#concepto-que-es-el-binder" title="Permanent link">&para;</a></h3>
+<p><code>Binder</code> es un <strong>traductor entre un formulario y un objeto Java</strong>. Le
+dices una vez qué campo corresponde a qué propiedad (con su getter y su
+setter), y él se encarga de:</p>
+<ul>
+<li><strong>leer</strong>: copiar los valores del objeto a los campos,</li>
+<li><strong>escribir</strong>: copiar los valores de los campos al objeto,</li>
+<li><strong>validar</strong>: comprobar cada campo antes de escribir.</li>
+</ul>
+<div class="admonition abstract">
+<p class="admonition-title">Signals y Binder no compiten</p>
+<p><strong>Signals</strong> decide <strong>qué se muestra y cuándo</strong> (qué cliente está en
+edición, si el formulario se ve). <strong>Binder</strong> decide <strong>cómo se leen y
+escriben</strong> los campos contra un objeto, con validación. Un efecto les
+sirve de puente.</p>
+</div>
+<h3 id="paso-7-crear-el-binder">Paso 7: Crear el Binder<a class="headerlink" href="#paso-7-crear-el-binder" title="Permanent link">&para;</a></h3>
+<p>Agrega el campo:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">binder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span></code></pre></div>
+<p>Import: <code>com.vaadin.flow.data.binder.Binder</code>.</p>
+<h3 id="paso-8-enlazar-un-campo-y-probar">Paso 8: Enlazar un campo y probar<a class="headerlink" href="#paso-8-enlazar-un-campo-y-probar" title="Permanent link">&para;</a></h3>
+<p>En <code>createForm()</code>, después de crear los campos:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">binder</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">firstName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setFirstName</span><span class="p">);</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">form</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">binder</span><span class="p">.</span><span class="na">setBean</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span></code></pre></div>
+<ul>
+<li><code>binder.bind(campo, getter, setter)</code>: para mostrar usa
+  <code>getFirstName</code>; cuando el usuario escribe, usa <code>setFirstName</code>.</li>
+<li>El efecto es el <strong>puente</strong>: cada vez que cambia <code>editedCustomer</code>, el
+  Binder recibe ese cliente con <code>setBean</code> y llena los campos. Usa <code>get()</code>
+  porque está dentro de un efecto.</li>
+</ul>
+<p><strong>Guarda y mira:</strong> al hacer clic en distintas filas, el campo Nombre se
+llena con el nombre de cada cliente.</p>
+<div class="admonition tip">
+<p class="admonition-title"><code>setBean(null)</code> limpia el formulario</p>
+<p>Cuando no hay selección, <code>editedCustomer.get()</code> es <code>null</code> y
+<code>binder.setBean(null)</code> deja los campos vacíos. No hace falta un <code>if</code>.</p>
+</div>
+<h3 id="paso-9-el-resto-de-los-campos-con-validacion">Paso 9: El resto de los campos, con validación<a class="headerlink" href="#paso-9-el-resto-de-los-campos-con-validacion" title="Permanent link">&para;</a></h3>
+<p>Reemplaza el <code>binder.bind(firstName, ...)</code> por la versión completa:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">firstName</span><span class="p">)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">        </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El nombre es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">        </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setFirstName</span><span class="p">);</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">        </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El apellido es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">        </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setLastName</span><span class="p">);</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">        </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El correo es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">        </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getEmail</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setEmail</span><span class="p">);</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">        </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"Selecciona un estado"</span><span class="p">)</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">        </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getStatus</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setStatus</span><span class="p">);</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="n">binder</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">customerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">getCustomerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setCustomerSince</span><span class="p">);</span>
+</span></code></pre></div>
+<p><code>bind(...)</code> directo es la forma corta. Cuando necesitas configurar algo
+más (validación, conversión), usas la forma larga:</p>
+<table>
+<thead>
+<tr>
+<th>Paso de la cadena</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>forField(campo)</code></td>
+<td>Empieza a configurar ese campo</td>
+</tr>
+<tr>
+<td><code>.asRequired("mensaje")</code></td>
+<td>Lo marca obligatorio: muestra un asterisco, y si queda vacío muestra el mensaje y <strong>no</strong> escribe el valor en el objeto</td>
+</tr>
+<tr>
+<td><code>.bind(getter, setter)</code></td>
+<td>Termina la configuración y conecta el campo con la propiedad</td>
+</tr>
+</tbody>
+</table>
+<p><code>customerSince</code> usa la forma corta y <strong>no</strong> es obligatorio a propósito:
+un prospecto todavía no tiene fecha de alta.</p>
+<p><strong>Guarda y mira:</strong></p>
+<ol>
+<li>Los campos obligatorios muestran un asterisco.</li>
+<li>Selecciona a Alicia y borra su nombre: el campo se marca en rojo y
+   aparece "El nombre es obligatorio".</li>
+<li>Escribe un correo sin <code>@</code>: <code>EmailField</code> también lo marca inválido.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Por ahora los cambios se aplican solos</p>
+<p>Con <code>setBean</code>, cada cambio válido se escribe <strong>de inmediato</strong> en el
+cliente. Si cambias el nombre de Alicia y seleccionas otra fila, el
+Grid ya muestra el nombre nuevo. Ese es justamente el problema que
+resolvemos en la Sesión 5.</p>
+</div>
+<details class="tip">
+<summary>Para profundizar: validadores propios</summary>
+<p>Antes de escribir uno, revisa los que Vaadin ya trae:
+<code>EmailValidator</code>, <code>StringLengthValidator</code>, <code>RegexpValidator</code>,
+<code>IntegerRangeValidator</code>, entre otros. Un validador propio es una
+función que devuelve <code>ValidationResult</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.binder.ValidationResult</span><span class="p">;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">        </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El apellido es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">        </span><span class="p">.</span><span class="na">withValidator</span><span class="p">((</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">length</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">                </span><span class="o">?</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">ok</span><span class="p">()</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">                </span><span class="p">:</span><span class="w"> </span><span class="n">ValidationResult</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"Mínimo 2 caracteres"</span><span class="p">))</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">        </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setLastName</span><span class="p">);</span>
+</span></code></pre></div>
+<p><code>withValidator</code> va <strong>antes</strong> de <code>bind</code>. Puedes encadenar varios.</p>
+</details>
+<p><img alt="Formulario lleno con los datos del cliente y un error de validación en Nombre" src="images/s4-binder-validacion.png" /></p>
+<hr />
+<h2 id="codigo-completo-al-cierre-de-la-sesion">Código completo al cierre de la sesión<a class="headerlink" href="#codigo-completo-al-cierre-de-la-sesion" title="Permanent link">&para;</a></h2>
+<details class="example">
+<summary>CustomerListView.java</summary>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.crm.ui</span><span class="p">;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.baqjug.crm.backend.Customer</span><span class="p">;</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.baqjug.crm.backend.Status</span><span class="p">;</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.combobox.ComboBox</span><span class="p">;</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.datepicker.DatePicker</span><span class="p">;</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.formlayout.FormLayout</span><span class="p">;</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.grid.Grid</span><span class="p">;</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.orderedlayout.HorizontalLayout</span><span class="p">;</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.orderedlayout.VerticalLayout</span><span class="p">;</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.textfield.EmailField</span><span class="p">;</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.textfield.TextField</span><span class="p">;</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.binder.Binder</span><span class="p">;</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.value.ValueChangeMode</span><span class="p">;</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.router.Route</span><span class="p">;</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.signals.Signal</span><span class="p">;</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.signals.local.ValueSignal</span><span class="p">;</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.LocalDate</span><span class="p">;</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.ArrayList</span><span class="p">;</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.stream.Collectors</span><span class="p">;</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="nd">@Route</span><span class="p">(</span><span class="s">"customers"</span><span class="p">)</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CustomerListView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">VerticalLayout</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSampleCustomers</span><span class="p">();</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">searchValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">editedCustomer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">binder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CustomerListView</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="w">        </span><span class="n">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createSearch</span><span class="p">();</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="w">        </span><span class="n">configureGrid</span><span class="p">();</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createForm</span><span class="p">();</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">form</span><span class="p">);</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="w">        </span><span class="n">content</span><span class="p">.</span><span class="na">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">);</span>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">TextField</span><span class="w"> </span><span class="nf">createSearch</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">();</span>
+</span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">setPlaceholder</span><span class="p">(</span><span class="s">"Buscar"</span><span class="p">);</span>
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">setValueChangeMode</span><span class="p">(</span><span class="n">ValueChangeMode</span><span class="p">.</span><span class="na">LAZY</span><span class="p">);</span>
+</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">bindValue</span><span class="p">(</span><span class="n">searchValue</span><span class="p">,</span><span class="w"> </span><span class="n">searchValue</span><span class="p">::</span><span class="n">set</span><span class="p">);</span>
+</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a><span class="w">        </span><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">updateCustomerList</span><span class="p">(</span><span class="n">searchValue</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">search</span><span class="p">;</span>
+</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-52"><a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a>
+</span><span id="__span-14-53"><a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">configureGrid</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-54"><a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-14-55"><a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Apellido"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-14-56"><a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getEmail</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Correo"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-14-57"><a id="__codelineno-14-57" name="__codelineno-14-57" href="#__codelineno-14-57"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getStatus</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Estado"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-14-58"><a id="__codelineno-14-58" name="__codelineno-14-58" href="#__codelineno-14-58"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getCustomerSince</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Cliente desde"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-14-59"><a id="__codelineno-14-59" name="__codelineno-14-59" href="#__codelineno-14-59"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-14-60"><a id="__codelineno-14-60" name="__codelineno-14-60" href="#__codelineno-14-60"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">asSingleSelect</span><span class="p">().</span><span class="na">bindValue</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">,</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">::</span><span class="n">set</span><span class="p">);</span>
+</span><span id="__span-14-61"><a id="__codelineno-14-61" name="__codelineno-14-61" href="#__codelineno-14-61"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-62"><a id="__codelineno-14-62" name="__codelineno-14-62" href="#__codelineno-14-62"></a>
+</span><span id="__span-14-63"><a id="__codelineno-14-63" name="__codelineno-14-63" href="#__codelineno-14-63"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">FormLayout</span><span class="w"> </span><span class="nf">createForm</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-64"><a id="__codelineno-14-64" name="__codelineno-14-64" href="#__codelineno-14-64"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">firstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">);</span>
+</span><span id="__span-14-65"><a id="__codelineno-14-65" name="__codelineno-14-65" href="#__codelineno-14-65"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">lastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Apellido"</span><span class="p">);</span>
+</span><span id="__span-14-66"><a id="__codelineno-14-66" name="__codelineno-14-66" href="#__codelineno-14-66"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EmailField</span><span class="p">(</span><span class="s">"Correo"</span><span class="p">);</span>
+</span><span id="__span-14-67"><a id="__codelineno-14-67" name="__codelineno-14-67" href="#__codelineno-14-67"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ComboBox</span><span class="o">&lt;</span><span class="n">Status</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"Estado"</span><span class="p">);</span>
+</span><span id="__span-14-68"><a id="__codelineno-14-68" name="__codelineno-14-68" href="#__codelineno-14-68"></a><span class="w">        </span><span class="n">status</span><span class="p">.</span><span class="na">setItems</span><span class="p">(</span><span class="n">Status</span><span class="p">.</span><span class="na">values</span><span class="p">());</span>
+</span><span id="__span-14-69"><a id="__codelineno-14-69" name="__codelineno-14-69" href="#__codelineno-14-69"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">customerSince</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatePicker</span><span class="p">(</span><span class="s">"Cliente desde"</span><span class="p">);</span>
+</span><span id="__span-14-70"><a id="__codelineno-14-70" name="__codelineno-14-70" href="#__codelineno-14-70"></a>
+</span><span id="__span-14-71"><a id="__codelineno-14-71" name="__codelineno-14-71" href="#__codelineno-14-71"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">firstName</span><span class="p">)</span>
+</span><span id="__span-14-72"><a id="__codelineno-14-72" name="__codelineno-14-72" href="#__codelineno-14-72"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El nombre es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-14-73"><a id="__codelineno-14-73" name="__codelineno-14-73" href="#__codelineno-14-73"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setFirstName</span><span class="p">);</span>
+</span><span id="__span-14-74"><a id="__codelineno-14-74" name="__codelineno-14-74" href="#__codelineno-14-74"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
+</span><span id="__span-14-75"><a id="__codelineno-14-75" name="__codelineno-14-75" href="#__codelineno-14-75"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El apellido es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-14-76"><a id="__codelineno-14-76" name="__codelineno-14-76" href="#__codelineno-14-76"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setLastName</span><span class="p">);</span>
+</span><span id="__span-14-77"><a id="__codelineno-14-77" name="__codelineno-14-77" href="#__codelineno-14-77"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+</span><span id="__span-14-78"><a id="__codelineno-14-78" name="__codelineno-14-78" href="#__codelineno-14-78"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El correo es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-14-79"><a id="__codelineno-14-79" name="__codelineno-14-79" href="#__codelineno-14-79"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getEmail</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setEmail</span><span class="p">);</span>
+</span><span id="__span-14-80"><a id="__codelineno-14-80" name="__codelineno-14-80" href="#__codelineno-14-80"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</span><span id="__span-14-81"><a id="__codelineno-14-81" name="__codelineno-14-81" href="#__codelineno-14-81"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"Selecciona un estado"</span><span class="p">)</span>
+</span><span id="__span-14-82"><a id="__codelineno-14-82" name="__codelineno-14-82" href="#__codelineno-14-82"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getStatus</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setStatus</span><span class="p">);</span>
+</span><span id="__span-14-83"><a id="__codelineno-14-83" name="__codelineno-14-83" href="#__codelineno-14-83"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">customerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">getCustomerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setCustomerSince</span><span class="p">);</span>
+</span><span id="__span-14-84"><a id="__codelineno-14-84" name="__codelineno-14-84" href="#__codelineno-14-84"></a>
+</span><span id="__span-14-85"><a id="__codelineno-14-85" name="__codelineno-14-85" href="#__codelineno-14-85"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FormLayout</span><span class="p">(</span><span class="n">firstName</span><span class="p">,</span><span class="w"> </span><span class="n">lastName</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">customerSince</span><span class="p">);</span>
+</span><span id="__span-14-86"><a id="__codelineno-14-86" name="__codelineno-14-86" href="#__codelineno-14-86"></a><span class="w">        </span><span class="n">form</span><span class="p">.</span><span class="na">setWidth</span><span class="p">(</span><span class="s">"300px"</span><span class="p">);</span>
+</span><span id="__span-14-87"><a id="__codelineno-14-87" name="__codelineno-14-87" href="#__codelineno-14-87"></a><span class="w">        </span><span class="n">form</span><span class="p">.</span><span class="na">bindVisible</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">));</span>
+</span><span id="__span-14-88"><a id="__codelineno-14-88" name="__codelineno-14-88" href="#__codelineno-14-88"></a><span class="w">        </span><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">form</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">binder</span><span class="p">.</span><span class="na">setBean</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span><span id="__span-14-89"><a id="__codelineno-14-89" name="__codelineno-14-89" href="#__codelineno-14-89"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">form</span><span class="p">;</span>
+</span><span id="__span-14-90"><a id="__codelineno-14-90" name="__codelineno-14-90" href="#__codelineno-14-90"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-91"><a id="__codelineno-14-91" name="__codelineno-14-91" href="#__codelineno-14-91"></a>
+</span><span id="__span-14-92"><a id="__codelineno-14-92" name="__codelineno-14-92" href="#__codelineno-14-92"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateCustomerList</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-93"><a id="__codelineno-14-93" name="__codelineno-14-93" href="#__codelineno-14-93"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">;</span>
+</span><span id="__span-14-94"><a id="__codelineno-14-94" name="__codelineno-14-94" href="#__codelineno-14-94"></a>
+</span><span id="__span-14-95"><a id="__codelineno-14-95" name="__codelineno-14-95" href="#__codelineno-14-95"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">query</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-96"><a id="__codelineno-14-96" name="__codelineno-14-96" href="#__codelineno-14-96"></a><span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">();</span>
+</span><span id="__span-14-97"><a id="__codelineno-14-97" name="__codelineno-14-97" href="#__codelineno-14-97"></a><span class="w">            </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+</span><span id="__span-14-98"><a id="__codelineno-14-98" name="__codelineno-14-98" href="#__codelineno-14-98"></a><span class="w">                    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getFirstName</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-14-99"><a id="__codelineno-14-99" name="__codelineno-14-99" href="#__codelineno-14-99"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getLastName</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-14-100"><a id="__codelineno-14-100" name="__codelineno-14-100" href="#__codelineno-14-100"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getEmail</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-14-101"><a id="__codelineno-14-101" name="__codelineno-14-101" href="#__codelineno-14-101"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getStatus</span><span class="p">().</span><span class="na">name</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">))</span>
+</span><span id="__span-14-102"><a id="__codelineno-14-102" name="__codelineno-14-102" href="#__codelineno-14-102"></a><span class="w">                    </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toCollection</span><span class="p">(</span><span class="n">ArrayList</span><span class="p">::</span><span class="k">new</span><span class="p">));</span>
+</span><span id="__span-14-103"><a id="__codelineno-14-103" name="__codelineno-14-103" href="#__codelineno-14-103"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-14-104"><a id="__codelineno-14-104" name="__codelineno-14-104" href="#__codelineno-14-104"></a>
+</span><span id="__span-14-105"><a id="__codelineno-14-105" name="__codelineno-14-105" href="#__codelineno-14-105"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">setItems</span><span class="p">(</span><span class="n">filtered</span><span class="p">);</span>
+</span><span id="__span-14-106"><a id="__codelineno-14-106" name="__codelineno-14-106" href="#__codelineno-14-106"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-107"><a id="__codelineno-14-107" name="__codelineno-14-107" href="#__codelineno-14-107"></a>
+</span><span id="__span-14-108"><a id="__codelineno-14-108" name="__codelineno-14-108" href="#__codelineno-14-108"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getSampleCustomers</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-109"><a id="__codelineno-14-109" name="__codelineno-14-109" href="#__codelineno-14-109"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+</span><span id="__span-14-110"><a id="__codelineno-14-110" name="__codelineno-14-110" href="#__codelineno-14-110"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">Customer</span><span class="p">(</span><span class="s">"Alicia"</span><span class="p">,</span><span class="w"> </span><span class="s">"Nieto"</span><span class="p">,</span><span class="w"> </span><span class="s">"alicia.nieto@meridian.co"</span><span class="p">,</span>
+</span><span id="__span-14-111"><a id="__codelineno-14-111" name="__codelineno-14-111" href="#__codelineno-14-111"></a><span class="w">                        </span><span class="n">Status</span><span class="p">.</span><span class="na">CUSTOMER</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDate</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">)),</span>
+</span><span id="__span-14-112"><a id="__codelineno-14-112" name="__codelineno-14-112" href="#__codelineno-14-112"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">Customer</span><span class="p">(</span><span class="s">"Boris"</span><span class="p">,</span><span class="w"> </span><span class="s">"Martínez"</span><span class="p">,</span><span class="w"> </span><span class="s">"boris.martinez@bluefern.io"</span><span class="p">,</span>
+</span><span id="__span-14-113"><a id="__codelineno-14-113" name="__codelineno-14-113" href="#__codelineno-14-113"></a><span class="w">                        </span><span class="n">Status</span><span class="p">.</span><span class="na">CUSTOMER</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDate</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)),</span>
+</span><span id="__span-14-114"><a id="__codelineno-14-114" name="__codelineno-14-114" href="#__codelineno-14-114"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">Customer</span><span class="p">(</span><span class="s">"Carolina"</span><span class="p">,</span><span class="w"> </span><span class="s">"Schmidt"</span><span class="p">,</span><span class="w"> </span><span class="s">"carolina.schmidt@meridian.co"</span><span class="p">,</span>
+</span><span id="__span-14-115"><a id="__codelineno-14-115" name="__codelineno-14-115" href="#__codelineno-14-115"></a><span class="w">                        </span><span class="n">Status</span><span class="p">.</span><span class="na">PROSPECT</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
+</span><span id="__span-14-116"><a id="__codelineno-14-116" name="__codelineno-14-116" href="#__codelineno-14-116"></a><span class="w">        </span><span class="p">));</span>
+</span><span id="__span-14-117"><a id="__codelineno-14-117" name="__codelineno-14-117" href="#__codelineno-14-117"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-118"><a id="__codelineno-14-118" name="__codelineno-14-118" href="#__codelineno-14-118"></a><span class="p">}</span>
+</span></code></pre></div>
+</details>
+<hr />
+<h2 id="verifica">Verifica<a class="headerlink" href="#verifica" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Sin selección no se ve el formulario.</li>
+<li>[ ] Al hacer clic en una fila aparece el formulario con los datos de ese cliente.</li>
+<li>[ ] Al cambiar de fila, el formulario cambia de cliente.</li>
+<li>[ ] Nombre, apellido, correo y estado tienen asterisco; "Cliente desde" no.</li>
+<li>[ ] Borrar el nombre muestra "El nombre es obligatorio".</li>
+<li>[ ] El Grid sigue ocupando todo el alto.</li>
+</ul>
+<h2 id="errores-comunes">Errores comunes<a class="headerlink" href="#errores-comunes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El Grid se encoge al agregar el formulario</td>
+<td><code>content</code> no tiene tamaño</td>
+<td><code>content.setSizeFull()</code></td>
+</tr>
+<tr>
+<td>El formulario ocupa media pantalla</td>
+<td>Falta el ancho fijo</td>
+<td><code>form.setWidth("300px")</code></td>
+</tr>
+<tr>
+<td>El formulario no se oculta</td>
+<td>Falta <code>bindVisible</code>, o se aplicó a otro componente</td>
+<td><code>form.bindVisible(editedCustomer.map(c -&gt; c != null))</code></td>
+</tr>
+<tr>
+<td>Los campos no se llenan</td>
+<td>Falta el efecto con <code>setBean</code>, o usa <code>peek()</code> en vez de <code>get()</code></td>
+<td>Dentro del efecto, <code>editedCustomer.get()</code></td>
+</tr>
+<tr>
+<td><code>ComboBox</code> vacío</td>
+<td>Faltó <code>status.setItems(Status.values())</code></td>
+<td>Agrégalo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="que-resolvimos">Qué resolvimos<a class="headerlink" href="#que-resolvimos" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>La selección también es un signal.</strong> El mismo patrón de la búsqueda
+  (signal + <code>bindValue</code> + efecto) ahora conecta Grid y formulario.</li>
+<li><strong>Se pueden enlazar propiedades, no solo valores.</strong> <code>bindVisible</code> con
+  un signal derivado (<code>map</code>) muestra u oculta el formulario.</li>
+<li><strong>Binder conecta formulario y objeto</strong>, en las dos direcciones, y
+  valida antes de escribir.</li>
+<li><strong>El componente correcto para cada tipo de dato</strong> ahorra validaciones:
+  <code>EmailField</code>, <code>ComboBox</code>, <code>DatePicker</code>.</li>
+</ul>
+<h2 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: details form bound to grid selection with binder"</span>
+</span></code></pre></div>
+<p>Sigue con la <a href="../sesion_5/">Sesión 5</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/geovannymcode" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/geovannycode/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

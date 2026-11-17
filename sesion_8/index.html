@@ -1,0 +1,1793 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Taller de 70 minutos: un CRM con Vaadin Flow 25, Signals y Spring Boot, todo en Java.">
+      
+      
+        <meta name="author" content="Geovanny Mendoza">
+      
+      
+        <link rel="canonical" href="https://geovannymcode.github.io/stockpilot-vaadin-baqjug/sesion_8/">
+      
+      
+        <link rel="prev" href="../sesion_7/">
+      
+      
+        <link rel="next" href="../referencias/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Sesión 8 — Estilos, tema Aura y cierre - CRM interno en Java puro con Vaadin Flow</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sesion-8-estilos-tema-aura-y-cierre" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href=".." title="CRM interno en Java puro con Vaadin Flow" class="md-header__button md-logo" aria-label="CRM interno en Java puro con Vaadin Flow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CRM interno en Java puro con Vaadin Flow
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sesión 8 — Estilos, tema Aura y cierre
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geovannymcode/stockpilot-vaadin-baqjug" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geovannymcode/stockpilot-vaadin-baqjug
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sesion_0/" class="md-tabs__link">
+          
+  
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../referencias/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Referencias
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CRM interno en Java puro con Vaadin Flow" class="md-nav__button md-logo" aria-label="CRM interno en Java puro con Vaadin Flow" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CRM interno en Java puro con Vaadin Flow
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geovannymcode/stockpilot-vaadin-baqjug" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geovannymcode/stockpilot-vaadin-baqjug
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 0 — Preparación y apertura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 1 — Primera vista, componentes y layouts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 2 — Mostrar datos en un Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 3 — Filtrar con Signals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 4 — Formulario, Binder y validación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 5 — Guardar, descartar, crear y eliminar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 6 — Conectar la base de datos real
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesion_7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 7 — App shell y navegación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 8 — Estilos, tema Aura y cierre
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesión 8 — Estilos, tema Aura y cierre
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#de-donde-partimos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De dónde partimos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#las-tres-herramientas-de-estilo-de-menor-a-mayor-esfuerzo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Las tres herramientas de estilo, de menor a mayor esfuerzo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-1-variantes-de-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 1: Variantes de tema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte 1: Variantes de tema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#el-problema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El problema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-botones-primarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Botones primarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-eliminar-en-rojo-sin-borde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Eliminar en rojo, sin borde
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-el-boton-del-dialogo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: El botón del diálogo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-un-ajuste-puntual-de-espaciado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: Un ajuste puntual de espaciado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-2-css-propio-y-modo-clarooscuro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 2: CSS propio y modo claro/oscuro
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte 2: CSS propio y modo claro/oscuro">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#el-problema_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El problema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-una-clase-css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5: Una clase CSS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-seguir-el-modo-del-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6: Seguir el modo del sistema operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aura-y-lumo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aura y Lumo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-3-marca-propia-con-el-editor-de-temas-de-aura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 3: Marca propia con el editor de temas de Aura
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte 3: Marca propia con el editor de temas de Aura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#el-problema_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El problema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concepto-variables-css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concepto: variables CSS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-7-generar-y-pegar-el-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 7: Generar y pegar el tema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-8-fijar-el-modo-oscuro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 8: Fijar el modo oscuro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codigo-completo-al-cierre-del-taller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Código completo al cierre del taller
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errores-comunes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errores comunes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-resolvimos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué resolvimos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cierre-3-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cierre (3 min)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cierre (3 min)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#para-seguir-aprendiendo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para seguir aprendiendo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../referencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sesion-8-estilos-tema-aura-y-cierre">Sesión 8: Estilos, tema Aura y cierre<a class="headerlink" href="#sesion-8-estilos-tema-aura-y-cierre" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">Resumen de la sesión</p>
+<ul>
+<li><strong>Tiempo en vivo:</strong> 11 min (8 de estilos + 3 de cierre) · Video de
+  referencia: 51:42</li>
+<li><strong>Al terminar vas a tener:</strong> botones con jerarquía visual, CSS
+  propio, modo claro/oscuro y un tema con los colores de tu marca.</li>
+<li><strong>Conceptos nuevos:</strong> variantes de tema, <code>getStyle()</code>, clases CSS,
+  <code>styles.css</code>, <code>@ColorScheme</code>, temas Aura y Lumo, variables CSS.</li>
+</ul>
+</div>
+<hr />
+<h2 id="de-donde-partimos">De dónde partimos<a class="headerlink" href="#de-donde-partimos" title="Permanent link">&para;</a></h2>
+<p>La aplicación funciona de punta a punta: navegación, Grid, búsqueda,
+formulario, alta, edición y baja contra la base de datos. Pero todos los
+botones se ven iguales y la app usa los colores por defecto.</p>
+<h2 id="las-tres-herramientas-de-estilo-de-menor-a-mayor-esfuerzo">Las tres herramientas de estilo, de menor a mayor esfuerzo<a class="headerlink" href="#las-tres-herramientas-de-estilo-de-menor-a-mayor-esfuerzo" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Cuándo usarla</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Variantes de tema</strong></td>
+<td>Siempre primero: el componente ya trae la opción</td>
+<td>Botón primario, botón de error</td>
+</tr>
+<tr>
+<td><strong>CSS propio</strong></td>
+<td>No hay variante para lo que necesitas</td>
+<td>Poner en negrita el nombre de la app</td>
+</tr>
+<tr>
+<td><strong>Variables del tema</strong></td>
+<td>Cambiar el aspecto de <strong>toda</strong> la app de una vez</td>
+<td>Colores de marca</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="parte-1-variantes-de-tema">Parte 1: Variantes de tema<a class="headerlink" href="#parte-1-variantes-de-tema" title="Permanent link">&para;</a></h2>
+<h3 id="el-problema">El problema<a class="headerlink" href="#el-problema" title="Permanent link">&para;</a></h3>
+<p>Guardar, Descartar y Eliminar se ven idénticos. El usuario no distingue
+la acción principal de la peligrosa.</p>
+<h3 id="paso-1-botones-primarios">Paso 1: Botones primarios<a class="headerlink" href="#paso-1-botones-primarios" title="Permanent link">&para;</a></h3>
+<p>En <code>createToolbar()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">addBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">PRIMARY</span><span class="p">);</span>
+</span></code></pre></div>
+<p>En <code>createForm()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">saveBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">PRIMARY</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Import: <code>com.vaadin.flow.component.button.ButtonVariant</code>.</p>
+<p><strong>Guarda y mira:</strong> Guardar y + quedan con fondo de color. Son las
+acciones principales de cada zona.</p>
+<h3 id="paso-2-eliminar-en-rojo-sin-borde">Paso 2: Eliminar en rojo, sin borde<a class="headerlink" href="#paso-2-eliminar-en-rojo-sin-borde" title="Permanent link">&para;</a></h3>
+<p>En <code>createForm()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">deleteBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">TERTIARY</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Las variantes se <strong>combinan</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Efecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PRIMARY</code></td>
+<td>Fondo de color: la acción principal</td>
+</tr>
+<tr>
+<td><code>ERROR</code></td>
+<td>Color rojo: acción peligrosa</td>
+</tr>
+<tr>
+<td><code>TERTIARY</code></td>
+<td>Sin fondo ni borde: acción secundaria</td>
+</tr>
+</tbody>
+</table>
+<p><code>ERROR</code> + <code>TERTIARY</code> da un Eliminar rojo y discreto: se lee como
+peligroso, pero no compite con Guardar.</p>
+<div class="admonition note">
+<p class="admonition-title">Si vienes de Vaadin 24</p>
+<p>Las constantes ya no llevan el prefijo del tema: es
+<code>ButtonVariant.PRIMARY</code>, no <code>ButtonVariant.LUMO_PRIMARY</code>.</p>
+</div>
+<h3 id="paso-3-el-boton-del-dialogo">Paso 3: El botón del diálogo<a class="headerlink" href="#paso-3-el-boton-del-dialogo" title="Permanent link">&para;</a></h3>
+<p>En <code>confirmDelete()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dialog</span><span class="p">.</span><span class="na">setConfirmButtonTheme</span><span class="p">(</span><span class="s">"primary error"</span><span class="p">);</span>
+</span></code></pre></div>
+<p><code>ConfirmDialog</code> crea su propio botón, así que la variante se le pasa
+como texto. Ahora el botón "Eliminar" del diálogo es rojo, no azul.</p>
+<h3 id="paso-4-un-ajuste-puntual-de-espaciado">Paso 4: Un ajuste puntual de espaciado<a class="headerlink" href="#paso-4-un-ajuste-puntual-de-espaciado" title="Permanent link">&para;</a></h3>
+<p>En <code>createForm()</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">form</span><span class="p">.</span><span class="na">getStyle</span><span class="p">().</span><span class="na">setPaddingTop</span><span class="p">(</span><span class="s">"30px"</span><span class="p">);</span>
+</span></code></pre></div>
+<p><code>getStyle()</code> aplica CSS <strong>directamente</strong> a un componente desde Java.
+Sirve para casos puntuales: un solo padding no merece un archivo CSS. Si
+el mismo estilo se repite en varios lugares, va en la hoja de estilos.</p>
+<p><img alt="Guardar y + en color primario, Eliminar rojo sin borde, diálogo con botón rojo" src="images/s8-variantes.png" /></p>
+<hr />
+<h2 id="parte-2-css-propio-y-modo-clarooscuro">Parte 2: CSS propio y modo claro/oscuro<a class="headerlink" href="#parte-2-css-propio-y-modo-clarooscuro" title="Permanent link">&para;</a></h2>
+<h3 id="el-problema_1">El problema<a class="headerlink" href="#el-problema_1" title="Permanent link">&para;</a></h3>
+<p>Queremos el nombre de la app en negrita, y no existe una variante para
+eso. Además, la app ignora si el sistema operativo del usuario está en
+modo oscuro.</p>
+<h3 id="paso-5-una-clase-css">Paso 5: Una clase CSS<a class="headerlink" href="#paso-5-una-clase-css" title="Permanent link">&para;</a></h3>
+<p>En <code>MainLayout</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">appName</span><span class="p">.</span><span class="na">addClassNames</span><span class="p">(</span><span class="s">"app-name"</span><span class="p">);</span>
+</span></code></pre></div>
+<p>En <code>src/main/resources/META-INF/resources/styles.css</code>:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">.</span><span class="nc">app-name</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<ul>
+<li><code>addClassNames("app-name")</code> le pone la clase CSS <code>app-name</code> al
+  componente, igual que <code>class="app-name"</code> en HTML.</li>
+<li><code>styles.css</code> ya se carga desde la Sesión 0, por el
+  <code>@StyleSheet("styles.css")</code> de <code>Application</code>.</li>
+</ul>
+<p><strong>Guarda el CSS y mira:</strong> el cambio se ve <strong>sin reiniciar</strong>. Es CSS
+normal, sin un lenguaje propietario.</p>
+<h3 id="paso-6-seguir-el-modo-del-sistema-operativo">Paso 6: Seguir el modo del sistema operativo<a class="headerlink" href="#paso-6-seguir-el-modo-del-sistema-operativo" title="Permanent link">&para;</a></h3>
+<p>En <code>Application</code>, agrega la anotación:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.ColorScheme</span><span class="p">;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nd">@SpringBootApplication</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">LIGHT_DARK</span><span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LIGHT</code></td>
+<td>Siempre claro</td>
+</tr>
+<tr>
+<td><code>DARK</code></td>
+<td>Siempre oscuro</td>
+</tr>
+<tr>
+<td><code>LIGHT_DARK</code></td>
+<td>Sigue la preferencia del navegador o del sistema operativo</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Reinicia la aplicación</p>
+<p>Los cambios en <code>Application.java</code> no se aplican con <em>hotswap</em>.</p>
+</div>
+<p><strong>Mira:</strong> cambia tu sistema operativo a modo oscuro y la app lo sigue.
+Fondo, texto, Grid, campos y botones: todo cambia, porque el tema ya
+trae las dos versiones.</p>
+<h3 id="aura-y-lumo">Aura y Lumo<a class="headerlink" href="#aura-y-lumo" title="Permanent link">&para;</a></h3>
+<p>Vaadin incluye dos temas:</p>
+<table>
+<thead>
+<tr>
+<th>Tema</th>
+<th>Características</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Aura</strong></td>
+<td>El más reciente. Es el que usamos</td>
+</tr>
+<tr>
+<td><strong>Lumo</strong></td>
+<td>El tema clásico de Vaadin, más cuadrado</td>
+</tr>
+</tbody>
+</table>
+<p>Los dos soportan claro y oscuro. Para probar Lumo, cambia en
+<code>Application</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.lumo.Lumo</span><span class="p">;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Lumo</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span></code></pre></div>
+<p>y reinicia. Vuelve a <code>Aura.STYLESHEET</code> para seguir.</p>
+<p><img alt="Nombre de la app en negrita, la app en modo oscuro siguiendo al sistema" src="images/s8-css-modo-oscuro.png" /></p>
+<hr />
+<h2 id="parte-3-marca-propia-con-el-editor-de-temas-de-aura">Parte 3: Marca propia con el editor de temas de Aura<a class="headerlink" href="#parte-3-marca-propia-con-el-editor-de-temas-de-aura" title="Permanent link">&para;</a></h2>
+<h3 id="el-problema_2">El problema<a class="headerlink" href="#el-problema_2" title="Permanent link">&para;</a></h3>
+<p>Queremos los colores de nuestra marca. Cambiar a mano el color de cada
+botón, campo, ítem de menú y fila seleccionada sería interminable.</p>
+<h3 id="concepto-variables-css">Concepto: variables CSS<a class="headerlink" href="#concepto-variables-css" title="Permanent link">&para;</a></h3>
+<p>El tema Aura no tiene colores escritos componente por componente. Todos
+los componentes leen <strong>variables CSS</strong> compartidas, por ejemplo
+<code>--aura-accent-color-light</code>. Si cambias la variable una vez, el cambio
+se propaga a todos los componentes que la usan.</p>
+<h3 id="paso-7-generar-y-pegar-el-tema">Paso 7: Generar y pegar el tema<a class="headerlink" href="#paso-7-generar-y-pegar-el-tema" title="Permanent link">&para;</a></h3>
+<p>El editor de temas de Aura (ver la
+<a href="https://vaadin.com/docs/latest/styling/themes/aura">documentación de Aura</a>)
+te deja elegir en el navegador el color de acento, el tamaño de letra,
+la densidad y el contraste, y exporta un bloque de variables. Pégalo en
+<code>styles.css</code>, debajo de <code>.app-name</code>. Por ejemplo:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">html</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="nv">--aura-accent-color-dark</span><span class="p">:</span><span class="w"> </span><span class="mh">#22D3EE</span><span class="p">;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nv">--aura-accent-color-light</span><span class="p">:</span><span class="w"> </span><span class="mh">#7F22FE</span><span class="p">;</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nv">--aura-background-color-light</span><span class="p">:</span><span class="w"> </span><span class="mh">#FFFFFF</span><span class="p">;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nv">--aura-base-font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nv">--aura-base-size</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nv">--aura-content-color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nv">--aura-contrast-level</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="p">;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="nv">--aura-notification-color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="k">color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="p">}</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="nt">html</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="nv">--vaadin-button-font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="nv">--vaadin-grid-header-font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="p">}</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Qué controla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--aura-accent-color-light</code> / <code>-dark</code></td>
+<td>Color de acento en modo claro / oscuro (botones primarios, selección, ítem activo)</td>
+</tr>
+<tr>
+<td><code>--aura-base-font-size</code></td>
+<td>Tamaño de letra base</td>
+</tr>
+<tr>
+<td><code>--aura-base-size</code></td>
+<td>Densidad: tamaño de campos y botones</td>
+</tr>
+<tr>
+<td><code>--aura-contrast-level</code></td>
+<td>Contraste entre superficies</td>
+</tr>
+<tr>
+<td><code>--vaadin-button-font-weight</code></td>
+<td>Grosor de letra de <strong>todos</strong> los botones</td>
+</tr>
+<tr>
+<td><code>--vaadin-grid-header-font-weight</code></td>
+<td>Grosor de letra de los encabezados del Grid</td>
+</tr>
+</tbody>
+</table>
+<p>Las variables <code>--aura-*</code> son del tema; las <code>--vaadin-*</code> ajustan un tipo
+de componente en particular.</p>
+<h3 id="paso-8-fijar-el-modo-oscuro">Paso 8: Fijar el modo oscuro<a class="headerlink" href="#paso-8-fijar-el-modo-oscuro" title="Permanent link">&para;</a></h3>
+<p>Este tema de ejemplo está pensado para modo oscuro. En <code>Application</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">DARK</span><span class="p">)</span>
+</span></code></pre></div>
+<p>y reinicia.</p>
+<p><strong>Mira:</strong> no tocamos ni un componente, y botones, campos, diálogos, el
+Grid y el menú cambiaron juntos. Como el modo está fijado en oscuro, se
+ve el acento <code>--aura-accent-color-dark</code> (cian); el morado de
+<code>--aura-accent-color-light</code> queda listo por si vuelves a modo claro.</p>
+<div class="admonition note">
+<p class="admonition-title">Contraste</p>
+<p>Al elegir colores propios, verifica que el texto se siga leyendo
+bien. El <a href="https://webaim.org/resources/contrastchecker/">contrast checker de WebAIM</a>
+sirve para comprobarlo.</p>
+</div>
+<p><img alt="La app terminada con el tema de marca aplicado" src="images/s8-tema-marca.png" /></p>
+<hr />
+<h2 id="codigo-completo-al-cierre-del-taller">Código completo al cierre del taller<a class="headerlink" href="#codigo-completo-al-cierre-del-taller" title="Permanent link">&para;</a></h2>
+<details class="example">
+<summary>Application.java</summary>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.crm</span><span class="p">;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.dependency.StyleSheet</span><span class="p">;</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.AppShellConfigurator</span><span class="p">;</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.ColorScheme</span><span class="p">;</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.aura.Aura</span><span class="p">;</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="nd">@SpringBootApplication</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">DARK</span><span class="p">)</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">Application</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="p">}</span>
+</span></code></pre></div>
+</details>
+<details class="example">
+<summary>MainLayout.java</summary>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.crm.ui</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.applayout.AppLayout</span><span class="p">;</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.html.Span</span><span class="p">;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.icon.VaadinIcon</span><span class="p">;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.orderedlayout.HorizontalLayout</span><span class="p">;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.sidenav.SideNav</span><span class="p">;</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.sidenav.SideNavItem</span><span class="p">;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.router.Layout</span><span class="p">;</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="nd">@Layout</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainLayout</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">AppLayout</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MainLayout</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">        </span><span class="n">setPrimarySection</span><span class="p">(</span><span class="n">Section</span><span class="p">.</span><span class="na">DRAWER</span><span class="p">);</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">logo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VaadinIcon</span><span class="p">.</span><span class="na">VAADIN_H</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">appName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Span</span><span class="p">(</span><span class="s">"CRM Interno"</span><span class="p">);</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">        </span><span class="n">appName</span><span class="p">.</span><span class="na">addClassNames</span><span class="p">(</span><span class="s">"app-name"</span><span class="p">);</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">logo</span><span class="p">,</span><span class="w"> </span><span class="n">appName</span><span class="p">);</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">        </span><span class="n">header</span><span class="p">.</span><span class="na">setPadding</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">nav</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SideNav</span><span class="p">();</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a><span class="w">        </span><span class="n">nav</span><span class="p">.</span><span class="na">addItem</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SideNavItem</span><span class="p">(</span><span class="s">"Inicio"</span><span class="p">,</span><span class="w"> </span><span class="n">HomeView</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">VaadinIcon</span><span class="p">.</span><span class="na">HOME</span><span class="p">.</span><span class="na">create</span><span class="p">()));</span>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="w">        </span><span class="n">nav</span><span class="p">.</span><span class="na">addItem</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SideNavItem</span><span class="p">(</span><span class="s">"Clientes"</span><span class="p">,</span><span class="w"> </span><span class="n">CustomerListView</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">VaadinIcon</span><span class="p">.</span><span class="na">USER</span><span class="p">.</span><span class="na">create</span><span class="p">()));</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">        </span><span class="n">addToDrawer</span><span class="p">(</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">nav</span><span class="p">);</span>
+</span><span id="__span-12-28"><a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-12-29"><a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a><span class="p">}</span>
+</span></code></pre></div>
+</details>
+<details class="example">
+<summary>CustomerListView.java</summary>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.crm.ui</span><span class="p">;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.baqjug.crm.backend.Customer</span><span class="p">;</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.baqjug.crm.backend.CustomerService</span><span class="p">;</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.baqjug.crm.backend.Status</span><span class="p">;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.button.Button</span><span class="p">;</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.button.ButtonVariant</span><span class="p">;</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.combobox.ComboBox</span><span class="p">;</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.confirmdialog.ConfirmDialog</span><span class="p">;</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.datepicker.DatePicker</span><span class="p">;</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.formlayout.FormLayout</span><span class="p">;</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.grid.Grid</span><span class="p">;</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.html.H3</span><span class="p">;</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.icon.VaadinIcon</span><span class="p">;</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.orderedlayout.HorizontalLayout</span><span class="p">;</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.orderedlayout.VerticalLayout</span><span class="p">;</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.textfield.EmailField</span><span class="p">;</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.textfield.TextField</span><span class="p">;</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.binder.Binder</span><span class="p">;</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.binder.ValidationException</span><span class="p">;</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.data.value.ValueChangeMode</span><span class="p">;</span>
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.router.Route</span><span class="p">;</span>
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.signals.Signal</span><span class="p">;</span>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.signals.local.ValueSignal</span><span class="p">;</span>
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.ArrayList</span><span class="p">;</span>
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.stream.Collectors</span><span class="p">;</span>
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>
+</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a><span class="nd">@Route</span><span class="p">(</span><span class="s">"customers"</span><span class="p">)</span>
+</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CustomerListView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">VerticalLayout</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>
+</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CustomerService</span><span class="w"> </span><span class="n">customerService</span><span class="p">;</span>
+</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>
+</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">searchValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+</span><span id="__span-13-35"><a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">editedCustomer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span id="__span-13-36"><a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">binder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Binder</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span><span id="__span-13-37"><a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>
+</span><span id="__span-13-38"><a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CustomerListView</span><span class="p">(</span><span class="n">CustomerService</span><span class="w"> </span><span class="n">customerService</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-39"><a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">customerService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customerService</span><span class="p">;</span>
+</span><span id="__span-13-40"><a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>
+</span><span id="__span-13-41"><a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a><span class="w">        </span><span class="n">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-13-42"><a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">toolbar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createToolbar</span><span class="p">();</span>
+</span><span id="__span-13-43"><a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a><span class="w">        </span><span class="n">configureGrid</span><span class="p">();</span>
+</span><span id="__span-13-44"><a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createForm</span><span class="p">();</span>
+</span><span id="__span-13-45"><a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a>
+</span><span id="__span-13-46"><a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">form</span><span class="p">);</span>
+</span><span id="__span-13-47"><a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a><span class="w">        </span><span class="n">content</span><span class="p">.</span><span class="na">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-13-48"><a id="__codelineno-13-48" name="__codelineno-13-48" href="#__codelineno-13-48"></a>
+</span><span id="__span-13-49"><a id="__codelineno-13-49" name="__codelineno-13-49" href="#__codelineno-13-49"></a><span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">toolbar</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">);</span>
+</span><span id="__span-13-50"><a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-51"><a id="__codelineno-13-51" name="__codelineno-13-51" href="#__codelineno-13-51"></a>
+</span><span id="__span-13-52"><a id="__codelineno-13-52" name="__codelineno-13-52" href="#__codelineno-13-52"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="w"> </span><span class="nf">createToolbar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-53"><a id="__codelineno-13-53" name="__codelineno-13-53" href="#__codelineno-13-53"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">H3</span><span class="p">(</span><span class="s">"Clientes"</span><span class="p">);</span>
+</span><span id="__span-13-54"><a id="__codelineno-13-54" name="__codelineno-13-54" href="#__codelineno-13-54"></a>
+</span><span id="__span-13-55"><a id="__codelineno-13-55" name="__codelineno-13-55" href="#__codelineno-13-55"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">();</span>
+</span><span id="__span-13-56"><a id="__codelineno-13-56" name="__codelineno-13-56" href="#__codelineno-13-56"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">setPlaceholder</span><span class="p">(</span><span class="s">"Buscar"</span><span class="p">);</span>
+</span><span id="__span-13-57"><a id="__codelineno-13-57" name="__codelineno-13-57" href="#__codelineno-13-57"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">setValueChangeMode</span><span class="p">(</span><span class="n">ValueChangeMode</span><span class="p">.</span><span class="na">LAZY</span><span class="p">);</span>
+</span><span id="__span-13-58"><a id="__codelineno-13-58" name="__codelineno-13-58" href="#__codelineno-13-58"></a><span class="w">        </span><span class="n">search</span><span class="p">.</span><span class="na">bindValue</span><span class="p">(</span><span class="n">searchValue</span><span class="p">,</span><span class="w"> </span><span class="n">searchValue</span><span class="p">::</span><span class="n">set</span><span class="p">);</span>
+</span><span id="__span-13-59"><a id="__codelineno-13-59" name="__codelineno-13-59" href="#__codelineno-13-59"></a><span class="w">        </span><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">updateCustomerList</span><span class="p">(</span><span class="n">searchValue</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span><span id="__span-13-60"><a id="__codelineno-13-60" name="__codelineno-13-60" href="#__codelineno-13-60"></a>
+</span><span id="__span-13-61"><a id="__codelineno-13-61" name="__codelineno-13-61" href="#__codelineno-13-61"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">addBtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Button</span><span class="p">(</span><span class="n">VaadinIcon</span><span class="p">.</span><span class="na">PLUS</span><span class="p">.</span><span class="na">create</span><span class="p">());</span>
+</span><span id="__span-13-62"><a id="__codelineno-13-62" name="__codelineno-13-62" href="#__codelineno-13-62"></a><span class="w">        </span><span class="n">addBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">PRIMARY</span><span class="p">);</span>
+</span><span id="__span-13-63"><a id="__codelineno-13-63" name="__codelineno-13-63" href="#__codelineno-13-63"></a><span class="w">        </span><span class="n">addBtn</span><span class="p">.</span><span class="na">addClickListener</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">addCustomer</span><span class="p">());</span>
+</span><span id="__span-13-64"><a id="__codelineno-13-64" name="__codelineno-13-64" href="#__codelineno-13-64"></a>
+</span><span id="__span-13-65"><a id="__codelineno-13-65" name="__codelineno-13-65" href="#__codelineno-13-65"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">toolbar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="n">addBtn</span><span class="p">);</span>
+</span><span id="__span-13-66"><a id="__codelineno-13-66" name="__codelineno-13-66" href="#__codelineno-13-66"></a><span class="w">        </span><span class="n">toolbar</span><span class="p">.</span><span class="na">setWidthFull</span><span class="p">();</span>
+</span><span id="__span-13-67"><a id="__codelineno-13-67" name="__codelineno-13-67" href="#__codelineno-13-67"></a><span class="w">        </span><span class="n">toolbar</span><span class="p">.</span><span class="na">setFlexGrow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="p">);</span>
+</span><span id="__span-13-68"><a id="__codelineno-13-68" name="__codelineno-13-68" href="#__codelineno-13-68"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">toolbar</span><span class="p">;</span>
+</span><span id="__span-13-69"><a id="__codelineno-13-69" name="__codelineno-13-69" href="#__codelineno-13-69"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-70"><a id="__codelineno-13-70" name="__codelineno-13-70" href="#__codelineno-13-70"></a>
+</span><span id="__span-13-71"><a id="__codelineno-13-71" name="__codelineno-13-71" href="#__codelineno-13-71"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">configureGrid</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-72"><a id="__codelineno-13-72" name="__codelineno-13-72" href="#__codelineno-13-72"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-73"><a id="__codelineno-13-73" name="__codelineno-13-73" href="#__codelineno-13-73"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Apellido"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-74"><a id="__codelineno-13-74" name="__codelineno-13-74" href="#__codelineno-13-74"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getEmail</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Correo"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-75"><a id="__codelineno-13-75" name="__codelineno-13-75" href="#__codelineno-13-75"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getStatus</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Estado"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-76"><a id="__codelineno-13-76" name="__codelineno-13-76" href="#__codelineno-13-76"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getCustomerSince</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Cliente desde"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-77"><a id="__codelineno-13-77" name="__codelineno-13-77" href="#__codelineno-13-77"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">setSizeFull</span><span class="p">();</span>
+</span><span id="__span-13-78"><a id="__codelineno-13-78" name="__codelineno-13-78" href="#__codelineno-13-78"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">asSingleSelect</span><span class="p">().</span><span class="na">bindValue</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">,</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">::</span><span class="n">set</span><span class="p">);</span>
+</span><span id="__span-13-79"><a id="__codelineno-13-79" name="__codelineno-13-79" href="#__codelineno-13-79"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-80"><a id="__codelineno-13-80" name="__codelineno-13-80" href="#__codelineno-13-80"></a>
+</span><span id="__span-13-81"><a id="__codelineno-13-81" name="__codelineno-13-81" href="#__codelineno-13-81"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">FormLayout</span><span class="w"> </span><span class="nf">createForm</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-82"><a id="__codelineno-13-82" name="__codelineno-13-82" href="#__codelineno-13-82"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">firstName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">);</span>
+</span><span id="__span-13-83"><a id="__codelineno-13-83" name="__codelineno-13-83" href="#__codelineno-13-83"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">lastName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TextField</span><span class="p">(</span><span class="s">"Apellido"</span><span class="p">);</span>
+</span><span id="__span-13-84"><a id="__codelineno-13-84" name="__codelineno-13-84" href="#__codelineno-13-84"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EmailField</span><span class="p">(</span><span class="s">"Correo"</span><span class="p">);</span>
+</span><span id="__span-13-85"><a id="__codelineno-13-85" name="__codelineno-13-85" href="#__codelineno-13-85"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ComboBox</span><span class="o">&lt;</span><span class="n">Status</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"Estado"</span><span class="p">);</span>
+</span><span id="__span-13-86"><a id="__codelineno-13-86" name="__codelineno-13-86" href="#__codelineno-13-86"></a><span class="w">        </span><span class="n">status</span><span class="p">.</span><span class="na">setItems</span><span class="p">(</span><span class="n">Status</span><span class="p">.</span><span class="na">values</span><span class="p">());</span>
+</span><span id="__span-13-87"><a id="__codelineno-13-87" name="__codelineno-13-87" href="#__codelineno-13-87"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">customerSince</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatePicker</span><span class="p">(</span><span class="s">"Cliente desde"</span><span class="p">);</span>
+</span><span id="__span-13-88"><a id="__codelineno-13-88" name="__codelineno-13-88" href="#__codelineno-13-88"></a>
+</span><span id="__span-13-89"><a id="__codelineno-13-89" name="__codelineno-13-89" href="#__codelineno-13-89"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">firstName</span><span class="p">)</span>
+</span><span id="__span-13-90"><a id="__codelineno-13-90" name="__codelineno-13-90" href="#__codelineno-13-90"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El nombre es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-13-91"><a id="__codelineno-13-91" name="__codelineno-13-91" href="#__codelineno-13-91"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getFirstName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setFirstName</span><span class="p">);</span>
+</span><span id="__span-13-92"><a id="__codelineno-13-92" name="__codelineno-13-92" href="#__codelineno-13-92"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">lastName</span><span class="p">)</span>
+</span><span id="__span-13-93"><a id="__codelineno-13-93" name="__codelineno-13-93" href="#__codelineno-13-93"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El apellido es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-13-94"><a id="__codelineno-13-94" name="__codelineno-13-94" href="#__codelineno-13-94"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getLastName</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setLastName</span><span class="p">);</span>
+</span><span id="__span-13-95"><a id="__codelineno-13-95" name="__codelineno-13-95" href="#__codelineno-13-95"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+</span><span id="__span-13-96"><a id="__codelineno-13-96" name="__codelineno-13-96" href="#__codelineno-13-96"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"El correo es obligatorio"</span><span class="p">)</span>
+</span><span id="__span-13-97"><a id="__codelineno-13-97" name="__codelineno-13-97" href="#__codelineno-13-97"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getEmail</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setEmail</span><span class="p">);</span>
+</span><span id="__span-13-98"><a id="__codelineno-13-98" name="__codelineno-13-98" href="#__codelineno-13-98"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">forField</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</span><span id="__span-13-99"><a id="__codelineno-13-99" name="__codelineno-13-99" href="#__codelineno-13-99"></a><span class="w">                </span><span class="p">.</span><span class="na">asRequired</span><span class="p">(</span><span class="s">"Selecciona un estado"</span><span class="p">)</span>
+</span><span id="__span-13-100"><a id="__codelineno-13-100" name="__codelineno-13-100" href="#__codelineno-13-100"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getStatus</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setStatus</span><span class="p">);</span>
+</span><span id="__span-13-101"><a id="__codelineno-13-101" name="__codelineno-13-101" href="#__codelineno-13-101"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">customerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">getCustomerSince</span><span class="p">,</span><span class="w"> </span><span class="n">Customer</span><span class="p">::</span><span class="n">setCustomerSince</span><span class="p">);</span>
+</span><span id="__span-13-102"><a id="__codelineno-13-102" name="__codelineno-13-102" href="#__codelineno-13-102"></a>
+</span><span id="__span-13-103"><a id="__codelineno-13-103" name="__codelineno-13-103" href="#__codelineno-13-103"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">saveBtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Button</span><span class="p">();</span>
+</span><span id="__span-13-104"><a id="__codelineno-13-104" name="__codelineno-13-104" href="#__codelineno-13-104"></a><span class="w">        </span><span class="n">saveBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">PRIMARY</span><span class="p">);</span>
+</span><span id="__span-13-105"><a id="__codelineno-13-105" name="__codelineno-13-105" href="#__codelineno-13-105"></a><span class="w">        </span><span class="n">saveBtn</span><span class="p">.</span><span class="na">bindText</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">isNew</span><span class="p">(</span><span class="n">customer</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">"Crear"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">"Guardar"</span><span class="p">));</span>
+</span><span id="__span-13-106"><a id="__codelineno-13-106" name="__codelineno-13-106" href="#__codelineno-13-106"></a><span class="w">        </span><span class="n">saveBtn</span><span class="p">.</span><span class="na">addClickListener</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">save</span><span class="p">());</span>
+</span><span id="__span-13-107"><a id="__codelineno-13-107" name="__codelineno-13-107" href="#__codelineno-13-107"></a>
+</span><span id="__span-13-108"><a id="__codelineno-13-108" name="__codelineno-13-108" href="#__codelineno-13-108"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">discardBtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Button</span><span class="p">(</span><span class="s">"Descartar"</span><span class="p">);</span>
+</span><span id="__span-13-109"><a id="__codelineno-13-109" name="__codelineno-13-109" href="#__codelineno-13-109"></a><span class="w">        </span><span class="n">discardBtn</span><span class="p">.</span><span class="na">addClickListener</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">binder</span><span class="p">.</span><span class="na">readBean</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">peek</span><span class="p">()));</span>
+</span><span id="__span-13-110"><a id="__codelineno-13-110" name="__codelineno-13-110" href="#__codelineno-13-110"></a>
+</span><span id="__span-13-111"><a id="__codelineno-13-111" name="__codelineno-13-111" href="#__codelineno-13-111"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">deleteBtn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Button</span><span class="p">(</span><span class="s">"Eliminar"</span><span class="p">);</span>
+</span><span id="__span-13-112"><a id="__codelineno-13-112" name="__codelineno-13-112" href="#__codelineno-13-112"></a><span class="w">        </span><span class="n">deleteBtn</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">TERTIARY</span><span class="p">);</span>
+</span><span id="__span-13-113"><a id="__codelineno-13-113" name="__codelineno-13-113" href="#__codelineno-13-113"></a><span class="w">        </span><span class="n">deleteBtn</span><span class="p">.</span><span class="na">addClickListener</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">confirmDelete</span><span class="p">());</span>
+</span><span id="__span-13-114"><a id="__codelineno-13-114" name="__codelineno-13-114" href="#__codelineno-13-114"></a><span class="w">        </span><span class="n">deleteBtn</span><span class="p">.</span><span class="na">bindEnabled</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">!</span><span class="n">isNew</span><span class="p">(</span><span class="n">customer</span><span class="p">)));</span>
+</span><span id="__span-13-115"><a id="__codelineno-13-115" name="__codelineno-13-115" href="#__codelineno-13-115"></a>
+</span><span id="__span-13-116"><a id="__codelineno-13-116" name="__codelineno-13-116" href="#__codelineno-13-116"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">buttons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HorizontalLayout</span><span class="p">(</span><span class="n">saveBtn</span><span class="p">,</span><span class="w"> </span><span class="n">discardBtn</span><span class="p">,</span><span class="w"> </span><span class="n">deleteBtn</span><span class="p">);</span>
+</span><span id="__span-13-117"><a id="__codelineno-13-117" name="__codelineno-13-117" href="#__codelineno-13-117"></a>
+</span><span id="__span-13-118"><a id="__codelineno-13-118" name="__codelineno-13-118" href="#__codelineno-13-118"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FormLayout</span><span class="p">(</span><span class="n">firstName</span><span class="p">,</span><span class="w"> </span><span class="n">lastName</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">customerSince</span><span class="p">,</span><span class="w"> </span><span class="n">buttons</span><span class="p">);</span>
+</span><span id="__span-13-119"><a id="__codelineno-13-119" name="__codelineno-13-119" href="#__codelineno-13-119"></a><span class="w">        </span><span class="n">form</span><span class="p">.</span><span class="na">setWidth</span><span class="p">(</span><span class="s">"300px"</span><span class="p">);</span>
+</span><span id="__span-13-120"><a id="__codelineno-13-120" name="__codelineno-13-120" href="#__codelineno-13-120"></a><span class="w">        </span><span class="n">form</span><span class="p">.</span><span class="na">getStyle</span><span class="p">().</span><span class="na">setPaddingTop</span><span class="p">(</span><span class="s">"30px"</span><span class="p">);</span>
+</span><span id="__span-13-121"><a id="__codelineno-13-121" name="__codelineno-13-121" href="#__codelineno-13-121"></a><span class="w">        </span><span class="n">form</span><span class="p">.</span><span class="na">bindVisible</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">));</span>
+</span><span id="__span-13-122"><a id="__codelineno-13-122" name="__codelineno-13-122" href="#__codelineno-13-122"></a><span class="w">        </span><span class="n">Signal</span><span class="p">.</span><span class="na">effect</span><span class="p">(</span><span class="n">form</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">binder</span><span class="p">.</span><span class="na">readBean</span><span class="p">(</span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">get</span><span class="p">()));</span>
+</span><span id="__span-13-123"><a id="__codelineno-13-123" name="__codelineno-13-123" href="#__codelineno-13-123"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">form</span><span class="p">;</span>
+</span><span id="__span-13-124"><a id="__codelineno-13-124" name="__codelineno-13-124" href="#__codelineno-13-124"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-125"><a id="__codelineno-13-125" name="__codelineno-13-125" href="#__codelineno-13-125"></a>
+</span><span id="__span-13-126"><a id="__codelineno-13-126" name="__codelineno-13-126" href="#__codelineno-13-126"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isNew</span><span class="p">(</span><span class="n">Customer</span><span class="w"> </span><span class="n">customer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-127"><a id="__codelineno-13-127" name="__codelineno-13-127" href="#__codelineno-13-127"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="na">getId</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+</span><span id="__span-13-128"><a id="__codelineno-13-128" name="__codelineno-13-128" href="#__codelineno-13-128"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-129"><a id="__codelineno-13-129" name="__codelineno-13-129" href="#__codelineno-13-129"></a>
+</span><span id="__span-13-130"><a id="__codelineno-13-130" name="__codelineno-13-130" href="#__codelineno-13-130"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addCustomer</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-131"><a id="__codelineno-13-131" name="__codelineno-13-131" href="#__codelineno-13-131"></a><span class="w">        </span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Customer</span><span class="p">());</span>
+</span><span id="__span-13-132"><a id="__codelineno-13-132" name="__codelineno-13-132" href="#__codelineno-13-132"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-133"><a id="__codelineno-13-133" name="__codelineno-13-133" href="#__codelineno-13-133"></a>
+</span><span id="__span-13-134"><a id="__codelineno-13-134" name="__codelineno-13-134" href="#__codelineno-13-134"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">save</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-135"><a id="__codelineno-13-135" name="__codelineno-13-135" href="#__codelineno-13-135"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-136"><a id="__codelineno-13-136" name="__codelineno-13-136" href="#__codelineno-13-136"></a><span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">peek</span><span class="p">();</span>
+</span><span id="__span-13-137"><a id="__codelineno-13-137" name="__codelineno-13-137" href="#__codelineno-13-137"></a><span class="w">            </span><span class="n">binder</span><span class="p">.</span><span class="na">writeBean</span><span class="p">(</span><span class="n">customer</span><span class="p">);</span>
+</span><span id="__span-13-138"><a id="__codelineno-13-138" name="__codelineno-13-138" href="#__codelineno-13-138"></a><span class="w">            </span><span class="n">customerService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">customer</span><span class="p">);</span>
+</span><span id="__span-13-139"><a id="__codelineno-13-139" name="__codelineno-13-139" href="#__codelineno-13-139"></a><span class="w">            </span><span class="n">updateCustomerList</span><span class="p">();</span>
+</span><span id="__span-13-140"><a id="__codelineno-13-140" name="__codelineno-13-140" href="#__codelineno-13-140"></a><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">ValidationException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-141"><a id="__codelineno-13-141" name="__codelineno-13-141" href="#__codelineno-13-141"></a><span class="w">            </span><span class="c1">// The fields already show their own error messages.</span>
+</span><span id="__span-13-142"><a id="__codelineno-13-142" name="__codelineno-13-142" href="#__codelineno-13-142"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-13-143"><a id="__codelineno-13-143" name="__codelineno-13-143" href="#__codelineno-13-143"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-144"><a id="__codelineno-13-144" name="__codelineno-13-144" href="#__codelineno-13-144"></a>
+</span><span id="__span-13-145"><a id="__codelineno-13-145" name="__codelineno-13-145" href="#__codelineno-13-145"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">confirmDelete</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-146"><a id="__codelineno-13-146" name="__codelineno-13-146" href="#__codelineno-13-146"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">editedCustomer</span><span class="p">.</span><span class="na">peek</span><span class="p">();</span>
+</span><span id="__span-13-147"><a id="__codelineno-13-147" name="__codelineno-13-147" href="#__codelineno-13-147"></a>
+</span><span id="__span-13-148"><a id="__codelineno-13-148" name="__codelineno-13-148" href="#__codelineno-13-148"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">dialog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConfirmDialog</span><span class="p">();</span>
+</span><span id="__span-13-149"><a id="__codelineno-13-149" name="__codelineno-13-149" href="#__codelineno-13-149"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Eliminar cliente"</span><span class="p">);</span>
+</span><span id="__span-13-150"><a id="__codelineno-13-150" name="__codelineno-13-150" href="#__codelineno-13-150"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">"¿Seguro que quieres eliminar a %s %s?"</span>
+</span><span id="__span-13-151"><a id="__codelineno-13-151" name="__codelineno-13-151" href="#__codelineno-13-151"></a><span class="w">                </span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">customer</span><span class="p">.</span><span class="na">getFirstName</span><span class="p">(),</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="na">getLastName</span><span class="p">()));</span>
+</span><span id="__span-13-152"><a id="__codelineno-13-152" name="__codelineno-13-152" href="#__codelineno-13-152"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">setCancelable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-13-153"><a id="__codelineno-13-153" name="__codelineno-13-153" href="#__codelineno-13-153"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">setConfirmText</span><span class="p">(</span><span class="s">"Eliminar"</span><span class="p">);</span>
+</span><span id="__span-13-154"><a id="__codelineno-13-154" name="__codelineno-13-154" href="#__codelineno-13-154"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">setConfirmButtonTheme</span><span class="p">(</span><span class="s">"primary error"</span><span class="p">);</span>
+</span><span id="__span-13-155"><a id="__codelineno-13-155" name="__codelineno-13-155" href="#__codelineno-13-155"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">addConfirmListener</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-156"><a id="__codelineno-13-156" name="__codelineno-13-156" href="#__codelineno-13-156"></a><span class="w">            </span><span class="n">customerService</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">customer</span><span class="p">);</span>
+</span><span id="__span-13-157"><a id="__codelineno-13-157" name="__codelineno-13-157" href="#__codelineno-13-157"></a><span class="w">            </span><span class="n">updateCustomerList</span><span class="p">();</span>
+</span><span id="__span-13-158"><a id="__codelineno-13-158" name="__codelineno-13-158" href="#__codelineno-13-158"></a><span class="w">        </span><span class="p">});</span>
+</span><span id="__span-13-159"><a id="__codelineno-13-159" name="__codelineno-13-159" href="#__codelineno-13-159"></a><span class="w">        </span><span class="n">dialog</span><span class="p">.</span><span class="na">open</span><span class="p">();</span>
+</span><span id="__span-13-160"><a id="__codelineno-13-160" name="__codelineno-13-160" href="#__codelineno-13-160"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-161"><a id="__codelineno-13-161" name="__codelineno-13-161" href="#__codelineno-13-161"></a>
+</span><span id="__span-13-162"><a id="__codelineno-13-162" name="__codelineno-13-162" href="#__codelineno-13-162"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateCustomerList</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-163"><a id="__codelineno-13-163" name="__codelineno-13-163" href="#__codelineno-13-163"></a><span class="w">        </span><span class="n">updateCustomerList</span><span class="p">(</span><span class="n">searchValue</span><span class="p">.</span><span class="na">peek</span><span class="p">());</span>
+</span><span id="__span-13-164"><a id="__codelineno-13-164" name="__codelineno-13-164" href="#__codelineno-13-164"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-165"><a id="__codelineno-13-165" name="__codelineno-13-165" href="#__codelineno-13-165"></a>
+</span><span id="__span-13-166"><a id="__codelineno-13-166" name="__codelineno-13-166" href="#__codelineno-13-166"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateCustomerList</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-167"><a id="__codelineno-13-167" name="__codelineno-13-167" href="#__codelineno-13-167"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customerService</span><span class="p">.</span><span class="na">findAll</span><span class="p">();</span>
+</span><span id="__span-13-168"><a id="__codelineno-13-168" name="__codelineno-13-168" href="#__codelineno-13-168"></a>
+</span><span id="__span-13-169"><a id="__codelineno-13-169" name="__codelineno-13-169" href="#__codelineno-13-169"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">query</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-170"><a id="__codelineno-13-170" name="__codelineno-13-170" href="#__codelineno-13-170"></a><span class="w">            </span><span class="kd">var</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">();</span>
+</span><span id="__span-13-171"><a id="__codelineno-13-171" name="__codelineno-13-171" href="#__codelineno-13-171"></a><span class="w">            </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtered</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+</span><span id="__span-13-172"><a id="__codelineno-13-172" name="__codelineno-13-172" href="#__codelineno-13-172"></a><span class="w">                    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getFirstName</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-13-173"><a id="__codelineno-13-173" name="__codelineno-13-173" href="#__codelineno-13-173"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getLastName</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-13-174"><a id="__codelineno-13-174" name="__codelineno-13-174" href="#__codelineno-13-174"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getEmail</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+</span><span id="__span-13-175"><a id="__codelineno-13-175" name="__codelineno-13-175" href="#__codelineno-13-175"></a><span class="w">                            </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getStatus</span><span class="p">().</span><span class="na">name</span><span class="p">().</span><span class="na">toLowerCase</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="n">lower</span><span class="p">))</span>
+</span><span id="__span-13-176"><a id="__codelineno-13-176" name="__codelineno-13-176" href="#__codelineno-13-176"></a><span class="w">                    </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toCollection</span><span class="p">(</span><span class="n">ArrayList</span><span class="p">::</span><span class="k">new</span><span class="p">));</span>
+</span><span id="__span-13-177"><a id="__codelineno-13-177" name="__codelineno-13-177" href="#__codelineno-13-177"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-13-178"><a id="__codelineno-13-178" name="__codelineno-13-178" href="#__codelineno-13-178"></a>
+</span><span id="__span-13-179"><a id="__codelineno-13-179" name="__codelineno-13-179" href="#__codelineno-13-179"></a><span class="w">        </span><span class="n">grid</span><span class="p">.</span><span class="na">setItems</span><span class="p">(</span><span class="n">filtered</span><span class="p">);</span>
+</span><span id="__span-13-180"><a id="__codelineno-13-180" name="__codelineno-13-180" href="#__codelineno-13-180"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-13-181"><a id="__codelineno-13-181" name="__codelineno-13-181" href="#__codelineno-13-181"></a><span class="p">}</span>
+</span></code></pre></div>
+</details>
+<details class="example">
+<summary>styles.css</summary>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">.</span><span class="nc">app-name</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="p">}</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="nt">html</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nv">--aura-accent-color-dark</span><span class="p">:</span><span class="w"> </span><span class="mh">#22D3EE</span><span class="p">;</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nv">--aura-accent-color-light</span><span class="p">:</span><span class="w"> </span><span class="mh">#7F22FE</span><span class="p">;</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="nv">--aura-background-color-light</span><span class="p">:</span><span class="w"> </span><span class="mh">#FFFFFF</span><span class="p">;</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="nv">--aura-base-font-size</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="nv">--aura-base-size</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="nv">--aura-content-color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="nv">--aura-contrast-level</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="p">;</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="nv">--aura-notification-color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="k">color-scheme</span><span class="p">:</span><span class="w"> </span><span class="n">dark</span><span class="p">;</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p">}</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="nt">html</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">    </span><span class="nv">--vaadin-button-font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">    </span><span class="nv">--vaadin-grid-header-font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="p">}</span>
+</span></code></pre></div>
+</details>
+<hr />
+<h2 id="verifica">Verifica<a class="headerlink" href="#verifica" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Guardar y + tienen fondo de color; Eliminar es rojo y sin borde.</li>
+<li>[ ] El botón Eliminar del diálogo es rojo.</li>
+<li>[ ] Hay espacio arriba del formulario.</li>
+<li>[ ] "CRM Interno" está en negrita.</li>
+<li>[ ] La app está en modo oscuro con el acento cian en botones, selección e ítem activo del menú.</li>
+</ul>
+<h2 id="errores-comunes">Errores comunes<a class="headerlink" href="#errores-comunes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ButtonVariant.LUMO_PRIMARY</code> no compila</td>
+<td>Código de Vaadin 24</td>
+<td>Usa <code>ButtonVariant.PRIMARY</code></td>
+</tr>
+<tr>
+<td>El CSS no se aplica y no hay error</td>
+<td><code>styles.css</code> está en otra carpeta</td>
+<td><code>src/main/resources/META-INF/resources/styles.css</code></td>
+</tr>
+<tr>
+<td><code>@ColorScheme</code> no tiene efecto</td>
+<td>No reiniciaste</td>
+<td>Reinicia después de tocar <code>Application</code></td>
+</tr>
+<tr>
+<td>La app se ve sin estilos</td>
+<td>Se borró <code>@StyleSheet(Aura.STYLESHEET)</code></td>
+<td>Vuelve a agregarlo en <code>Application</code></td>
+</tr>
+<tr>
+<td>Las variables no cambian nada</td>
+<td>Escribiste <code>--lumo-*</code> con el tema Aura activo</td>
+<td>Usa las variables <code>--aura-*</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="que-resolvimos">Qué resolvimos<a class="headerlink" href="#que-resolvimos" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Variantes antes que CSS</strong>: la mayoría de los componentes ya trae las
+  opciones visuales que necesitas.</li>
+<li><strong>CSS normal</strong> cuando no hay variante: clases y selectores, sin un
+  lenguaje propietario.</li>
+<li><strong>Claro, oscuro o automático</strong> con una anotación.</li>
+<li><strong>Una marca completa cambiando variables</strong>, sin tocar un solo
+  componente.</li>
+</ul>
+<h2 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"style: theme variants, custom css and aura branding"</span>
+</span></code></pre></div>
+<hr />
+<h2 id="cierre-3-min">Cierre (3 min)<a class="headerlink" href="#cierre-3-min" title="Permanent link">&para;</a></h2>
+<p>Construimos un CRM con:</p>
+<ul>
+<li>Grid ordenable y filtrable con Signals,</li>
+<li>formulario validado con Binder, en modo buffered,</li>
+<li>alta, edición y baja contra una base de datos real,</li>
+<li>navegación con un app shell,</li>
+<li>y un tema con colores de marca.</li>
+</ul>
+<p>Todo en Java, en tres clases de interfaz (<code>HomeView</code>,
+<code>CustomerListView</code>, <code>MainLayout</code>), sin HTML, sin un proyecto de
+JavaScript y sin una API REST.</p>
+<h3 id="para-seguir-aprendiendo">Para seguir aprendiendo<a class="headerlink" href="#para-seguir-aprendiendo" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="https://vaadin.com/directory">Directorio de add-ons</a></strong>: componentes
+  de la comunidad y oficiales (calendarios, gráficos, editores). Se
+  instalan copiando una dependencia Maven al <code>pom.xml</code>.</li>
+<li><strong>Vaadin Copilot</strong>: con la app en modo desarrollo, permite editar la
+  interfaz desde el navegador, de forma visual o escribiendo lo que
+  quieres cambiar, y escribe el cambio en tu código Java.</li>
+<li><strong><a href="https://vaadin.com/docs/latest/flow/ui-state">Signals</a></strong>: hoy usamos
+  <code>ValueSignal</code>, <code>map</code> y <code>Signal.effect</code>. Hay más tipos, como
+  <code>ListSignal</code> y los signals computados.</li>
+<li><strong>El tutorial en inglés</strong> en el que se basa este taller:
+  <a href="https://drewharvey.github.io/vaadin-intro-tutorial/">texto</a> y
+  <a href="https://github.com/drewharvey/vaadin-intro-tutorial">código</a>.</li>
+</ul>
+<p><img alt="Copilot editando un texto de la UI desde el navegador" src="images/s8-copilot.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/geovannymcode" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/geovannycode/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
