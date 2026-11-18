@@ -1,7 +1,6 @@
 # Sesión 1: Primera vista, componentes y layouts
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 6 min · Video de referencia: 2:29
     - **Al terminar vas a tener:** una pantalla en `http://localhost:8080`
       con un campo de texto, un selector de fecha y dos botones que
       responden al clic.
@@ -56,14 +55,7 @@ idea central de esta sesión.
 
 Esta es la diferencia más importante con un frontend tradicional:
 
-```
-Navegador                          Servidor (tu app Java)
-─────────                          ──────────────────────
-1. El usuario hace clic   ───────▶ 2. Vaadin ejecuta tu listener (Java)
-                                   3. Tu código cambia componentes
-4. El navegador se        ◀─────── 5. Vaadin envía solo lo que cambió
-   actualiza
-```
+![Frontend Tradicional](images/Flujo_Vaadin_navegador_servidor_Java.png)
 
 Tu código Java **nunca** corre en el navegador. Vaadin mantiene la
 comunicación y sincroniza la pantalla. Por eso no escribes JavaScript ni

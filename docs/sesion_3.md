@@ -1,7 +1,6 @@
 # Sesión 3: Filtrar con Signals
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 9 min · Video de referencia: 10:36
     - **Al terminar vas a tener:** un buscador encima del Grid que filtra
       por nombre, apellido, correo y estado mientras escribes.
     - **Conceptos nuevos:** estado reactivo, `ValueSignal`, `bindValue`,
@@ -68,12 +67,114 @@ Signal.effect(grid, () -> grid.setItems(filter(searchValue.get())));
 Vaadin ve que el efecto leyó `searchValue` con `get()` y lo "suscribe":
 cada `searchValue.set(...)` futuro vuelve a ejecutar el bloque.
 
-### Si conoces React
+### Si vienes de React o Angular
 
-| React | Vaadin | Diferencia |
-|-------|--------|------------|
-| `useState` | `ValueSignal` | En Vaadin vive en el servidor, en tu clase Java |
-| `useEffect` | `Signal.effect` | Las dependencias se detectan solas con `get()`, no hay arreglo de dependencias |
+La idea es la misma que ya conoces: un estado, un campo enlazado a ese
+estado y una tabla que se actualiza sola. Este es el mismo buscador en
+los tres (`filter` es la función que filtra la lista; la nuestra la
+escribimos en el Paso 4):
+
+=== "React"
+
+    ```tsx
+    function CustomerList() {
+      const [query, setQuery] = useState("");
+      const rows = filter(customers, query); // se recalcula en cada render
+
+      return (
+        <>
+          <input value={query} onChange={e => setQuery(e.target.value)} />
+          <Table rows={rows} />
+        </>
+      );
+    }
+    ```
+
+=== "Angular"
+
+    ```ts
+    @Component({
+      selector: "app-customer-list",
+      imports: [FormsModule, TableComponent],
+      template: `
+        <input [ngModel]="query()" (ngModelChange)="query.set($event)" />
+        <app-table [rows]="rows()" />
+      `,
+    })
+    export class CustomerListComponent {
+      query = signal("");
+      rows = computed(() => filter(customers, this.query()));
+    }
+    ```
+
+=== "Vaadin Flow"
+
+    ```java
+    private final ValueSignal<String> searchValue = new ValueSignal<>("");
+
+    // en el constructor (o en un método que llama el constructor):
+    search.bindValue(searchValue, searchValue::set);
+    Signal.effect(search, () -> grid.setItems(filter(customers, searchValue.get())));
+    ```
+
+Se parecen, pero hay tres diferencias que cambian la forma de pensar.
+
+#### 1. El estado vive en el servidor
+
+En React y en Angular, `query` vive en el navegador, en JavaScript. En
+Vaadin, `searchValue` es un campo de tu clase Java y vive en el
+**servidor**: hay una instancia de `CustomerListView` por cada usuario y
+pestaña abierta. El navegador solo dibuja los componentes y le avisa al
+servidor cuando algo cambia.
+
+Dos consecuencias:
+
+- No hay API REST, JSON ni `fetch` de por medio. El efecto filtra la
+  lista con Java normal y, a partir de la Sesión 6, llama directo al
+  servicio.
+- Cada cambio en el campo viaja al servidor. Por eso en el Paso 7 vamos
+  a decidir **cuándo** se envía el valor.
+
+#### 2. No hay *re-render*
+
+En React, cada `setQuery` vuelve a ejecutar **toda** la función del
+componente. En Vaadin, el constructor de la vista corre **una sola
+vez**. Los componentes son objetos que guardas en campos (como `grid`) y
+modificas cuando hace falta. Lo único que se vuelve a ejecutar es el
+bloque del efecto.
+
+Si vienes de Angular con signals, esto te va a resultar familiar: las
+dependencias se detectan solas al leer el signal, igual que en
+`computed` o `effect`.
+
+#### 3. El Grid se actualiza con una llamada, no con una plantilla
+
+No hay JSX ni *template*. En vez de escribir `rows={rows}` o
+`[rows]="rows()"`, le dices al Grid `grid.setItems(...)`. Por eso aquí
+usamos un efecto y no un valor calculado: el efecto es el que hace esa
+llamada cada vez que cambia la búsqueda.
+
+#### Tabla de equivalencias
+
+| Idea | React | Angular | Vaadin Flow |
+|------|-------|---------|-------------|
+| Crear el estado | `useState("")` | `signal("")` | `new ValueSignal<>("")` |
+| Cambiar el valor | `setQuery("ali")` | `query.set("ali")` | `searchValue.set("ali")` |
+| Leer y suscribirse | `query` (en el render) | `query()` | `searchValue.get()` |
+| Leer sin suscribirse | No hay equivalente directo | `untracked(() => query())` | `searchValue.peek()` |
+| Campo enlazado al estado | `value` + `onChange` | `[ngModel]` + `(ngModelChange)` | `bindValue(searchValue, searchValue::set)` |
+| Reaccionar a un cambio | *Re-render* o `useEffect` con `[deps]` | `computed` o `effect` | `Signal.effect` |
+| Limpiar al salir de la pantalla | `return` dentro de `useEffect` | Automático al destruir el componente | Automático: el efecto tiene un componente dueño |
+| Esperar a que el usuario deje de escribir | *Debounce* a mano | `debounceTime` (RxJS) | `ValueChangeMode.LAZY` |
+
+!!! warning "Dos trampas según de dónde vengas"
+    - **Desde Angular:** en Angular puedes leer `query()` en cualquier
+      parte. En Vaadin, `get()` fuera de un efecto lanza
+      `IllegalStateException`. Fuera de un efecto se usa `peek()`, que
+      es lo que en Angular harías con `untracked`.
+    - **Desde React:** no hay arreglo de dependencias. La dependencia es
+      cualquier signal que leas con `get()` dentro del efecto, así que no
+      se te puede olvidar una ni te quedas con un valor viejo.
 
 !!! note "Si no te hace clic a la primera, es normal"
     La programación reactiva cuesta un par de repeticiones. En este

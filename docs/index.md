@@ -23,7 +23,7 @@ en el mismo proyecto que ya tiene la lógica de negocio. Cada componente
 (botón, campo, tabla) es un objeto Java que vive en el servidor, y el
 framework se encarga de pintarlo y actualizarlo en el navegador.
 
-## Agenda (70 minutos)
+## Agenda
 
 | Sesión | Qué problema resuelve | Tiempo |
 |--------|-----------------------|--------|

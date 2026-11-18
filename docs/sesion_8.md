@@ -1,8 +1,6 @@
 # Sesión 8: Estilos, tema Aura y cierre
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 11 min (8 de estilos + 3 de cierre) · Video de
-      referencia: 51:42
     - **Al terminar vas a tener:** botones con jerarquía visual, CSS
       propio, modo claro/oscuro y un tema con los colores de tu marca.
     - **Conceptos nuevos:** variantes de tema, `getStyle()`, clases CSS,
@@ -129,24 +127,29 @@ En `src/main/resources/META-INF/resources/styles.css`:
 - `addClassNames("app-name")` le pone la clase CSS `app-name` al
   componente, igual que `class="app-name"` en HTML.
 - `styles.css` ya se carga desde la Sesión 0, por el
-  `@StyleSheet("styles.css")` de `Application`.
+  `@StyleSheet("styles.css")` de `AppShell`.
 
 **Guarda el CSS y mira:** el cambio se ve **sin reiniciar**. Es CSS
 normal, sin un lenguaje propietario.
 
 ### Paso 6: Seguir el modo del sistema operativo
 
-En `Application`, agrega la anotación:
+En `AppShell`, agrega la anotación:
 
 ```java
 import com.vaadin.flow.component.page.ColorScheme;
 
-@SpringBootApplication
 @StyleSheet(Aura.STYLESHEET)
-@StyleSheet("styles.css")
+@StyleSheet("styles.css") // Your custom styles
 @ColorScheme(ColorScheme.Value.LIGHT_DARK)
-public class Application implements AppShellConfigurator {
+@Push
+public class AppShell implements AppShellConfigurator {
+}
 ```
+
+`Application` no se toca: sigue igual que en la Sesión 0. Si le agregas
+`implements AppShellConfigurator`, la app no arranca porque quedan dos
+clases de configuración.
 
 | Valor | Resultado |
 |-------|-----------|
@@ -155,7 +158,7 @@ public class Application implements AppShellConfigurator {
 | `LIGHT_DARK` | Sigue la preferencia del navegador o del sistema operativo |
 
 !!! warning "Reinicia la aplicación"
-    Los cambios en `Application.java` no se aplican con *hotswap*.
+    Los cambios en `AppShell.java` no se aplican con *hotswap*.
 
 **Mira:** cambia tu sistema operativo a modo oscuro y la app lo sigue.
 Fondo, texto, Grid, campos y botones: todo cambia, porque el tema ya
@@ -171,7 +174,7 @@ Vaadin incluye dos temas:
 | **Lumo** | El tema clásico de Vaadin, más cuadrado |
 
 Los dos soportan claro y oscuro. Para probar Lumo, cambia en
-`Application`:
+`AppShell`:
 
 ```java
 import com.vaadin.flow.theme.lumo.Lumo;
@@ -240,7 +243,7 @@ de componente en particular.
 
 ### Paso 8: Fijar el modo oscuro
 
-Este tema de ejemplo está pensado para modo oscuro. En `Application`:
+Este tema de ejemplo está pensado para modo oscuro. En `AppShell`:
 
 ```java
 @ColorScheme(ColorScheme.Value.DARK)
@@ -264,26 +267,21 @@ ve el acento `--aura-accent-color-dark` (cian); el morado de
 
 ## Código completo al cierre del taller
 
-??? example "Application.java"
+??? example "AppShell.java"
     ```java
     package com.baqjug.crm;
 
     import com.vaadin.flow.component.dependency.StyleSheet;
     import com.vaadin.flow.component.page.AppShellConfigurator;
     import com.vaadin.flow.component.page.ColorScheme;
+    import com.vaadin.flow.component.page.Push;
     import com.vaadin.flow.theme.aura.Aura;
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-    @SpringBootApplication
     @StyleSheet(Aura.STYLESHEET)
-    @StyleSheet("styles.css")
+    @StyleSheet("styles.css") // Your custom styles
     @ColorScheme(ColorScheme.Value.DARK)
-    public class Application implements AppShellConfigurator {
-
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
+    @Push
+    public class AppShell implements AppShellConfigurator {
     }
     ```
 
@@ -545,8 +543,9 @@ ve el acento `--aura-accent-color-dark` (cian); el morado de
 |---------|-------|----------|
 | `ButtonVariant.LUMO_PRIMARY` no compila | Código de Vaadin 24 | Usa `ButtonVariant.PRIMARY` |
 | El CSS no se aplica y no hay error | `styles.css` está en otra carpeta | `src/main/resources/META-INF/resources/styles.css` |
-| `@ColorScheme` no tiene efecto | No reiniciaste | Reinicia después de tocar `Application` |
-| La app se ve sin estilos | Se borró `@StyleSheet(Aura.STYLESHEET)` | Vuelve a agregarlo en `Application` |
+| `@ColorScheme` no tiene efecto | No reiniciaste | Reinicia después de tocar `AppShell` |
+| `Multiple classes implementing AppShellConfigurator` | Pusiste las anotaciones en `Application` y le agregaste `implements AppShellConfigurator` | Deja `Application` como en la Sesión 0 y pon las anotaciones en `AppShell` |
+| La app se ve sin estilos | Se borró `@StyleSheet(Aura.STYLESHEET)` | Vuelve a agregarlo en `AppShell` |
 | Las variables no cambian nada | Escribiste `--lumo-*` con el tema Aura activo | Usa las variables `--aura-*` |
 
 ## Qué resolvimos
@@ -566,8 +565,6 @@ git add . && git commit -m "style: theme variants, custom css and aura branding"
 ```
 
 ---
-
-## Cierre (3 min)
 
 Construimos un CRM con:
 
@@ -592,8 +589,3 @@ JavaScript y sin una API REST.
 - **[Signals](https://vaadin.com/docs/latest/flow/ui-state)**: hoy usamos
   `ValueSignal`, `map` y `Signal.effect`. Hay más tipos, como
   `ListSignal` y los signals computados.
-- **El tutorial en inglés** en el que se basa este taller:
-  [texto](https://drewharvey.github.io/vaadin-intro-tutorial/) y
-  [código](https://github.com/drewharvey/vaadin-intro-tutorial).
-
-![Copilot editando un texto de la UI desde el navegador](images/s8-copilot.png)

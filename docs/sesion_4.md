@@ -1,7 +1,6 @@
 # Sesión 4: Formulario de detalle, Binder y validación
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 11 min · Video de referencia: 18:01
     - **Al terminar vas a tener:** al hacer clic en un cliente, un
       formulario a la derecha con sus datos; al quitar la selección, el
       formulario se oculta. Los campos obligatorios muestran error si

@@ -1,7 +1,6 @@
 # Sesión 7: App shell y navegación
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 6 min · Video de referencia: 48:18
     - **Al terminar vas a tener:** un marco común para toda la app, con
       logo, nombre y un menú lateral para ir entre Inicio y Clientes.
     - **Conceptos nuevos:** `AppLayout`, `@Layout`, drawer, `SideNav` y
@@ -28,18 +27,7 @@ Un **app shell** (o *layout* principal) es el marco que envuelve todas
 las pantallas: lo que **no cambia** al navegar. En Vaadin se construye
 con `AppLayout`, que tiene tres zonas:
 
-```
-┌─────────────────────────────────────────────┐
-│ navbar (barra superior)                     │
-├──────────────┬──────────────────────────────┤
-│              │                              │
-│   drawer     │   contenido                  │
-│   (menú      │   (la vista actual:          │
-│   lateral)   │   HomeView o                 │
-│              │   CustomerListView)          │
-│              │                              │
-└──────────────┴──────────────────────────────┘
-```
+![Diagrama de interfaz con barra lateral](images/diagrama_interfaz_barra_lateral.png)
 
 Al navegar, solo cambia la zona de contenido. El drawer y la barra se
 quedan.

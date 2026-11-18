@@ -1,7 +1,6 @@
 # Sesión 2: Mostrar datos en un Grid
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 7 min · Video de referencia: 5:58
     - **Al terminar vas a tener:** una pantalla en `/customers` con una
       tabla de clientes que ocupa toda la pantalla y se puede ordenar
       por cualquier columna.

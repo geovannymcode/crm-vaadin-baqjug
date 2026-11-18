@@ -1,7 +1,6 @@
 # Sesión 6: Conectar la base de datos real
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 5 min · Video de referencia: 43:52
     - **Al terminar vas a tener:** el Grid mostrando los clientes de la
       base de datos H2, y guardar, crear y eliminar persistiendo de
       verdad. El botón dice "Crear" o "Guardar" según el caso, y Eliminar
@@ -34,16 +33,12 @@ memoria (`customers`) con tres clientes fijos.
 En un stack tradicional, para que la pantalla lea clientes de la base de
 datos necesitas:
 
-```
-Navegador ──HTTP/JSON──▶ Controlador REST ──▶ Servicio ──▶ Repositorio ──▶ BD
-```
+![Stack Tradicional](images/s6-tradicional.png)
 
 En Vaadin la vista **ya está en el servidor**, así que llama al servicio
 como a cualquier objeto Java:
 
-```
-CustomerListView ──▶ CustomerService ──▶ CustomerRepository ──▶ H2
-```
+![VistaVaadin](images/s6-vista-vaadin.png)
 
 Sin endpoints, sin serializar a JSON, sin DTOs de transporte, sin
 duplicar validaciones en dos lenguajes.

@@ -1,7 +1,6 @@
 # Sesión 5: Guardar, descartar, crear y eliminar
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 12 min · Video de referencia: 30:03
     - **Al terminar vas a tener:** un CRUD completo en memoria. Los
       cambios del formulario solo se aplican al presionar Guardar,
       Descartar los revierte, el botón + crea un cliente nuevo y Eliminar

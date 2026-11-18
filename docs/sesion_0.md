@@ -1,8 +1,6 @@
 # Sesión 0: Preparación y apertura
 
 !!! info "Resumen de la sesión"
-    - **Tiempo en vivo:** 3 min (solo la apertura). Las Partes 1 a 4 se
-      hacen **antes** del taller, en casa.
     - **Al terminar vas a tener:** el proyecto generado, el backend de
       clientes copiado, la base de datos con datos de ejemplo y la app
       arrancando sin errores.
@@ -56,7 +54,7 @@ La guía te avisa cada vez que pase:
 
 - crear una vista nueva con `@Route` (a veces),
 - agregar parámetros al constructor de una vista,
-- cambiar anotaciones de la clase `Application`.
+- cambiar anotaciones de `Application` o de `AppShell`.
 
 ---
 
@@ -70,22 +68,40 @@ y no queremos gastar tiempo del taller configurándolo a mano.
 ### Paso 1: Generar en start.vaadin.com
 
 1. Entra a [start.vaadin.com](https://start.vaadin.com).
-2. Elige **Flow** (no Hilla). Flow es el modo en que toda la interfaz se
-   escribe en Java.
-3. Java 25 (o 21) y la versión estable más reciente de Vaadin 25.x.
-4. Usa `com.baqjug.crm` como paquete base (*group id*).
-5. Descarga el `.zip`, descomprímelo y ábrelo en tu IDE como proyecto
-   Maven.
+2. En **Choose your starting point**, elige **Blank canvas**: trae solo
+   Maven, Spring Boot, JPA y H2, sin vistas de ejemplo.
+3. En **Select an edition**, deja **Vaadin** (la edición open source).
+   No necesitas la *Enterprise Edition*.
+4. Abre **Configure the basics** y ajusta:
 
-Si el generador incluyó vistas o funcionalidades de ejemplo (por ejemplo
-una lista de tareas o un `MainLayout`), **bórralas**. Vamos a construir
-todo desde una vista vacía y el `MainLayout` lo creamos nosotros en la
+    | Opción | Valor |
+    |--------|-------|
+    | Vaadin version | La estable (25.3 al escribir esta guía), no la marcada *pre* |
+    | Java version | **Java 25 LTS** (o 21 LTS) |
+    | Theme | **Aura** |
+    | Group ID | `com.baqjug.crm` |
+    | Artifact ID | `crm-vaadin` |
+
+5. En **Set up your AI tool**, deja **No AI tool**.
+6. La sección *Get security alerts* es opcional. Pulsa **Download**,
+   descomprime el `.zip` y ábrelo en tu IDE como proyecto Maven.
+
+!!! warning "El Group ID es también el paquete"
+    El generador usa el *group id* como paquete de la clase
+    `Application`. Si pones `com.baqjug`, la clase queda en `com.baqjug`
+    y no coincide con los paquetes de la guía (`com.baqjug.crm`,
+    `com.baqjug.crm.backend`, `com.baqjug.crm.ui`).
+
+Si elegiste **Sample view** en lugar de *Blank canvas*, el proyecto trae
+una lista de tareas de ejemplo: **bórrala**. Vamos a construir todo
+desde una vista vacía y el `MainLayout` lo creamos nosotros en la
 Sesión 7.
 
 ### Paso 2: Revisar las dependencias
 
-Abre `pom.xml` y busca estas dos dependencias. Si no están, agrégalas
-dentro de `<dependencies>`:
+Abre `pom.xml` y confirma que estén estas dos dependencias. El starter
+ya las trae; si por algún motivo falta alguna, agrégala dentro de
+`<dependencies>`:
 
 ```xml
 <dependency>
@@ -109,50 +125,69 @@ dentro de `<dependencies>`:
 No pongas versión: el *parent* de Spring Boot ya la define, y así todas
 las dependencias quedan compatibles entre sí.
 
-### Paso 3: La clase `Application`
+### Paso 3: `Application` y `AppShell`
 
-Deja `src/main/java/com/baqjug/crm/Application.java` así:
+El generador crea dos clases en el paquete base, y cada una tiene un
+trabajo distinto.
+
+`Application.java` es el punto de entrada. Déjala tal como viene:
+
+```java
+package com.baqjug.crm;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+}
+```
+
+| Línea | Qué hace |
+|-------|----------|
+| `@SpringBootApplication` | Enciende Spring Boot: busca tus clases, crea los objetos que necesitas (servicios, repositorios) y arranca un servidor web embebido. |
+| `main` | El punto de entrada. Correr `main` arranca todo: no hay un servidor aparte que instalar. |
+
+`AppShell.java` es la configuración global de la página: tema, estilos
+y esquema de color. También déjala tal como viene:
 
 ```java
 package com.baqjug.crm;
 
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.aura.Aura;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
 @StyleSheet(Aura.STYLESHEET)
-@StyleSheet("styles.css")
-public class Application implements AppShellConfigurator {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+@StyleSheet("styles.css") // Your custom styles
+@Push
+public class AppShell implements AppShellConfigurator {
 }
 ```
 
-Qué hace cada línea:
-
 | Línea | Qué hace |
 |-------|----------|
-| `@SpringBootApplication` | Enciende Spring Boot: busca tus clases, crea los objetos que necesitas (servicios, repositorios) y arranca un servidor web embebido. |
 | `@StyleSheet(Aura.STYLESHEET)` | Carga **Aura**, el tema visual de Vaadin 25. Sin un tema, los componentes se ven sin estilo. |
 | `@StyleSheet("styles.css")` | Carga nuestra propia hoja de estilos. La usamos en la Sesión 8. |
-| `implements AppShellConfigurator` | Marca esta clase como la configuración global de la página (tema, estilos, esquema de color). |
-| `main` | El punto de entrada. Correr `main` arranca todo: no hay un servidor aparte que instalar. |
+| `@Push` | Permite que el servidor envíe cambios al navegador sin que el usuario haga nada. En este taller no lo usamos; lo dejamos como viene. |
+| `implements AppShellConfigurator` | Marca esta clase como la configuración global de la página. |
 
 !!! warning "Una sola clase `AppShellConfigurator`"
-    Si el generador ya creó otra clase que implementa
-    `AppShellConfigurator`, deja solo una. Con dos, la app no arranca y
-    muestra: *"Multiple classes implementing AppShellConfigurator were
-    found"*.
+    No agregues `implements AppShellConfigurator` a `Application`: ya lo
+    hace `AppShell`. Con dos, la app no arranca y muestra: *"Multiple
+    classes implementing AppShellConfigurator were found"*.
 
 ### Paso 4: La hoja de estilos vacía
 
-Crea el archivo `src/main/resources/META-INF/resources/styles.css`,
-vacío por ahora.
+Revisa si existe `src/main/resources/META-INF/resources/styles.css`. Si
+el generador lo creó, borra su contenido y déjalo vacío; si no existe,
+créalo vacío. Lo usamos en la Sesión 8.
 
 !!! warning "La ruta exacta importa"
     Vaadin sirve como archivos estáticos lo que está en
@@ -438,7 +473,7 @@ esperado.** Lo importante está en la consola.
 | Síntoma | Causa | Solución |
 |---------|-------|----------|
 | `Table "CUSTOMER" not found` al arrancar | Falta `defer-datasource-initialization` | Agrega la línea en `application.properties` |
-| `Multiple classes implementing AppShellConfigurator` | El generador dejó otra clase de configuración | Deja solo `Application` |
+| `Multiple classes implementing AppShellConfigurator` | `Application` también implementa `AppShellConfigurator` | Quítaselo y deja solo `AppShell` |
 | `release version 25 not supported` | Maven usa un JDK más viejo | Configura el JDK 25 en el IDE, o baja `java.version` a 21 en el `pom.xml` |
 | `Port 8080 was already in use` | Otra app usa el puerto | Cierra la otra app o agrega `server.port=8081` |
 
