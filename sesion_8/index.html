@@ -971,18 +971,7 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cierre-3-min" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cierre (3 min)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Cierre (3 min)">
+    <nav class="md-nav" aria-label="Checkpoint">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1068,8 +1057,6 @@
 <div class="admonition info">
 <p class="admonition-title">Resumen de la sesión</p>
 <ul>
-<li><strong>Tiempo en vivo:</strong> 11 min (8 de estilos + 3 de cierre) · Video de
-  referencia: 51:42</li>
 <li><strong>Al terminar vas a tener:</strong> botones con jerarquía visual, CSS
   propio, modo claro/oscuro y un tema con los colores de tu marca.</li>
 <li><strong>Conceptos nuevos:</strong> variantes de tema, <code>getStyle()</code>, clases CSS,
@@ -1170,7 +1157,7 @@ como texto. Ahora el botón "Eliminar" del diálogo es rojo, no azul.</p>
 <p><code>getStyle()</code> aplica CSS <strong>directamente</strong> a un componente desde Java.
 Sirve para casos puntuales: un solo padding no merece un archivo CSS. Si
 el mismo estilo se repite en varios lugares, va en la hoja de estilos.</p>
-<p><img alt="Guardar y + en color primario, Eliminar rojo sin borde, diálogo con botón rojo" src="images/s8-variantes.png" /></p>
+<p><img alt="Guardar y + en color primario, Eliminar rojo sin borde, diálogo con botón rojo" src="../images/s8-variantes.png" /></p>
 <hr />
 <h2 id="parte-2-css-propio-y-modo-clarooscuro">Parte 2: CSS propio y modo claro/oscuro<a class="headerlink" href="#parte-2-css-propio-y-modo-clarooscuro" title="Permanent link">&para;</a></h2>
 <h3 id="el-problema_1">El problema<a class="headerlink" href="#el-problema_1" title="Permanent link">&para;</a></h3>
@@ -1190,20 +1177,24 @@ modo oscuro.</p>
 <li><code>addClassNames("app-name")</code> le pone la clase CSS <code>app-name</code> al
   componente, igual que <code>class="app-name"</code> en HTML.</li>
 <li><code>styles.css</code> ya se carga desde la Sesión 0, por el
-  <code>@StyleSheet("styles.css")</code> de <code>Application</code>.</li>
+  <code>@StyleSheet("styles.css")</code> de <code>AppShell</code>.</li>
 </ul>
 <p><strong>Guarda el CSS y mira:</strong> el cambio se ve <strong>sin reiniciar</strong>. Es CSS
 normal, sin un lenguaje propietario.</p>
 <h3 id="paso-6-seguir-el-modo-del-sistema-operativo">Paso 6: Seguir el modo del sistema operativo<a class="headerlink" href="#paso-6-seguir-el-modo-del-sistema-operativo" title="Permanent link">&para;</a></h3>
-<p>En <code>Application</code>, agrega la anotación:</p>
+<p>En <code>AppShell</code>, agrega la anotación:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.ColorScheme</span><span class="p">;</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nd">@SpringBootApplication</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">LIGHT_DARK</span><span class="p">)</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span><span class="w"> </span><span class="c1">// Your custom styles</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">LIGHT_DARK</span><span class="p">)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nd">@Push</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AppShell</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
 </span></code></pre></div>
+<p><code>Application</code> no se toca: sigue igual que en la Sesión 0. Si le agregas
+<code>implements AppShellConfigurator</code>, la app no arranca porque quedan dos
+clases de configuración.</p>
 <table>
 <thead>
 <tr>
@@ -1228,7 +1219,7 @@ normal, sin un lenguaje propietario.</p>
 </table>
 <div class="admonition warning">
 <p class="admonition-title">Reinicia la aplicación</p>
-<p>Los cambios en <code>Application.java</code> no se aplican con <em>hotswap</em>.</p>
+<p>Los cambios en <code>AppShell.java</code> no se aplican con <em>hotswap</em>.</p>
 </div>
 <p><strong>Mira:</strong> cambia tu sistema operativo a modo oscuro y la app lo sigue.
 Fondo, texto, Grid, campos y botones: todo cambia, porque el tema ya
@@ -1254,13 +1245,13 @@ trae las dos versiones.</p>
 </tbody>
 </table>
 <p>Los dos soportan claro y oscuro. Para probar Lumo, cambia en
-<code>Application</code>:</p>
+<code>AppShell</code>:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.lumo.Lumo</span><span class="p">;</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Lumo</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
 </span></code></pre></div>
 <p>y reinicia. Vuelve a <code>Aura.STYLESHEET</code> para seguir.</p>
-<p><img alt="Nombre de la app en negrita, la app en modo oscuro siguiendo al sistema" src="images/s8-css-modo-oscuro.png" /></p>
+<p><img alt="Nombre de la app en negrita, la app en modo oscuro siguiendo al sistema" src="../images/s8-css-modo-oscuro.png" /></p>
 <hr />
 <h2 id="parte-3-marca-propia-con-el-editor-de-temas-de-aura">Parte 3: Marca propia con el editor de temas de Aura<a class="headerlink" href="#parte-3-marca-propia-con-el-editor-de-temas-de-aura" title="Permanent link">&para;</a></h2>
 <h3 id="el-problema_2">El problema<a class="headerlink" href="#el-problema_2" title="Permanent link">&para;</a></h3>
@@ -1331,7 +1322,7 @@ la densidad y el contraste, y exporta un bloque de variables. Pégalo en
 <p>Las variables <code>--aura-*</code> son del tema; las <code>--vaadin-*</code> ajustan un tipo
 de componente en particular.</p>
 <h3 id="paso-8-fijar-el-modo-oscuro">Paso 8: Fijar el modo oscuro<a class="headerlink" href="#paso-8-fijar-el-modo-oscuro" title="Permanent link">&para;</a></h3>
-<p>Este tema de ejemplo está pensado para modo oscuro. En <code>Application</code>:</p>
+<p>Este tema de ejemplo está pensado para modo oscuro. En <code>AppShell</code>:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">DARK</span><span class="p">)</span>
 </span></code></pre></div>
 <p>y reinicia.</p>
@@ -1345,30 +1336,25 @@ ve el acento <code>--aura-accent-color-dark</code> (cian); el morado de
 bien. El <a href="https://webaim.org/resources/contrastchecker/">contrast checker de WebAIM</a>
 sirve para comprobarlo.</p>
 </div>
-<p><img alt="La app terminada con el tema de marca aplicado" src="images/s8-tema-marca.png" /></p>
+<p><img alt="La app terminada con el tema de marca aplicado" src="../images/s8-tema-marca.png" /></p>
 <hr />
 <h2 id="codigo-completo-al-cierre-del-taller">Código completo al cierre del taller<a class="headerlink" href="#codigo-completo-al-cierre-del-taller" title="Permanent link">&para;</a></h2>
 <details class="example">
-<summary>Application.java</summary>
+<summary>AppShell.java</summary>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.crm</span><span class="p">;</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.dependency.StyleSheet</span><span class="p">;</span>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.AppShellConfigurator</span><span class="p">;</span>
 </span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.ColorScheme</span><span class="p">;</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.aura.Aura</span><span class="p">;</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="nd">@SpringBootApplication</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">DARK</span><span class="p">)</span>
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">Application</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
-</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="p">}</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.Push</span><span class="p">;</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.aura.Aura</span><span class="p">;</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Aura</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span><span class="w"> </span><span class="c1">// Your custom styles</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nd">@ColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">DARK</span><span class="p">)</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nd">@Push</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AppShell</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="p">}</span>
 </span></code></pre></div>
 </details>
 <details class="example">
@@ -1645,12 +1631,17 @@ sirve para comprobarlo.</p>
 <tr>
 <td><code>@ColorScheme</code> no tiene efecto</td>
 <td>No reiniciaste</td>
-<td>Reinicia después de tocar <code>Application</code></td>
+<td>Reinicia después de tocar <code>AppShell</code></td>
+</tr>
+<tr>
+<td><code>Multiple classes implementing AppShellConfigurator</code></td>
+<td>Pusiste las anotaciones en <code>Application</code> y le agregaste <code>implements AppShellConfigurator</code></td>
+<td>Deja <code>Application</code> como en la Sesión 0 y pon las anotaciones en <code>AppShell</code></td>
 </tr>
 <tr>
 <td>La app se ve sin estilos</td>
 <td>Se borró <code>@StyleSheet(Aura.STYLESHEET)</code></td>
-<td>Vuelve a agregarlo en <code>Application</code></td>
+<td>Vuelve a agregarlo en <code>AppShell</code></td>
 </tr>
 <tr>
 <td>Las variables no cambian nada</td>
@@ -1673,7 +1664,6 @@ sirve para comprobarlo.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"style: theme variants, custom css and aura branding"</span>
 </span></code></pre></div>
 <hr />
-<h2 id="cierre-3-min">Cierre (3 min)<a class="headerlink" href="#cierre-3-min" title="Permanent link">&para;</a></h2>
 <p>Construimos un CRM con:</p>
 <ul>
 <li>Grid ordenable y filtrable con Signals,</li>
@@ -1696,11 +1686,7 @@ JavaScript y sin una API REST.</p>
 <li><strong><a href="https://vaadin.com/docs/latest/flow/ui-state">Signals</a></strong>: hoy usamos
   <code>ValueSignal</code>, <code>map</code> y <code>Signal.effect</code>. Hay más tipos, como
   <code>ListSignal</code> y los signals computados.</li>
-<li><strong>El tutorial en inglés</strong> en el que se basa este taller:
-  <a href="https://drewharvey.github.io/vaadin-intro-tutorial/">texto</a> y
-  <a href="https://github.com/drewharvey/vaadin-intro-tutorial">código</a>.</li>
 </ul>
-<p><img alt="Copilot editando un texto de la UI desde el navegador" src="images/s8-copilot.png" /></p>
 
 
 
